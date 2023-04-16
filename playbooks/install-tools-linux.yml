@@ -3,6 +3,12 @@
   hosts: localhost
   become: true
 
+  vars:
+    toolbox_version: 1.17.7391
+    toolbox_filename: jetbrains-toolbox-{{ toolbox_version }}.tar.gz
+    toolbox_download_url: https://download.jetbrains.com/toolbox/{{ toolbox_filename }}
+    toolbox_install_dir: /opt/jetbrains-toolbox
+
   tasks:
     - name: Add Microsoft GPG key
       apt_key:
@@ -12,9 +18,43 @@
       apt_repository:
         repo: deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main
 
+    - name: Install Doppler CLI
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+
+    - name: Add Doppler GPG key
+      apt_key:
+        url: https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key
+
+    - name: Add Doppler package repository
+      apt_repository:
+        repo: "deb https://packages.doppler.com/public/cli/deb/debian any-version main"
+        state: present
+
+    - name: Add Google Chrome key
+      apt_key:
+        url: https://dl.google.com/linux/linux_signing_key.pub
+        state: present
+
+    - name: Add Google Chrome repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main"
+        state: present
+
     - name: Update package cache
       apt:
         update_cache: yes
+
+    - name: Install Doppler CLI
+      apt:
+        name:
+          - doppler
+        state: present
 
     - name: Install VS Code
       apt:
@@ -86,12 +126,20 @@
         deb: https://downloads.slack-edge.com/linux_releases/slack-desktop-4.16.0-amd64.deb
         state: present
 
-    - name: Install DataGrip
-      apt:
-        deb: https://download.jetbrains.com/datagrip/datagrip-{{ datagrip_version }}.deb
-        state: present
-      vars:
-        datagrip_version: 2022.1.2
+    - name: Download JetBrains Toolbox App tarball
+      get_url:
+        url: "{{ toolbox_download_url }}"
+        dest: "{{ toolbox_filename }}"
+
+    - name: Extract JetBrains Toolbox App to {{ toolbox_install_dir }}
+      unarchive:
+        src: "{{ toolbox_filename }}"
+        dest: "{{ toolbox_install_dir }}"
+        remote_src: true
+        creates: "{{ toolbox_install_dir }}/jetbrains-toolbox-{{ toolbox_version }}/jetbrains-toolbox"
+
+    - name: Run JetBrains Toolbox App
+      shell: "{{ toolbox_install_dir }}/jetbrains-toolbox-{{ toolbox_version }}/jetbrains-toolbox"
 
     - name: Install additional dependencies
       apt:
