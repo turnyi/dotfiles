@@ -126,20 +126,26 @@
         deb: https://downloads.slack-edge.com/linux_releases/slack-desktop-4.16.0-amd64.deb
         state: present
 
-    - name: Download JetBrains Toolbox App tarball
-      get_url:
-        url: "{{ toolbox_download_url }}"
-        dest: "{{ toolbox_filename }}"
+    # - name: Create directory for JetBrains Toolbox App
+    #   file:
+    #     path: "{{ toolbox_install_dir }}"
+    #     state: directory
+    #     mode: "0755"
 
-    - name: Extract JetBrains Toolbox App to {{ toolbox_install_dir }}
-      unarchive:
-        src: "{{ toolbox_filename }}"
-        dest: "{{ toolbox_install_dir }}"
-        remote_src: true
-        creates: "{{ toolbox_install_dir }}/jetbrains-toolbox-{{ toolbox_version }}/jetbrains-toolbox"
+    # - name: Download JetBrains Toolbox App tarball
+    #   get_url:
+    #     url: "{{ toolbox_download_url }}"
+    #     dest: "{{ toolbox_filename }}"
 
-    - name: Run JetBrains Toolbox App
-      shell: "{{ toolbox_install_dir }}/jetbrains-toolbox-{{ toolbox_version }}/jetbrains-toolbox"
+    # - name: Extract JetBrains Toolbox App to {{ toolbox_install_dir }}
+    #   unarchive:
+    #     src: "{{ toolbox_filename }}"
+    #     dest: "{{ toolbox_install_dir }}"
+    #     remote_src: true
+    #     creates: "{{ toolbox_install_dir }}/jetbrains-toolbox-{{ toolbox_version }}/jetbrains-toolbox"
+
+    # - name: Run JetBrains Toolbox App
+    #   shell: "{{ toolbox_install_dir }}/jetbrains-toolbox-{{ toolbox_version }}/jetbrains-toolbox"
 
     - name: Install additional dependencies
       apt:
