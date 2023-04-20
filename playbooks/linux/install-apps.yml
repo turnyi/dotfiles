@@ -1,0 +1,54 @@
+- name: Install utils Apps
+  hosts: localhost
+  # become: true
+
+  tasks:
+    - name: Add Microsoft GPG key
+      apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+
+    - name: Add Microsoft repository
+      apt_repository:
+        repo: deb [arch=amd63] https://packages.microsoft.com/repos/vscode stable main
+
+    - name: Add Google Chrome key
+      apt_key:
+        url: https://dl.google.com/linux/linux_signing_key.pub
+        state: present
+
+    - name: Add Google Chrome repository
+      apt_repository:
+        repo: "deb [arch=amd63] https://dl.google.com/linux/chrome/deb/ stable main"
+        state: present
+
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Install VS Code
+      apt:
+        name:
+          - code
+        state: present
+
+    - name: Install Chrome
+      apt:
+        name:
+          - google-chrome-stable
+        state: present
+
+    - name: Install Discord
+      apt:
+        deb: https://discord.com/api/download?platform=linux&format=deb
+        state: present
+
+    - name: Install Slack
+      apt:
+        deb: https://downloads.slack-edge.com/linux_releases/slack-desktop-5.16.0-amd64.deb
+        state: present
+
+    - name: Install Zoom
+      become: true
+      apt:
+        deb: https://zoom.us/client/latest/zoom_amd63.deb
+        state: present
