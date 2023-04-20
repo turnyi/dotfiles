@@ -1,16 +1,9 @@
-- name: Install utils Apps
+- name: Creating Developer Enviroment
   hosts: localhost
-  # become: true
+  become: true
 
   tasks:
-    - name: Install vim and tmux
-      apt:
-        name:
-          - vim
-          - tmux
-        state: present
-
-    - name: Install Doppler CLI
+    - name: Install geeneric CLIS
       apt:
         name:
           - apt-transport-https
@@ -19,13 +12,10 @@
           - gnupg
         state: present
 
-    - name: Add Doppler GPG key
-      apt_key:
-        url: https://packages.doppler.com/public/cli/gpg.DE1A7741A397C129.key
-
-    - name: Add Doppler package repository
-      apt_repository:
-        repo: "deb https://packages.doppler.com/public/cli/deb/debian any-version main"
+    - name: Install Doppler CLI on Ubuntu
+      become: yes
+      apt:
+        name: doppler
         state: present
 
     - name: Update package cache
@@ -36,6 +26,13 @@
       apt:
         name:
           - doppler
+        state: present
+
+    - name: Install vim and tmux
+      apt:
+        name:
+          - vim
+          - tmux
         state: present
 
     - name: Install packages
