@@ -2,7 +2,7 @@
 
 source .env
 
-# sudo ansible-playbook playbooks/linux/setup-linux.yml
+sudo ansible-playbook playbooks/linux/setup-linux.yml
 
 export DOPPLER_TOKEN=$DOPPLER_TOKEN
 
