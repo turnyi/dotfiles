@@ -4,6 +4,11 @@
       ansible.builtin.include_vars:
         file: .env
 
+    - name: Install Git
+      apt:
+        name: git
+        state: present
+
     - name: Authenticate with GitHub
       community.general.github_repository:
         username: "{{ github_user }}"

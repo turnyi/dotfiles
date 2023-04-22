@@ -1,6 +1,6 @@
 - name: Install utils Apps
   hosts: localhost
-  # become: true
+  become: true
 
   tasks:
     - name: Add Microsoft GPG key
@@ -25,12 +25,6 @@
       apt:
         update_cache: yes
 
-    - name: Install VS Code
-      apt:
-        name:
-          - code
-        state: present
-
     - name: Install Chrome
       apt:
         name:
@@ -42,13 +36,33 @@
         deb: https://discord.com/api/download?platform=linux&format=deb
         state: present
 
-    - name: Install Slack
+    - name: Install Slack dependencies
       apt:
-        deb: https://downloads.slack-edge.com/linux_releases/slack-desktop-5.16.0-amd64.deb
+        name:
+          - libgtk-3-0
+          - libnotify4
+          - libnss3
+          - libxss1
+          - libxtst6
+          - xdg-utils
         state: present
 
-    - name: Install Zoom
-      become: true
+    - name: Download Slack package
+      get_url:
+        url: https://downloads.slack-edge.com/linux_releases/slack-desktop-4.17.0-amd64.deb
+        dest: /tmp/slack-desktop.deb
+
+    - name: Install Slack
       apt:
-        deb: https://zoom.us/client/latest/zoom_amd63.deb
+        deb: /tmp/slack-desktop.deb
+        state: present
+
+    - name: Download Zoom package
+      get_url:
+        url: https://zoom.us/client/latest/zoom_amd64.deb
+        dest: /tmp/zoom.deb
+
+    - name: Install Zoom
+      apt:
+        deb: /tmp/zoom.deb
         state: present

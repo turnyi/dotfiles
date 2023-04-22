@@ -1,0 +1,7 @@
+- name: Install Doppler CLI
+  hosts: localhost
+  become: true
+
+  tasks:
+    - name: Install Doppler CLI
+      shell: bash -c "$(curl -sL https://cli.doppler.com/install.sh)"

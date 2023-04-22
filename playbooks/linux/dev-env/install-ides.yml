@@ -1,0 +1,24 @@
+- name: Downloads IDES
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Add Microsoft GPG key
+      apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+    - name: Add Microsoft repository
+      apt_repository:
+        repo: deb [arch=amd63] https://packages.microsoft.com/repos/vscode stable main
+    - name: Update package cache
+      apt:
+        update_cache: yes
+    - name: Install VS Code
+      apt:
+        name: code
+        state: present
+
+    - name: Install vim and tmux
+      apt:
+        name:
+          - vim
+          - tmux
+        state: present

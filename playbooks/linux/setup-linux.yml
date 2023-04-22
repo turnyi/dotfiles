@@ -1,5 +1,5 @@
 - name: Include a play after another play
-  import_playbook: create-dev-env.yml
+  import_playbook: dev-env/dev-env.yml
 
 - name: Install Main Apps
-  import_playbook: install-apps.yml
+  import_playbook: generic-apps/install-apps.yml
