@@ -23,7 +23,7 @@ alias kitty="/Applications/kitty.app/Contents/MacOS/kitty"
 # {{{ *** *** Aliases *** ***
 
 # ZSH
-alias ls="lsd"
+alias ls="ls -al"
 alias ll="ls -alh --color=auto"
 alias zshconfig="vim $HOME/.zshrc"
 alias reload="source $HOME/.zshrc"

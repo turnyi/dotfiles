@@ -108,9 +108,3 @@ if [ -f '/Users/ignaciobarreto/google-cloud-sdk/completion.zsh.inc' ]; then . '/
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 export PATH="/opt/homebrew/opt/curl/bin:$PATH"
-
-source <(kubectl completion zsh)
-alias k=kubectl
-complete -o default -F __start_kubectl k
-alias kubeclr='sed -i "" -e "s/^current-context:.*$/current-context:/" ~/.kube/config'
-export PATH=/Users/ignaciobarreto/.meteor:$PATH
