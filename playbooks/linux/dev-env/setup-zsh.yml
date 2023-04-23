@@ -1,0 +1,11 @@
+- name: Download zsh
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Install Zsh package
+      apt:
+        name: zsh
+        state: present
+
+    - name: Set default shell to Zsh for current user
+      shell: chsh -s $(which zsh) $USER

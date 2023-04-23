@@ -1,11 +1,14 @@
 #!/bin/bash
 
-source .env
+# source .env
 
-sudo ansible-playbook playbooks/linux/setup-linux.yml
+# sudo ansible-playbook playbooks/linux/setup-linux.yml
 
-export DOPPLER_TOKEN=$DOPPLER_TOKEN
+# export DOPPLER_TOKEN=$DOPPLER_TOKEN
 
-doppler secrets substitute playbooks/github/.env.template --project ansible --config dev > playbooks/github/.env
+# doppler secrets substitute playbooks/github/.env.template --project ansible --config dev > playbooks/github/.env
 
-sudo ansible-playbook playbooks/github/git-auth.yml
+# sudo ansible-playbook playbooks/github/git-auth.yml
+# cd playbooks/github/ && ./github-auth.sh && cd -
+cd config && ./install.sh && cd -
+
