@@ -1,6 +1,8 @@
 - name: Download zsh
   hosts: localhost
   become: true
+  environment:
+    HOME: "/home/martin"
   tasks:
     - name: Install Zsh package
       apt:
@@ -13,4 +15,10 @@
     - name: Stow dotfiles
       shell: |
         cd {{ playbook_dir }}/../../../config && ./install.sh
-      become: false
+      become: true
+
+    - name: change user shell to zsh
+      become: yes
+      user:
+        name: "martin"
+        shell: /usr/bin/zsh
