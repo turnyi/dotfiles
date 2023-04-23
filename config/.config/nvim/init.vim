@@ -8,7 +8,7 @@
 :set mouse=a
 
 source ~/.config/nvim/plug.vim
-call plug#begin()
+call plug#begin('~/.config/nvim/my-plugins/')
 Plug 'http://github.com/tpope/vim-surround' " Surrounding ysw)
 Plug 'https://github.com/preservim/nerdtree' " NerdTree
 Plug 'https://github.com/tpope/vim-commentary' " For Commenting gcc & gc
@@ -33,3 +33,5 @@ nmap <F8> :TagbarToggle<CR>
 :set completeopt-=preview " For No Previews
 
 :colorscheme jellybeans
+
+inoremap <expr> <Tab> pumvisible() ? coc#_select_confirm() : "<Tab>"
