@@ -25,6 +25,14 @@ Plug 'https://github.com/kien/ctrlp.vim' " ctrlp search
 
 call plug#end()
 
+" ctrlp show hidden files
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+let g:ctrlp_show_hidden = 1
+
+" Enable auto-completion in Normal mode
+imap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+
+
 " Set keybinds 
 nnoremap <C-f> :NERDTreeFocus<CR>
 nnoremap <C-n> :NERDTree<CR>
@@ -34,6 +42,8 @@ nnoremap <C-s> :w<CR>  " save with ctrl+s
 vnoremap <silent><c-s> <c-c>:update<cr>gv
 inoremap <silent><c-s> <c-o>:update<cr>
 nmap <F8> :TagbarToggle<CR>
+cnoremap <C-:> :q<CR>
+
 
 " Move line upwards with Alt + Up Arrow in normal and insert mode
 nnoremap <A-Up> :m-2<CR>
