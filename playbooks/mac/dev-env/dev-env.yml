@@ -1,0 +1,17 @@
+- name: install packages
+  import_playbook: install-packages.yml
+
+# - name: install ides
+#   import_playbook: install-ides.yml
+
+# - name: setup Node
+#   import_playbook: setup-node.yml
+
+# - name: setup Docker
+#   import_playbook: setup-docker.yml
+
+# - name: install Doppler
+#   import_playbook: install-doppler.yml
+
+- name: setup zsh
+  import_playbook: setup-zsh.yml

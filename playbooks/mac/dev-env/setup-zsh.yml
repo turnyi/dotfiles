@@ -1,0 +1,9 @@
+- name: Download zsh
+  hosts: localhost
+  become: true
+  environment:
+  tasks:
+    - name: Stow dotfiles
+      shell: |
+        cd {{ playbook_dir }}/../../../config && ./install.sh
+      become: true
