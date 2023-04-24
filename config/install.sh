@@ -11,5 +11,4 @@ stow -t ~ home
 # Install config files
 rm -rf ~/.config/ohmyposh ~/.config/nvim
 mkdir -p .config && cd .config &&  mkdir ~/.config/ohmyposh && stow -t ~/.config/ohmyposh ohmyposh 
-mkdir ~/.config/nvim && stow -t ~/.config/nvim nvim 
-
+mkdir ~/.config/nvim && stow -t ~/.config/nvim nvim
