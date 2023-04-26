@@ -67,7 +67,9 @@
 :set foldexpr=nvim_treesitter#foldexpr() " Use Treesitter to handle folds
 
 source ~/.config/nvim/plug.vim
+
 call plug#begin('~/.config/nvim/my-plugins/')
+Plug 'olimorris/onedarkpro.nvim'
 Plug 'http://github.com/tpope/vim-surround' " Surrounding ysw)
 Plug 'https://github.com/preservim/nerdtree' " NerdTree
 Plug 'https://github.com/tpope/vim-commentary' " For Commenting gcc & gc
@@ -80,8 +82,7 @@ Plug 'https://github.com/tc50cal/vim-terminal' " Vim Terminal
 Plug 'https://github.com/terryma/vim-multiple-cursors' " CTRL + N for multiple cursors
 Plug 'https://github.com/preservim/tagbar' " Tagbar for code navigation
 Plug 'https://github.com/neoclide/coc.nvim'  " Auto Completion
-Plug 'https://github.com/kien/ctrlp.vim' " ctrlp search
-Plug 'https://github.com/github/copilot.vim.git' " Copilot
+Plug 'https://github.com/github/copilot.vim.git' " Copilot1
 Plug 'https://github.com/andviro/flake8-vim.git' " Flake8
 Plug 'ambv/black' " Black
 Plug 'eslint/eslint' "eslint
@@ -90,18 +91,24 @@ Plug 'neomake/neomake'
 Plug 'neovim/nvim-lspconfig' " lsp plug languages
 Plug 'hrsh7th/nvim-compe'
 Plug 'nvim-lua/lsp-status.nvim'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'williamboman/nvim-lsp-installer'
+Plug 'f-person/git-blame.nvim'
+Plug 'dyng/ctrlsf.vim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+Plug 'junegunn/fzf.vim'
+Plug 'jose-elias-alvarez/null-ls.nvim'
 call plug#end()
+
 
 " ctrlp show hidden files
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 let g:ctrlp_show_hidden = 1
 
-" Enable auto-completion in Normal mode
-imap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-
 
 " Set keybinds 
-nnoremap <C-f> :NERDTreeFocus<CR>
 nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-b> :NERDTreeToggle<CR>
 nnoremap <C-l> :call CocActionAsync('jumpDefinition')<CR>
@@ -123,16 +130,38 @@ nnoremap <A-j> :m+<CR>
 inoremap <A-Down> <Esc>:m+<CR>a
 
 
-
-:set completeopt-=preview " For No Previews
-:colorscheme jellybeans
+colorscheme onedark
 
 inoremap <expr> <Tab> pumvisible() ? coc#_select_confirm() : "<Tab>"
 set fillchars+=eob:\ " remove ~ from empty lines:
+set wildmenu
 
 " NerdTree config:
 let g:NERDTreeShowHidden=1
 let g:NERDTreeWinPos = "right"
 
+" Telescope command line:
+" Find files using Telescope command-line sugar.
+" nnoremap <leader>ff <cmd>Telescope find_files hidden=true<cr>
+" nnoremap <C-p> <cmd>Telescope find_files hidden=true<cr>
+" nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+" nnoremap <leader>fb <cmd>Telescope buffers<cr>
+" nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
+" Find files using Telescope command-line sugar.
+nnoremap <leader>ff <cmd>Telescope find_files hidden=true<cr>
+nnoremap <C-p> <cmd>Telescope find_files hidden=true<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <C-S-f> <cmd>Telescope live_grep hidden=true<cr>
+nnoremap <C-f> :Telescope current_buffer_fuzzy_find<CR>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
+nnoremap <C-n> :call CreateFile()<CR>
+
+function! CreateFile()
+  let filename = input("Enter filename: ")
+  execute "e " . expand("%:p:h") . "/" . filename
+endfunction
+
+source ~/.config/nvim/setup.lua
