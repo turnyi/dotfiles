@@ -6,9 +6,6 @@ sudo ansible-playbook playbooks/linux/setup-linux.yml
 
 export DOPPLER_TOKEN=$DOPPLER_TOKEN
 
-doppler secrets substitute playbooks/github/.env.template --project ansible --config dev > playbooks/github/.env
+doppler secrets substitute config/.config/gh/hosts.template.yml --project ansible --config dev > config/.config/gh/hosts.yml
 
-sudo ansible-playbook playbooks/github/git-auth.yml
-cd playbooks/github/ && ./github-auth.sh && cd -
-
-
+cd config && bash install.sh cd -

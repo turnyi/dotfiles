@@ -138,7 +138,7 @@ nnoremap <A-j> :m+<CR>
 inoremap <A-Down> <Esc>:m+<CR>a
 
 
-colorscheme onedark
+" colorscheme onedark
 
 inoremap <expr> <Tab> pumvisible() ? coc#_select_confirm() : "<Tab>"
 set fillchars+=eob:\ " remove ~ from empty lines:

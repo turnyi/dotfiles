@@ -1,0 +1,4 @@
+github.com:
+    oauth_token: ${{.GITHUB_TOKEN}} 
+    user: ${{.GITHUB_USER}}
+    git_protocol: https

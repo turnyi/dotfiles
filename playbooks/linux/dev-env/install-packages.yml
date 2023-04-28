@@ -27,6 +27,7 @@
           - shellcheck
           - neovim
           - exuberant-ctags
+          - gh
         state: present
 
     - name: Install Vim-Plug for Neovim

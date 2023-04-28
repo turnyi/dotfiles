@@ -12,3 +12,6 @@
 
 - name: install Doppler
   import_playbook: install-doppler.yml
+
+- name: setup zsh
+  import_playboook: setup-zsh.yml

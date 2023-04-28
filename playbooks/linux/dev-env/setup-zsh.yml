@@ -12,11 +12,6 @@
     - name: Set default shell to Zsh for current user
       shell: chsh -s $(which zsh) $USER
 
-    - name: Stow dotfiles
-      shell: |
-        cd {{ playbook_dir }}/../../../config && ./install.sh
-      become: true
-
     - name: change user shell to zsh
       become: yes
       user:

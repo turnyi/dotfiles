@@ -20,6 +20,7 @@
           - openssl@1.1
           - lua-language-server
           - ack
+          - gh
         state: present
 
     - name: Install Vim-Plug for Neovim
