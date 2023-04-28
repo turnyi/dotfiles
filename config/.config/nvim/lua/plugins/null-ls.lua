@@ -12,7 +12,6 @@ local sources = {
   formattin.black,
   formattin.isort,
   formattin.sqlformat,
-  formattin.terraform_f
 }
 
 null_ls.setup({

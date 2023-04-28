@@ -100,12 +100,20 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
 Plug 'junegunn/fzf.vim'
 Plug 'jose-elias-alvarez/null-ls.nvim'
+Plug 'othree/html5.vim'
+Plug 'mustache/vim-mustache-handlebars',
+Plug 'pangloss/vim-javascript'
 call plug#end()
 
 
 " ctrlp show hidden files
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 let g:ctrlp_show_hidden = 1
+
+:set completeopt-=preview " For No Preview
+
+" Enable Coc on normal mode
+nmap <silent><leader>g <Plug>(coc-cmd)
 
 
 " Set keybinds 
@@ -124,7 +132,7 @@ nnoremap <A-Up> :m-2<CR>
 nnoremap <A-k> :m-2<CR>
 inoremap <A-Up> <Esc>:m-2<CR>a
 
-" Move line upwards with Alt + down Arrow in normal and insert mode
+" Move line Downwards with Alt + down Arrow in normal and insert mode
 nnoremap <A-Down> :m+<CR>
 nnoremap <A-j> :m+<CR>
 inoremap <A-Down> <Esc>:m+<CR>a

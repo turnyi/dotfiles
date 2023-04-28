@@ -4,7 +4,6 @@ local M = {}
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 function M.on_attach(client, bufnr)
-
   local function buf_set_keymap(...)
     vim.api.nvim_buf_set_keymap(bufnr, ...)
   end
@@ -263,7 +262,8 @@ nvim_lsp.efm.setup {
     languages = {
       lua = {
         {
-          formatCommand = "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=120 --break-after-table-lb",
+          formatCommand =
+          "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=120 --break-after-table-lb",
           formatStdin = true
         }
       }
@@ -302,5 +302,35 @@ vim.fn.sign_define("DiagnosticSignHint", { text = "", texthl = "DiagnosticSig
 
 -- global config for diagnostic
 vim.diagnostic.config({ underline = false, virtual_text = true, signs = true, severity_sort = true })
+
+-- nvim_lsp.ember.setup {
+-- on_attach = M.on_attach,
+-- cmd = { "ember-language-server", "--stdio" },
+-- filetypes = { "handlebars", "hbs" },
+-- capabilities = capabilities
+-- }
+
+
+require 'lspconfig'.tailwindcss.setup {
+  on_attach = M.on_attach,
+  cmd = { "tailwindcss-language-server", "--stdio" },
+  filetypes = { "handlebars", "hbs" },
+  settings = {
+    tailwindCSS = {
+      classAttributes = { "class", "className", "classList", "ngClass" },
+      lint = {
+        cssConflict = "warning",
+        invalidApply = "error",
+        invalidConfigPath = "error",
+        invalidScreen = "error",
+        invalidTailwindDirective = "error",
+        invalidVariant = "error",
+        recommendedVariantOrder = "warning"
+      },
+      validate = true
+    }
+  },
+  capabilities = capabilities
+}
 
 return M
