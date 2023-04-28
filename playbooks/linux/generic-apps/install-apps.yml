@@ -3,33 +3,17 @@
   become: true
 
   tasks:
-    - name: Add Microsoft GPG key
-      apt_key:
-        url: https://packages.microsoft.com/keys/microsoft.asc
+    - name: Download Google Chrome DEB file
+      shell: |
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+      args:
+        chdir: /tmp
 
-    - name: Add Microsoft repository
-      apt_repository:
-        repo: deb [arch=amd63] https://packages.microsoft.com/repos/vscode stable main
-
-    - name: Add Google Chrome key
-      apt_key:
-        url: https://dl.google.com/linux/linux_signing_key.pub
-        state: present
-
-    - name: Add Google Chrome repository
-      apt_repository:
-        repo: "deb [arch=amd63] https://dl.google.com/linux/chrome/deb/ stable main"
-        state: present
-
-    - name: Update package cache
-      apt:
-        update_cache: yes
-
-    - name: Install Chrome
-      apt:
-        name:
-          - google-chrome-stable
-        state: present
+    - name: Install Google Chrome using dpkg
+      shell: |
+        sudo dpkg -i google-chrome-stable_current_amd64.deb
+      args:
+        chdir: /tmp
 
     - name: Install Discord
       apt:
