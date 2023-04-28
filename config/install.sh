@@ -3,13 +3,13 @@
 set -e
 
 # Install link of home files
-rm -rf ~/scripts ~/zsh ~/.tmux.conf ~/.zprofile ~/.zshrc ~/.DS_Store ~/Notes
+rm -rf ~/scripts ~/zsh ~/.tmux.conf ~/.zprofile ~/.zshrc ~/.DS_Store ~/Notes ~/.bashrc
 
 echo "$(pwd)"
 stow -t ~ home
 
 # Install config files
-rm -rf ~/.config/ohmyposh ~/.config/nvim ~/.config/gh
+rm -rf ~/.config/ohmyposh ~/.config/nvim ~/.config/gh 
 mkdir -p .config && cd .config &&  mkdir ~/.config/ohmyposh && stow -t ~/.config/ohmyposh ohmyposh 
 mkdir ~/.config/nvim && stow -t ~/.config/nvim nvim
 mkdir ~/.config/gh && stow -t ~/.config/gh gh

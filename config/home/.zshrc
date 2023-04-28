@@ -1,3 +1,5 @@
+echo -e "\033]11;#282c34\007"
+
 #install plugins
 source "$HOME/zsh/antigen_install.zsh"
 source "$HOME/zsh/antigen.sh"
@@ -108,3 +110,4 @@ if [ -f '/Users/martinradovitzky/google-cloud-sdk/completion.zsh.inc' ]; then . 
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+

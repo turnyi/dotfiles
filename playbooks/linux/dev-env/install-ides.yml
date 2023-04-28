@@ -2,12 +2,23 @@
   hosts: localhost
   become: true
   tasks:
-    - name: Add Microsoft GPG key
-      apt_key:
-        url: https://packages.microsoft.com/keys/microsoft.asc
-    - name: Add Microsoft repository
-      apt_repository:
-        repo: deb [arch=amd63] https://packages.microsoft.com/repos/vscode stable main
+    - name: Install required packages
+      apt:
+        name:
+          - wget
+          - gpg
+        state: present
+
+    - name: Download and install Microsoft GPG key
+      shell: |
+        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+        sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+        rm -f packages.microsoft.gpg
+
+    - name: Add VS Code repository to sources list
+      shell: |
+        echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list
+
     - name: Update package cache
       apt:
         update_cache: yes
