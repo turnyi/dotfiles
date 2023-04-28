@@ -1,0 +1,3 @@
+[submodule "config/.config/nvim/my-plugins/nvim-comp"]
+	path = config/.config/nvim/my-plugins/nvim-comp
+	url = https://github.com/hrsh7th/nvim-compe.git
