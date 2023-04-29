@@ -3,7 +3,7 @@
 set -e
 
 # Install link of home files
-rm -rf ~/scripts ~/zsh ~/.tmux.conf ~/.zprofile ~/.zshrc ~/.DS_Store ~/Notes ~/.bashrc
+rm -rf ~/scripts ~/zsh ~/.tmux.conf ~/.zprofile ~/.zshrc ~/.DS_Store ~/Notes ~/.bashrc rm -rf ~/.fonts
 
 echo "$(pwd)"
 stow -t ~ home

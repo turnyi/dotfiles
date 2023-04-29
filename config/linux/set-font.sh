@@ -1,0 +1,1 @@
+dconf load /org/gnome/terminal/ < custom-font.txt

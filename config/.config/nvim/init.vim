@@ -69,7 +69,7 @@
 source ~/.config/nvim/plug.vim
 
 call plug#begin('~/.config/nvim/my-plugins/')
-Plug 'olimorris/onedarkpro.nvim'
+Plug 'https://github.com/joshdick/onedark.vim'
 Plug 'http://github.com/tpope/vim-surround' " Surrounding ysw)
 Plug 'https://github.com/preservim/nerdtree' " NerdTree
 Plug 'https://github.com/tpope/vim-commentary' " For Commenting gcc & gc
@@ -89,8 +89,8 @@ Plug 'eslint/eslint' "eslint
 Plug 'sbdchd/neoformat' " Neoformat
 Plug 'neomake/neomake'
 Plug 'neovim/nvim-lspconfig' " lsp plug languages
-Plug 'hrsh7th/nvim-compe'
 Plug 'nvim-lua/lsp-status.nvim'
+Plug 'hrsh7th/nvim-compe'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'williamboman/nvim-lsp-installer'
@@ -102,7 +102,10 @@ Plug 'junegunn/fzf.vim'
 Plug 'jose-elias-alvarez/null-ls.nvim'
 Plug 'othree/html5.vim'
 Plug 'mustache/vim-mustache-handlebars',
-Plug 'pangloss/vim-javascript'
+Plug 'pangloss/vim-javascript',
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'sheerun/vim-polyglot'
+
 call plug#end()
 
 
@@ -137,8 +140,9 @@ nnoremap <A-Down> :m+<CR>
 nnoremap <A-j> :m+<CR>
 inoremap <A-Down> <Esc>:m+<CR>a
 
-
-" colorscheme onedark
+set termguicolors
+syntax on
+colorscheme onedark
 
 inoremap <expr> <Tab> pumvisible() ? coc#_select_confirm() : "<Tab>"
 set fillchars+=eob:\ " remove ~ from empty lines:
@@ -172,4 +176,4 @@ function! CreateFile()
   execute "e " . expand("%:p:h") . "/" . filename
 endfunction
 
-source ~/.config/nvim/setup.lua
+"source ~/.config/nvim/setup.lua
