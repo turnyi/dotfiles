@@ -1,5 +1,8 @@
 local nvim_lsp = require('lspconfig')
 local M = {}
+local configs = require('lspconfig/configs')
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -309,6 +312,23 @@ vim.diagnostic.config({ underline = false, virtual_text = true, signs = true, se
 -- filetypes = { "handlebars", "hbs" },
 -- capabilities = capabilities
 -- }
+
+
+
+nvim_lsp.emmet_ls.setup({
+  -- on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = { "css", "eruby", "html", "javascript", "javascriptreact", "less", "sass", "scss", "svelte", "pug",
+    "typescriptreact", "vue" },
+  init_options = {
+    html = {
+      options = {
+        -- For possible options, see: https://github.com/emmetio/emmet/blob/master/src/config.ts#L79-L267
+        ["bem.enabled"] = true,
+      },
+    },
+  }
+})
 
 
 require 'lspconfig'.tailwindcss.setup {

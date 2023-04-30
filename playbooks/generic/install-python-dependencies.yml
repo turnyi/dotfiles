@@ -1,0 +1,10 @@
+- name: Install Python dependencies
+  hosts: localhost
+  become: true
+
+  tasks:
+    - name: Install Python dependencies via pip
+        pip:
+        name:
+          - pynvim
+      executable: python3
