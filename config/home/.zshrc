@@ -1,4 +1,5 @@
-echo -e "\033]11;#282c34\007"
+printf '\033]11;rgb:28/2c/34\033\\'
+
 
 #install plugins
 source "$HOME/zsh/antigen_install.zsh"

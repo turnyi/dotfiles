@@ -126,11 +126,17 @@ local border = {
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border })
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border })
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-  underline = false,
-  update_in_insert = false,
+  underline = true,
+  update_in_insert = true,
   signs = true,
-  virtual_text = true
+  virtual_text = true,
 })
+
+
+vim.cmd.highlight('DiagnosticUnderlineError guisp=#ff0000 gui=undercurl')
+
+
+
 
 -- NVIM lsp installer --
 require("nvim-lsp-installer").setup({
@@ -304,7 +310,7 @@ vim.fn.sign_define("DiagnosticSignInformation", { text = "", texthl = "Diagno
 vim.fn.sign_define("DiagnosticSignHint", { text = "", texthl = "DiagnosticSignHint" })
 
 -- global config for diagnostic
-vim.diagnostic.config({ underline = false, virtual_text = true, signs = true, severity_sort = true })
+vim.diagnostic.config({ underline = true, virtual_text = true, signs = true, severity_sort = true })
 
 -- nvim_lsp.ember.setup {
 -- on_attach = M.on_attach,
@@ -352,5 +358,8 @@ require 'lspconfig'.tailwindcss.setup {
   },
   capabilities = capabilities
 }
+
+-- Map key combination to trigger lsp hover
+vim.api.nvim_set_keymap('n', '<C-,>', '<cmd>lua vim.lsp.buf.hover()<CR>', { noremap = true, silent = true })
 
 return M
