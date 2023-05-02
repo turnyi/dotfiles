@@ -263,3 +263,4 @@ endfunction
 autocmd! CursorHold,CursorHoldI * call HighlightWordUnderCursor()
 nnoremap <silent> ga <cmd>lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent> <leader>t :TroubleToggle<CR>
+nnoremap <leader>z :vsplit \| terminal<CR>

@@ -52,3 +52,8 @@ Select a word then press enter.
 <leader-n> next buffers
 <leader-d> delete buffer 
 <leader-p> previous linter
+
+# Splits
+<C-w-v> Create split vertically
+<C-w-s> Create split horizontally
+<leader-z> Create terminal on vertical split 
