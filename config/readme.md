@@ -1,18 +1,19 @@
 # Macros example multiple cursors:
-Search for a word normal mode /var
-2. can -> const
-3. press. to repeat it
+
+Search for a word normal mode /var 2. cgn -> const 3. press. to repeat it
 
 # Generic key binds
 
 There are several general key binds that are the default keybindings and are not mentioned here
 
 # Tabs key binds
+
 <C-s><C-w> Save and close tab
 <C-S-w> Close tab
 <C-t> open new
 
 # Diagnostic Keybinds:
+
 <ga> shows element info including type,module etc
 <\t> shows errors of file
 
@@ -29,8 +30,8 @@ There are several general key binds that are the default keybindings and are not
 
 ## File browser
 
-<C-b> To open file browser 
-<c> To create file 
+<C-b> To open file browser
+<c> To create file
 <d> To delete selected file
 <r> Rename selected file
 <m> To move current file
@@ -42,7 +43,12 @@ There are several general key binds that are the default keybindings and are not
 <C-j>H moves to the bottom split
 <C-k>H moves to the top Split
 
-
 # Visual mode show occurrences:
+
 Select a word then press enter.
 
+
+# Bufferline
+<leader-n> next buffers
+<leader-d> delete buffer 
+<leader-p> previous linter

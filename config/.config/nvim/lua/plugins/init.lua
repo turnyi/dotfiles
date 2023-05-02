@@ -3,7 +3,7 @@ require('plugins.telescope')
 require('plugins.null-ls')
 require('plugins.nvim-cmp')
 require('plugins.trouble')
-
+require('plugins.bufferline')
 vim.api.nvim_exec([[
 augroup AutoFormat
   autocmd!

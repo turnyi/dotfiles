@@ -131,6 +131,11 @@ Plug 'mattn/emmet-vim'
 " React snippets
 Plug 'SirVer/ultisnips'
 Plug 'mlaursen/vim-react-snippets'
+
+"Bufferline
+Plug 'nvim-tree/nvim-web-devicons' " Recommended (for coloured icons)
+Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
+
 call plug#end()
 
 
@@ -190,6 +195,10 @@ nnoremap <C-t> :tabnew<CR>
 nnoremap <C-tab> :tabnext<CR>
 nnoremap <C-S-w> :bd<CR>
 map <C-s><C-w> :w<bar>bd<CR>
+map <leader>n :bnext<cr>
+map <leader>p :bprevious<cr>
+map <leader>d :bdelete<cr>
+
 function! CreateFile()
   let filename = input("Enter filename: ")
   execute "e " . expand("%:p:h") . "/" . filename
