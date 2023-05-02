@@ -22,6 +22,7 @@
           - ack
           - gh
           - ansible-lint
+          - stylua
         state: present
 
     - name: Install Vim-Plug for Neovim
