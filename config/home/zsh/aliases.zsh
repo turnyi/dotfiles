@@ -34,6 +34,7 @@ alias la='ls -la'
 alias mkdir='mkdir -p'
 
 # Git
+alias gs='git status'
 alias ga='git add'
 alias gb='git branch'
 alias gba='git branch -a'
