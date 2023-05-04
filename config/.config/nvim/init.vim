@@ -69,7 +69,6 @@
 source ~/.config/nvim/plug.vim
 
 call plug#begin('~/.config/nvim/my-plugins/')
-Plug 'https://github.com/joshdick/onedark.vim'
 Plug 'http://github.com/tpope/vim-surround' " Surrounding ysw)
 Plug 'https://github.com/preservim/nerdtree' " NerdTree
 Plug 'https://github.com/tpope/vim-commentary' " For Commenting gcc & gc
