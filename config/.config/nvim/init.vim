@@ -121,7 +121,6 @@ Plug 'jose-elias-alvarez/null-ls.nvim'
 Plug 'othree/html5.vim'
 Plug 'mustache/vim-mustache-handlebars',
 Plug 'pangloss/vim-javascript',
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'sheerun/vim-polyglot'
 
 "Emmet 
@@ -135,6 +134,11 @@ Plug 'mlaursen/vim-react-snippets'
 Plug 'nvim-tree/nvim-web-devicons' " Recommended (for coloured icons)
 Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
 
+Plug 'nvim-treesitter/nvim-treesitter',
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'romgrk/nvim-treesitter-context'
+
+" syntax Highlighting
 call plug#end()
 
 

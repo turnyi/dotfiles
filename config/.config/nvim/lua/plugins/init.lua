@@ -4,6 +4,7 @@ require("plugins.null-ls")
 require("plugins.nvim-cmp")
 require("plugins.trouble")
 require("plugins.bufferline")
+require("plugins.treesiter")
 
 vim.api.nvim_exec(
 	[[
