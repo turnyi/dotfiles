@@ -30,6 +30,7 @@
           - gh
           - wget
           - gpg
+          - notion
         state: present
 
     - name: Install Vim-Plug for Neovim
