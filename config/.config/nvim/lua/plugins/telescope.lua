@@ -3,7 +3,7 @@ local is_telescope_installed, telescope = pcall(require, "telescope")
 local is_trouble_installed, trouble = pcall(require, "trouble.providers.telescope")
 local is_action_layout, action_layout = pcall(require, "telescope.actions.layout")
 local fb_actions = require "telescope._extensions.file_browser.actions"
-
+local actions = require('telescope.actions')
 if not is_telescope_installed then return end
 if not is_trouble_installed then return end
 if not is_action_layout then return end
@@ -16,6 +16,11 @@ telescope.setup({
         mappings = {
             i = { 
             ["?"] = action_layout.toggle_preview, 
+            ['<C-d>'] = actions.delete_buffer,
+          },
+            n = { 
+            ["?"] = action_layout.toggle_preview, 
+            ['<C-d>'] = actions.delete_buffer,
           },
 
         },
