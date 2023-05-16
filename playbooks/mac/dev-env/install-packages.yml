@@ -24,6 +24,9 @@
           - ansible-lint
           - stylua
           - notion
+          - ultimaker-cura
+          - tmux
+
         state: present
 
     - name: Install Vim-Plug for Neovim

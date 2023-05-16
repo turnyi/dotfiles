@@ -1,4 +1,3 @@
-
 local is_telescope_installed, telescope = pcall(require, "telescope")
 local is_trouble_installed, trouble = pcall(require, "trouble.providers.telescope")
 local is_action_layout, action_layout = pcall(require, "telescope.actions.layout")
@@ -125,8 +124,9 @@ telescope.setup({
     },
 })
 
-telescope.load_extension('fzf')
-telescope.load_extension('zk')
-telescope.load_extension('file_browser')
+telescope.load_extension("fzf")
+telescope.load_extension("zk")
+telescope.load_extension("file_browser")
 return telescope
 -- Telescope file_browser cwd=%:p:h
+
