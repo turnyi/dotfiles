@@ -5,6 +5,7 @@ require("plugins.nvim-cmp")
 require("plugins.trouble")
 require("plugins.bufferline")
 require("plugins.treesiter")
+require("plugins.whichKey")
 
 vim.api.nvim_exec(
 	[[

@@ -143,5 +143,6 @@ telescope.setup({
 telescope.load_extension("fzf")
 telescope.load_extension("zk")
 telescope.load_extension("file_browser")
+telescope.load_extension("live_grep_args")
 return telescope
 -- Telescope file_browser cwd=%:p:h

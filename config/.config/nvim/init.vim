@@ -49,7 +49,7 @@
 :set splitbelow                          " Split panes to the bottom
 :set splitright                          " Split panes to the right
 :set termguicolors                       " Use terminal GUI colors.
-:set timeoutlen=1000                     " Update the time between multiple key presses
+:set timeoutlen=500                     " Update the time between multiple key presses
 :set ttyfast                             " Speed up scrolling on vim
 :set undodir=~/.vim/undodir              " Sets the location of the undo dir.
 :set undofile                            " Used with plugins. Need for research.init.vim
@@ -65,6 +65,7 @@
 :set shiftwidth=2                        " Visual mode indentation (match tabstop)
 :set foldmethod=expr                     " Kind of fold used for the current window.
 :set foldexpr=nvim_treesitter#foldexpr() " Use Treesitter to handle folds
+:set notimeout
 
 source ~/.config/nvim/plug.vim
 
@@ -137,7 +138,8 @@ Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
 Plug 'nvim-treesitter/nvim-treesitter',
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'romgrk/nvim-treesitter-context'
-
+Plug 'nvim-telescope/telescope-live-grep-args.nvim'
+Plug 'folke/which-key.nvim'
 " syntax Highlighting
 call plug#end()
 
@@ -267,3 +269,10 @@ autocmd! CursorHold,CursorHoldI * call HighlightWordUnderCursor()
 nnoremap <silent> ga <cmd>lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent> <leader>t :TroubleToggle<CR>
 nnoremap <leader>z :vsplit \| terminal<CR>
+nnoremap <silent> <leader>fs <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
+nnoremap <leader>xx <cmd>TroubleToggle<cr>
+nnoremap <leader>xw <cmd>TroubleToggle workspace_diagnostics<cr>
+nnoremap <leader>xd <cmd>TroubleToggle document_diagnostics<cr>
+nnoremap <leader>xq <cmd>TroubleToggle quickfix<cr>
+nnoremap <leader>xl <cmd>TroubleToggle loclist<cr>
+nnoremap <silent> <leader>h  <cmd>WhichKey<cr>
