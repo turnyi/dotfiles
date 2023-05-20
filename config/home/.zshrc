@@ -1,4 +1,3 @@
-printf '\033]11;rgb:28/2c/34\033\\'
 
 
 #install plugins
@@ -109,6 +108,9 @@ if [ -f '/Users/martinradovitzky/google-cloud-sdk/path.zsh.inc' ]; then . '/User
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/martinradovitzky/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/martinradovitzky/google-cloud-sdk/completion.zsh.inc'; fi
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+# Enable word navigation with Ctrl + arrow keys
+bindkey '^[[1;5C' forward-word     # Ctrl + right arrow
+bindkey '^[[1;5D' backward-word    # Ctrl + left arrow
 
 export PATH="/opt/homebrew/opt/curl/bin:$PATH"
 

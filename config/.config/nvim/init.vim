@@ -140,10 +140,14 @@ Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'romgrk/nvim-treesitter-context'
 Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 Plug 'folke/which-key.nvim'
+Plug 'ThePrimeagen/harpoon'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'xiyaowong/transparent.nvim'
 " syntax Highlighting
 call plug#end()
 
 
+let g:transparent_groups = extend(get(g:, 'transparent_groups', []), ["ExtraGroup"])
 " ctrlp show hidden files
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 let g:ctrlp_show_hidden = 1
