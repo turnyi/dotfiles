@@ -178,6 +178,7 @@ inoremap <A-Down> <Esc>:m+<CR>a
 
 set termguicolors
 syntax on
+autocmd ColorScheme * highlight Normal ctermbg=NONE guibg=NONE
 colorscheme onedark
 
 inoremap <expr> <Tab> pumvisible() ? coc#_select_confirm() : "<Tab>"
