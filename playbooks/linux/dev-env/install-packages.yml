@@ -35,6 +35,7 @@
           - tmux
           - tmuxinator
 
+          - xfce4-terminal
         state: present
 
     - name: Install Vim-Plug for Neovim
