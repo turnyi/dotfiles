@@ -192,8 +192,8 @@ let g:NERDTreeWinPos = "right"
 " Telescope command line:
 " Find files using Telescope command-line sugar.
 nnoremap <C-p> <cmd>Telescope find_files hidden=true<cr>
-nnoremap <C-S-f> <cmd>Telescope live_grep hidden=true<cr>
-nnoremap <C-f> :Telescope current_buffer_fuzzy_find<CR>
+" nnoremap <C-F> <cmd>Telescope live_grep hidden=true<cr>
+" nnoremap <C-f> :Telescope current_buffer_fuzzy_find<CR>
 nnoremap <C-u> :Telescope buffers<CR>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
@@ -275,6 +275,7 @@ nnoremap <silent> ga <cmd>lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent> <leader>t :TroubleToggle<CR>
 nnoremap <leader>z :vsplit \| terminal<CR>
 nnoremap <silent> <leader>fs <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
+nnoremap <silent> <C-f> <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
 nnoremap <leader>xx <cmd>TroubleToggle<cr>
 nnoremap <leader>xw <cmd>TroubleToggle workspace_diagnostics<cr>
 nnoremap <leader>xd <cmd>TroubleToggle document_diagnostics<cr>
