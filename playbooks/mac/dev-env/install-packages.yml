@@ -26,6 +26,7 @@
           - notion
           - ultimaker-cura
           - tmux
+          - tmuxinator
 
         state: present
 

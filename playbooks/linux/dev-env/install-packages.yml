@@ -32,6 +32,9 @@
           - gpg
           - notion
           - steam
+          - tmux
+          - tmuxinator
+
         state: present
 
     - name: Install Vim-Plug for Neovim

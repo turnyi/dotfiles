@@ -13,3 +13,4 @@ rm -rf ~/.config/ohmyposh ~/.config/nvim ~/.config/gh
 mkdir -p .config && cd .config &&  mkdir ~/.config/ohmyposh && stow -t ~/.config/ohmyposh ohmyposh 
 mkdir ~/.config/nvim && stow -t ~/.config/nvim nvim
 mkdir ~/.config/gh && stow -t ~/.config/gh gh
+
