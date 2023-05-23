@@ -1,0 +1,25 @@
+# /Users/maritnradovitzky/.config/tmuxinator/stride.yml
+name: stride
+root: ~/Documents/December/Stride/stride-origin
+# on_project_start: docker-compose up -d
+windows:
+  - web:
+      layout: even-horizontal
+      panes:
+        - nvim web
+        - cd web
+  - firebase:
+      layout: even-horizontal
+      panes:
+        - nvim firebase
+        - cd firebase
+  - cloudFunc:
+      layout: even-horizontal
+      panes:
+        - nvim functions
+        - cd functions
+  - devops:
+      layout: even-horizontal
+      panes:
+        - nvim devops
+        - cd devops

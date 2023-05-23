@@ -1,0 +1,24 @@
+# /Users/maritnradovitzky/.config/tmuxinator/dotfiles.yml
+name: dotfiles
+root: ~/Documents/PersonalProjects/ansible-scripts
+# on_project_start: docker-compose up -d
+windows:
+  - config:
+      layout: even-horizontal
+      panes:
+        - nvim config
+        - cd config
+  - playbooks:
+      layout: even-horizontal
+      panes:
+        - nvim playbooks
+        - cd playbooks
+  - repoRoot:
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - cd .
+  - root:
+      layout: even-horizontal
+      panes:
+        - cd ~
