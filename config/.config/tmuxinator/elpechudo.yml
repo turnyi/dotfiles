@@ -4,15 +4,15 @@ windows:
   - front:
       layout: even-horizontal
       panes:
-        - nvim front
+        - cd front && nvim
         - cd front && yarn start
   - back:
       layout: even-horizontal
       panes:
-        - nvim back
+        - cd back && nvim .
         - cd back && yarn docker:dev
   - gits:
     layout: even-horizontal
     panes:
-      - cd back
-      - cd front
+      - cd front && lazygit
+      - cd back && lazygit

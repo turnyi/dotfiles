@@ -37,6 +37,7 @@
           - steam
           - tmux
           - tmuxinator
+          - lazygit
 
           - xfce4-terminal
         state: present

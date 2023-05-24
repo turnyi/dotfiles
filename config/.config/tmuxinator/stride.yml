@@ -23,3 +23,6 @@ windows:
       panes:
         - nvim devops
         - cd devops
+  - git:
+      panes:
+        - lazygit

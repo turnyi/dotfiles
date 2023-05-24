@@ -1,23 +1,20 @@
+
 # /Users/maritnradovitzky/.config/tmuxinator/dotfiles.yml
-name: dotfiles
-root: ~/Documents/PersonalProjects/ansible-scripts
+name: liveonitDotfiles
+root: ~/Documents/PersonalProjects/liveonit/dotfiles
 # on_project_start: docker-compose up -d
 windows:
   - config:
       layout: even-horizontal
       panes:
-        - cd config && nvim
-        - cd config
+        - nvim .dotfiles
+        - cd .dotfiles
   - playbooks:
       layout: even-horizontal
       panes:
-        - cd playbooks && nvim
-        - cd playbooks
+        - nvim ansible 
+        - cd ansible
   - root:
       layout: even-horizontal
       panes:
-        - nvim .
-        - cd .
-  - git:
-      panes:
-        - lazygit
+        - cd ~

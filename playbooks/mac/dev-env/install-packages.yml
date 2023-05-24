@@ -27,6 +27,7 @@
           - ultimaker-cura
           - tmux
           - tmuxinator
+          - lazygit
 
         state: present
 
