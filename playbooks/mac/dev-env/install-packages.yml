@@ -40,3 +40,8 @@
       pip:
         name: jedi
         state: present
+
+    - name: Install ansible-lint using pip
+      pip:
+        name: ansible-lint
+        state: present

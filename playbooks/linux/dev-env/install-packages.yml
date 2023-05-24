@@ -10,6 +10,9 @@
     - name: Install additional dependencies
       apt:
         name:
+          - rg
+          - grep
+          - silversearcher-ag
           - apt-transport-https
           - ca-certificates
           - curl
@@ -47,4 +50,9 @@
     - name: Install Jedi package using pip
       pip:
         name: jedi
+        state: present
+
+    - name: Install ansible-lint using pip
+      pip:
+        name: ansible-lint
         state: present

@@ -274,8 +274,6 @@ autocmd! CursorHold,CursorHoldI * call HighlightWordUnderCursor()
 nnoremap <silent> ga <cmd>lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent> <leader>t :TroubleToggle<CR>
 nnoremap <leader>z :vsplit \| terminal<CR>
-nnoremap <silent> <leader>fs <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
-nnoremap <silent> <C-f> <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
 nnoremap <leader>xx <cmd>TroubleToggle<cr>
 nnoremap <leader>xw <cmd>TroubleToggle workspace_diagnostics<cr>
 nnoremap <leader>xd <cmd>TroubleToggle document_diagnostics<cr>
