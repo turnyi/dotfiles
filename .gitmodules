@@ -1,3 +1,6 @@
 [submodule "config/.config/nvim/my-plugins/nvim-comp"]
 	path = config/.config/nvim/my-plugins/nvim-comp
 	url = https://github.com/hrsh7th/nvim-compe.git
+[submodule "config/.config/nvim/my-plugins/bufferline.nvim"]
+	path = config/.config/nvim/my-plugins/bufferline.nvim
+	url = https://github.com/akinsho/bufferline.nvim
