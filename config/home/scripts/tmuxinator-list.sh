@@ -38,8 +38,9 @@ for project in "${sortedClosedProjects[@]}"; do
   sortedProjects+=("$project")
 done
 
-project=$(printf "%s\n" "${sortedProjects[@]}" | fzf-tmux -p 80%,60% --header 'Select project to open')
-
+project=$(printf "%s\n" "${sortedProjects[@]}" | fzf-tmux -p 80%,60% \
+  --bind 'ctrl-r:execute(tmux has-session -t {+} && tmux kill-session -t {+}; tmuxinator start {+} 2> /dev/null)' \
+  --header 'Select project to open')
 if [[ $project == *" (Open)" ]]; then
   project="${project% (Open)}"
 fi
