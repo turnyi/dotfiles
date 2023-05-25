@@ -6,22 +6,22 @@ windows:
   - web:
       layout: even-horizontal
       panes:
-        - nvim web
+        - cd web && nvim
         - cd web
   - firebase:
       layout: even-horizontal
       panes:
-        - nvim firebase
+        - cd firebase && nvim
         - cd firebase
   - cloudFunc:
       layout: even-horizontal
       panes:
-        - nvim functions
+        - cd functions && nvim
         - cd functions
   - devops:
       layout: even-horizontal
       panes:
-        - nvim devops
+        - cd devops && nvim
         - cd devops
   - git:
       panes:
