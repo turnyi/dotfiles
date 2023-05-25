@@ -7,7 +7,7 @@ bindkey '^ ' autosuggest-accept
 # # =============
 # # Key-bindings
 # # =============
-bindkey -s '^p' 'tls^M'
+bindkey -s '^b' 'tls^M'
 bindkey -s '^p' 'tmuxinator-list.sh^M'
 bindkey -s '^n' 'tns^M'
 bindkey -s '^e' 'hexec.sh^M'
