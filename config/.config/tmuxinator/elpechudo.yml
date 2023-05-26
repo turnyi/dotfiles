@@ -1,6 +1,11 @@
 name: elpechudo
 root: ~/Projects/elpechudo
 windows:
+  - gits:
+      layout: even-horizontal
+      panes:
+        - cd front && lazygit
+        - cd back && lazygit
   - front:
       layout: even-horizontal
       panes:
@@ -11,8 +16,3 @@ windows:
       panes:
         - cd back && nvim .
         - cd back && yarn docker:dev
-  - gits:
-    layout: even-horizontal
-    panes:
-      - cd front && lazygit
-      - cd back && lazygit

@@ -3,6 +3,9 @@ name: dotfiles
 root: ~/Documents/PersonalProjects/ansible-scripts
 # on_project_start: docker-compose up -d
 windows:
+  - git:
+      panes:
+        - lazygit
   - config:
       layout: even-horizontal
       panes:
@@ -18,6 +21,3 @@ windows:
       panes:
         - nvim .
         - cd .
-  - git:
-      panes:
-        - lazygit

@@ -3,6 +3,9 @@ name: stride
 root: ~/Documents/December/Stride/stride-origin
 # on_project_start: docker-compose up -d
 windows:
+  - git:
+      panes:
+        - lazygit
   - web:
       layout: even-horizontal
       panes:
@@ -23,6 +26,5 @@ windows:
       panes:
         - cd devops && nvim
         - cd devops
-  - git:
-      panes:
-        - lazygit
+  - root:
+      panes: cd .

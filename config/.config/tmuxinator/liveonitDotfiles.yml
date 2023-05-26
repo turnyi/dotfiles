@@ -1,4 +1,3 @@
-
 # /Users/maritnradovitzky/.config/tmuxinator/dotfiles.yml
 name: liveonitDotfiles
 root: ~/Documents/PersonalProjects/liveonit/dotfiles
@@ -12,7 +11,7 @@ windows:
   - playbooks:
       layout: even-horizontal
       panes:
-        - nvim ansible 
+        - cd ansible && nvim
         - cd ansible
   - root:
       layout: even-horizontal

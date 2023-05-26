@@ -6,6 +6,7 @@ require("plugins.trouble")
 require("plugins.bufferline")
 require("plugins.treesiter")
 require("plugins.whichKey")
+require("plugins.smoothCursor")
 
 vim.api.nvim_exec(
 	[[

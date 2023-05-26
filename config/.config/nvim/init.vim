@@ -143,7 +143,8 @@ Plug 'folke/which-key.nvim'
 Plug 'ThePrimeagen/harpoon'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'xiyaowong/transparent.nvim'
-" syntax Highlighting
+Plug 'gen740/SmoothCursor.nvim' 
+"  syntax Highlighting
 call plug#end()
 
 
