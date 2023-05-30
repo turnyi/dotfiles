@@ -140,7 +140,12 @@ telescope.setup({
 	},
 })
 
-vim.api.nvim_set_keymap('n', '<leader>fs', '<cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>', { silent = true })
+vim.api.nvim_set_keymap(
+	"n",
+	"<leader>fs",
+	'<cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>',
+	{ silent = true }
+)
 telescope.load_extension("fzf")
 telescope.load_extension("zk")
 telescope.load_extension("file_browser")

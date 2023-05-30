@@ -280,4 +280,9 @@ nnoremap <leader>xw <cmd>TroubleToggle workspace_diagnostics<cr>
 nnoremap <leader>xd <cmd>TroubleToggle document_diagnostics<cr>
 nnoremap <leader>xq <cmd>TroubleToggle quickfix<cr>
 nnoremap <leader>xl <cmd>TroubleToggle loclist<cr>
-nnoremap <silent> <leader>h  <cmd>WhichKey<cr>
+nnoremap <silent> <leader>h  <cmd>WhichKey<cr>" Toggle word wrap
+nnoremap <leader>w :set wrap!<CR>
+nnoremap <S-f> <C-u>
+nnoremap <S-j> <C-d>
+nnoremap <S-k> <C-u>
+

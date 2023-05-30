@@ -6,6 +6,11 @@ windows:
   - git:
       panes:
         - lazygit
+  - root:
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - cd .
   - config:
       layout: even-horizontal
       panes:
@@ -16,8 +21,3 @@ windows:
       panes:
         - cd playbooks && nvim
         - cd playbooks
-  - root:
-      layout: even-horizontal
-      panes:
-        - nvim .
-        - cd .

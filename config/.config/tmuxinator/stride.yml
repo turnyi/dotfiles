@@ -6,6 +6,11 @@ windows:
   - git:
       panes:
         - lazygit
+  - root:
+      layout: even-horizontal
+      panes:
+        - nvim
+        - cd .
   - web:
       layout: even-horizontal
       panes:
@@ -20,11 +25,9 @@ windows:
       layout: even-horizontal
       panes:
         - cd functions && nvim
-        - cd functions
+        - source .venv/bin/activate && cd functions
   - devops:
       layout: even-horizontal
       panes:
         - cd devops && nvim
         - cd devops
-  - root:
-      panes: cd .
