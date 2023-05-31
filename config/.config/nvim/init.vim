@@ -144,6 +144,7 @@ Plug 'ThePrimeagen/harpoon'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'xiyaowong/transparent.nvim'
 Plug 'gen740/SmoothCursor.nvim' 
+Plug 'nvim-lua/plenary.nvim'
 "  syntax Highlighting
 call plug#end()
 

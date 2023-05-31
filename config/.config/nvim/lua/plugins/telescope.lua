@@ -3,6 +3,8 @@ local is_trouble_installed, trouble = pcall(require, "trouble.providers.telescop
 local is_action_layout, action_layout = pcall(require, "telescope.actions.layout")
 local fb_actions = require("telescope._extensions.file_browser.actions")
 local actions = require("telescope.actions")
+local action_state = require("telescope.actions.state")
+
 if not is_telescope_installed then
 	return
 end
@@ -140,12 +142,30 @@ telescope.setup({
 	},
 })
 
+function get_relative_path()
+	local entry = actions.get_selected_entry()
+	local buffer_path = entry.path
+
+	local selected_path = require("telescope.actions.state").get_selected_entry().value
+	local selected_absolute_path = vim.fn.expand(selected_path)
+
+	-- local relpath = Path:new(buffer_path):make_relative(selected_absolute_path)
+
+	-- print('the real path is', relpath)
+	-- print("the real path is", selected_absolute_path)
+	print("the buffer_path", buffer_path)
+end
+
+-- Map the keybinding to the custom function
+vim.api.nvim_set_keymap("n", "<leader>rp", ":lua get_relative_path()<CR>", { noremap = true, silent = true })
+
 vim.api.nvim_set_keymap(
 	"n",
 	"<leader>fs",
 	'<cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>',
 	{ silent = true }
 )
+
 telescope.load_extension("fzf")
 telescope.load_extension("zk")
 telescope.load_extension("file_browser")
