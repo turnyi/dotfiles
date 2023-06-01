@@ -133,3 +133,6 @@ export ZK_NOTEBOOK_DIR=~/dotfiles/.dotfiles/home/Notes
 
 # Set default JAVA runtime version
 export JAVA_HOME=/opt/homebrew/Cellar/openjdk@11/11.0.18/libexec/openjdk.jdk/Contents/Home
+
+export ZSH_DOTENV_ALLOWED_LIST=~/dotenv/allowed.list
+export ZSH_DOTENV_DISALLOWED_LIST=~/dotenv/disallowed.list
