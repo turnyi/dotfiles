@@ -32,7 +32,6 @@ telescope.setup({
 				["<C-d>"] = actions.delete_buffer,
 			},
 			n = {
-				["?"] = action_layout.toggle_preview,
 				["<C-d>"] = actions.delete_buffer,
 			},
 		},
@@ -133,13 +132,6 @@ telescope.setup({
 		-- Developer configurations: Not meant for general override
 		buffer_previewer_maker = require("telescope.previewers").buffer_previewer_maker,
 	},
-	pickers = {
-		live_grep = {
-			additional_args = function(opts)
-				return { "--hidden" }
-			end,
-		},
-	},
 })
 
 local function make_relative(path1, path2)
@@ -186,13 +178,6 @@ end
 
 -- Map the keybinding to the custom function
 vim.api.nvim_set_keymap("n", "<leader>rp", ":lua get_relative_path()<CR>", { noremap = true, silent = true })
-
-vim.api.nvim_set_keymap(
-	"n",
-	"<leader>fs",
-	'<cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>',
-	{ silent = true }
-)
 
 telescope.load_extension("fzf")
 telescope.load_extension("zk")
