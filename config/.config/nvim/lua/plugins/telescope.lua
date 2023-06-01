@@ -3,7 +3,7 @@ local is_trouble_installed, trouble = pcall(require, "trouble.providers.telescop
 local is_action_layout, action_layout = pcall(require, "telescope.actions.layout")
 local fb_actions = require("telescope._extensions.file_browser.actions")
 local actions = require("telescope.actions")
-local path = require("plenary.path")
+local state = require("telescope.actions.state")
 
 if not is_telescope_installed then
 	return
@@ -142,16 +142,46 @@ telescope.setup({
 	},
 })
 
+local function make_relative(path1, path2)
+	local function splitPath(path)
+		local parts = {}
+		for part in path:gmatch("[^/]+") do
+			table.insert(parts, part)
+		end
+		return parts
+	end
+
+	local parts1 = splitPath(path1)
+	local parts2 = splitPath(path2)
+
+	-- Remove common leading parts
+	while #parts1 > 0 and #parts2 > 0 and parts1[1] == parts2[1] do
+		table.remove(parts1, 1)
+		table.remove(parts2, 1)
+	end
+
+	-- Construct the relative path
+	local relative_path = ""
+	for _ = 1, #parts1 do
+		relative_path = relative_path .. "../"
+	end
+	relative_path = relative_path .. table.concat(parts2, "/")
+
+	if #parts1 == 0 and #parts2 == 1 then
+		relative_path = "./" .. relative_path
+	end
+
+	return relative_path
+end
+
 function get_relative_path()
 	local last_buffer = vim.fn.bufnr("#")
 	local last_buffer_path = vim.fn.bufname(last_buffer)
 	-- local root_path = vim.fn.getcwd()
 	local buffer_path = vim.fn.fnamemodify(last_buffer_path, ":p:h")
-	local selected_path = require("telescope.actions.state").get_selected_entry().value
-	local relpath = path:new(buffer_path):make_relative(selected_path)
-	print("the real path is", relpath)
-	print("the selected path is", selected_path)
-	print("the buffer_path", buffer_path)
+	local selected_path = state.get_selected_entry().value
+	local relative_path = make_relative(buffer_path, selected_path)
+	vim.fn.setreg("+", relative_path)
 end
 
 -- Map the keybinding to the custom function
