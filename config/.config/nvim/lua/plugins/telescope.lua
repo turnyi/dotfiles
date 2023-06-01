@@ -3,7 +3,7 @@ local is_trouble_installed, trouble = pcall(require, "trouble.providers.telescop
 local is_action_layout, action_layout = pcall(require, "telescope.actions.layout")
 local fb_actions = require("telescope._extensions.file_browser.actions")
 local actions = require("telescope.actions")
-local action_state = require("telescope.actions.state")
+local path = require("plenary.path")
 
 if not is_telescope_installed then
 	return
@@ -143,16 +143,14 @@ telescope.setup({
 })
 
 function get_relative_path()
-	local entry = actions.get_selected_entry()
-	local buffer_path = entry.path
-
+	local last_buffer = vim.fn.bufnr("#")
+	local last_buffer_path = vim.fn.bufname(last_buffer)
+	-- local root_path = vim.fn.getcwd()
+	local buffer_path = vim.fn.fnamemodify(last_buffer_path, ":p:h")
 	local selected_path = require("telescope.actions.state").get_selected_entry().value
-	local selected_absolute_path = vim.fn.expand(selected_path)
-
-	-- local relpath = Path:new(buffer_path):make_relative(selected_absolute_path)
-
-	-- print('the real path is', relpath)
-	-- print("the real path is", selected_absolute_path)
+	local relpath = path:new(buffer_path):make_relative(selected_path)
+	print("the real path is", relpath)
+	print("the selected path is", selected_path)
 	print("the buffer_path", buffer_path)
 end
 
