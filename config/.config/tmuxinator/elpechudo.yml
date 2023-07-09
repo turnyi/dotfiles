@@ -7,12 +7,14 @@ windows:
         - cd front && lazygit
         - cd back && lazygit
   - front:
+      root: ~/Projects/elpechudo/front
       layout: even-horizontal
       panes:
-        - cd front && nvim
-        - cd front && yarn start
+        - nvim
+        - yarn start
   - back:
+      root: ~/Projects/elpechudo/back
       layout: even-horizontal
       panes:
-        - cd back && nvim .
-        - cd back && yarn docker:dev
+        - nvim .
+        - yarn docker:dev

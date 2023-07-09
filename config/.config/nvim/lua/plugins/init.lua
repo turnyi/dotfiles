@@ -7,6 +7,7 @@ require("plugins.bufferline")
 require("plugins.treesiter")
 require("plugins.whichKey")
 require("plugins.smoothCursor")
+require("plugins.chatgpt")
 
 vim.api.nvim_exec(
 	[[

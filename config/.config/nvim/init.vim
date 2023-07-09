@@ -1,4 +1,4 @@
-:set smarttab
+:set smarttabinit
 :set number
 :set tabstop=4
 :set relativenumber
@@ -45,7 +45,7 @@
 :set shortmess=F                         " Don't pass messages to |ins-completion-menu|
 :set showmatch                           " Show matching
 :set signcolumn=yes
-:set smartindent
+:set smartindentini
 :set splitbelow                          " Split panes to the bottom
 :set splitright                          " Split panes to the right
 :set termguicolors                       " Use terminal GUI colors.
@@ -65,6 +65,7 @@
 :set shiftwidth=2                        " Visual mode indentation (match tabstop)
 :set foldmethod=expr                     " Kind of fold used for the current window.
 :set foldexpr=nvim_treesitter#foldexpr() " Use Treesitter to handle folds
+:set pumblend=0                         " Popup menu transparency
 
 source ~/.config/nvim/plug.vim
 
@@ -141,14 +142,15 @@ Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 Plug 'folke/which-key.nvim'
 Plug 'ThePrimeagen/harpoon'
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'xiyaowong/transparent.nvim'
+" Plug 'xiyaowong/transparent.nvim'
 Plug 'gen740/SmoothCursor.nvim' 
 Plug 'nvim-lua/plenary.nvim'
-"  syntax Highlighting
+Plug 'jackMort/ChatGPT.nvim'
+Plug 'MunifTanjim/nui.nvim'
 call plug#end()
 
 
-let g:transparent_groups = extend(get(g:, 'transparent_groups', []), ["ExtraGroup"])
+let g:transparent_groups = extend(get(g:, 'transparent_groups', []), ['Pmenu', 'Float', 'NormalFloat'])
 " ctrlp show hidden files
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 let g:ctrlp_show_hidden = 1
@@ -181,6 +183,7 @@ set termguicolors
 syntax on
 autocmd ColorScheme * highlight Normal ctermbg=NONE guibg=NONE
 colorscheme onedark
+highlight Pmenu guibg=NONE
 
 inoremap <expr> <Tab> pumvisible() ? coc#_select_confirm() : "<Tab>"
 set fillchars+=eob:\ " remove ~ from empty lines:
@@ -219,21 +222,21 @@ endfunction
 nnoremap <C-m> :tab sball<CR>
 
 " Convert the current colorscheme into an fzf configuration line
-let g:fzf_colors =
-\ { 'fg':         ['fg', 'Normal'],
-  \ 'bg':         ['bg', 'Normal'],
-  \ 'preview-bg': ['bg', 'NormalFloat'],
-  \ 'hl':         ['fg', 'Comment'],
-  \ 'fg+':        ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-  \ 'bg+':        ['bg', 'CursorLine', 'CursorColumn'],
-  \ 'hl+':        ['fg', 'Statement'],
-  \ 'info':       ['fg', 'PreProc'],
-  \ 'border':     ['fg', 'Ignore'],
-  \ 'prompt':     ['fg', 'Conditional'],
-  \ 'pointer':    ['fg', 'Exception'],
-  \ 'marker':     ['fg', 'Keyword'],
-  \ 'spinner':    ['fg', 'Label'],
-  \ 'header':     ['fg', 'Comment'] }
+" let g:fzf_colors =
+" \ { 'fg':         ['fg', 'Normal'],
+"   \ 'bg':         ['bg', 'Normal'],
+"   \ 'preview-bg': ['bg', 'NormalFloat'],
+"   \ 'hl':         ['fg', 'Comment'],
+"   \ 'fg+':        ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+"   \ 'bg+':        ['bg', 'CursorLine', 'CursorColumn'],
+"   \ 'hl+':        ['fg', 'Statement'],
+"   \ 'info':       ['fg', 'PreProc'],
+"   \ 'border':     ['fg', 'Ignore'],
+"   \ 'prompt':     ['fg', 'Conditional'],
+"   \ 'pointer':    ['fg', 'Exception'],
+"   \ 'marker':     ['fg', 'Keyword'],
+"   \ 'spinner':    ['fg', 'Label'],
+"   \ 'header':     ['fg', 'Comment'] }
 
 source ~/.config/nvim/setup.lua
 
@@ -242,9 +245,6 @@ set tabpagemax=9999
 
 
 
-" Set search result colors
-highlight Search cterm=NONE ctermbg=236 guibg=#3C3C3C gui=reverse
-highlight link SearchNone Search
 
 " Set search result border
 highlight Search gui=NONE guibg=NONE guifg=NONE cterm=NONE ctermbg=NONE ctermfg=NONE
@@ -252,10 +252,6 @@ highlight Search gui=reverse cterm=reverse
 highlight Search gui=undercurl guisp=white cterm=undercurl ctermfg=white
 
 " Set opacity for search results
-augroup SearchResults
-  autocmd!
-  autocmd ColorScheme * highlight Search guibg=#3C3C3C blend=30
-augroup END
 
 " highlight the visual selection after pressing enter.
 xnoremap <silent> <cr> "*y:silent! let searchTerm = '\V'.substitute(escape(@*, '\/'), "\n", '\\n', "g") <bar> let @/ = searchTerm <bar> echo '/'.@/ <bar> call histadd("search", searchTerm) <bar> set hls<cr>
@@ -284,5 +280,7 @@ nnoremap <silent> <leader>h  <cmd>WhichKey<cr>
 nnoremap <leader>w :set wrap!<CR>
 nnoremap <S-f> <C-u>
 nnoremap <S-j> <C-d>
-nnoremap <S-k> <C-u>
 nnoremap <silent> <leader>fs <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
+
+
+nnoremap <leader>c :ChatGPT<CR>
