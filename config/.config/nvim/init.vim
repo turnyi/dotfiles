@@ -1,4 +1,4 @@
-:set smarttabinit
+:set smarttab
 :set number
 :set tabstop=4
 :set relativenumber
@@ -45,7 +45,7 @@
 :set shortmess=F                         " Don't pass messages to |ins-completion-menu|
 :set showmatch                           " Show matching
 :set signcolumn=yes
-:set smartindentini
+:set smartindent
 :set splitbelow                          " Split panes to the bottom
 :set splitright                          " Split panes to the right
 :set termguicolors                       " Use terminal GUI colors.

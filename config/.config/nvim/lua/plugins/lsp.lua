@@ -322,7 +322,7 @@ vim.diagnostic.config({ underline = true, virtual_text = true, signs = true, sev
 nvim_lsp.ember.setup({
 	on_attach = M.on_attach,
 	capabilities = capabilities,
-	filetypes = { "handlebars", "html.handlebars" },
+	filetypes = { "handlebars", "html.handlebars", "javascript", "typescript" },
 })
 
 nvim_lsp.emmet_ls.setup({
