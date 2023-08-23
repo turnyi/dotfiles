@@ -3,8 +3,8 @@ local null_ls = require("null-ls")
 local formattin = null_ls.builtins.formatting
 
 local sources = {
-	formattin.eslint,
-	-- formattin.prettier,
+	-- formattin.eslint,
+	formattin.prettier,
 	formattin.stylua,
 	formattin.rustfmt,
 	formattin.shfmt,

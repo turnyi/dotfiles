@@ -147,6 +147,7 @@ Plug 'gen740/SmoothCursor.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'jackMort/ChatGPT.nvim'
 Plug 'MunifTanjim/nui.nvim'
+Plug 'dotsilas/darcubox-nvim'
 call plug#end()
 
 
@@ -182,7 +183,7 @@ inoremap <A-Down> <Esc>:m+<CR>a
 set termguicolors
 syntax on
 autocmd ColorScheme * highlight Normal ctermbg=NONE guibg=NONE
-colorscheme onedark
+colorscheme darcubox
 highlight Pmenu guibg=NONE
 
 inoremap <expr> <Tab> pumvisible() ? coc#_select_confirm() : "<Tab>"
@@ -196,8 +197,6 @@ let g:NERDTreeWinPos = "right"
 " Telescope command line:
 " Find files using Telescope command-line sugar.
 nnoremap <C-p> <cmd>Telescope find_files hidden=true<cr>
-" nnoremap <C-F> <cmd>Telescope live_grep hidden=true<cr>
-" nnoremap <C-f> :Telescope current_buffer_fuzzy_find<CR>
 nnoremap <C-u> :Telescope buffers<CR>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>

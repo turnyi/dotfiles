@@ -16,6 +16,11 @@ windows:
       panes:
         - cd config && nvim
         - cd config
+  - tmuxinator:
+      layout: even-horizontal
+      panes:
+        - cd config/.config/tmuxinator && nvim
+        - cd config/.config/tmuxinator
   - playbooks:
       layout: even-horizontal
       panes:

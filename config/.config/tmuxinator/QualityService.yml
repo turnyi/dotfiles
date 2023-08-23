@@ -1,0 +1,32 @@
+name: qualityService
+root: ~/Projects/QualityService/
+windows:
+  - gits:
+      root: ~/Projects/QualityService
+      layout: main-vertical
+      main-pane-width: 50%
+      panes:
+        - one:
+            - cd cleanup-web && lazygit
+        - two:
+            - cd cleanup-backend && lazygit
+        - three:
+            - cd cleanup-web  && lazygit
+  - web:
+      root: ~/Projects/QualityService/cleanup-web
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
+  - back:
+      root: ~/Projects/QualityService/cleanup-backend
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
+  - web:
+      root: ~/Projects/QualityService/cleanup-mobile
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
