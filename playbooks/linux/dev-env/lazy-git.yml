@@ -1,0 +1,31 @@
+---
+- name: Install LazyGit
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Get LazyGit latest version
+      uri:
+        url: "https://api.github.com/repos/jesseduffield/lazygit/releases/latest"
+        return_content: yes
+      register: latest_release
+
+    - name: Extract LazyGit version
+      set_fact:
+        lazygit_version: "{{ latest_release.json.tag_name | regex_replace('^v', '') }}"
+
+    - name: Download LazyGit archive
+      get_url:
+        url: "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_{{ lazygit_version }}_Linux_x86_64.tar.gz"
+        dest: "{{ ansible_env.HOME }}/lazygit.tar.gz"
+
+    - name: Extract LazyGit binary
+      command: "tar xf lazygit.tar.gz lazygit"
+      args:
+        chdir: "{{ ansible_env.HOME }}"
+
+    - name: Install LazyGit
+      command: "sudo install lazygit /usr/local/bin"
+      args:
+        chdir: "{{ ansible_env.HOME }}"
+

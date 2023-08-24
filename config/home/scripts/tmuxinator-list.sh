@@ -45,10 +45,8 @@ reload_projects() {
 sortedProjects=$(reload_projects)
 
 project=$(printf "%s\n" "${sortedProjects[@]}" | fzf-tmux -p 80%,60% \
-  --bind 'ctrl-r:execute(tmux has-session -t "$(echo {+} | cut -d " " -f 3)" && tmux kill-session -t "$(echo {+} | cut -d " " -f 1)"; tmuxinator start "$(echo {+} | cut -d " " -f 1)" 2> /dev/null)' \
   --bind 'ctrl-x:execute-silent(tmux kill-session -t "$(echo {+} | cut -d " " -f 1)")+reload(reload_projects)' \
-  --header 'Press CTRL-R to reload a session.
-Press CTRL-X to close a session.')
+  --header 'Press CTRL-X to close a session.')
 
 if [[ $project == *" (Open)" ]]; then
   project="${project% (Open)}"

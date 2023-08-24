@@ -1,7 +1,25 @@
-- name: Install Doppler CLI
+---
+- name: Install Doppler using shell commands
   hosts: localhost
   become: true
-
   tasks:
-    - name: Install Doppler CLI
-      shell: bash -c "$(curl -sL https://cli.doppler.com/install.sh)"
+    - name: Install required packages
+      apt:
+        name: apt-transport-https, ca-certificates, curl, gnupg
+        state: latest
+
+    - name: Add Doppler GPG key
+      shell: curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo gpg --dearmor -o /usr/share/keyrings/doppler-archive-keyring.gpg
+
+    - name: Add Doppler repository to sources.list
+      shell: echo "deb [signed-by=/usr/share/keyrings/doppler-archive-keyring.gpg] https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
+
+    - name: Update package lists
+      apt:
+       update_cache: yes
+
+    - name: Install Doppler
+      apt:
+        name: doppler
+        state: latest
+ 

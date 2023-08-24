@@ -10,7 +10,7 @@
     - name: Install additional dependencies
       apt:
         name:
-          - rg
+          - ripgrep
           - grep
           - silversearcher-ag
           - apt-transport-https
@@ -34,12 +34,8 @@
           - wget
           - gpg
           - notion
-          - steam
           - tmux
           - tmuxinator
-          - lazygit
-
-          - xfce4-terminal
         state: present
 
     - name: Install Vim-Plug for Neovim

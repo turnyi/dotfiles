@@ -1,33 +1,43 @@
+---
 - name: Install nvm and latest version of Node.js
   hosts: localhost
   become: true
   tasks:
     - name: Install nvm
-      git: repo=https://github.com/creationix/nvm.git dest=~/.nvm version=v0.33.11
+      git:
+        repo: https://github.com/creationix/nvm.git
+        dest: ~/.nvm
+        version: v0.33.11
       tags: nvm
 
     - name: Source nvm in ~/.{{ item }}
-      lineinfile: >
-        dest=~/.{{ item }}
-        line="source ~/.nvm/nvm.sh"
-        create=yes
+      lineinfile:
+        dest: "~/.{{ item }}"
+        line: "source ~/.nvm/nvm.sh"
+        create: yes
       tags: nvm
       with_items:
         - bashrc
         - profile
 
-    - name: Install node and set version
-      become: yes
-      become_user: root
-      shell: "source /root/.nvm/nvm.sh && nvm install 8.11.3"
+    - name: Install latest version of Node.js
+      shell: |
+        source ~/.nvm/nvm.sh
+        nvm install --lts
       args:
         executable: /bin/bash
 
-    - name: Update package cache
+    - name: Add Yarn GPG key
+      shell: curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+      
+    - name: Add Yarn repository to sources.list
+      shell: echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+      
+    - name: Update package lists
       apt:
         update_cache: yes
 
-    - name: Install yarn
+    - name: Install Yarn
       apt:
         name: yarn
-        state: present
+        state: latest

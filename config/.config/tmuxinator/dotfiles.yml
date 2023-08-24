@@ -1,6 +1,6 @@
 # /Users/maritnradovitzky/.config/tmuxinator/dotfiles.yml
 name: dotfiles
-root: ~/Documents/PersonalProjects/ansible-scripts
+root: ~/Projects/dotfiles
 # on_project_start: docker-compose up -d
 windows:
   - git:
