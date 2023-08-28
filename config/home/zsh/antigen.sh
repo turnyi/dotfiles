@@ -26,5 +26,6 @@ antigen bundle hlissner/zsh-autopair
 antigen bundle buonomo/yarn-completion
 antigen bundle lukechilds/zsh-better-npm-completion
 antigen bundle mattberther/zsh-pyenv
+antigen bundle greymd/docker-zsh-completion
 
 antigen apply
