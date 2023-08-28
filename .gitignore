@@ -4,3 +4,5 @@ my-plugins
 gh/hosts
 !gh/hosts.template
 
+config/.config/gh/hosts
+config/.config/gh/hosts.yml
