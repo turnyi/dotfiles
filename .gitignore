@@ -2,3 +2,5 @@
 my-plugins
 
 gh/hosts
+!gh/hosts.template
+
