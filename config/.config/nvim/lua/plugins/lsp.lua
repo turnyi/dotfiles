@@ -373,6 +373,17 @@ nvim_lsp.emmet_ls.setup({
 -- 	capabilities = capabilities,
 -- })
 
+nvim_lsp.csharp_ls.setup({
+	root_dir = function(startpath)
+		return nvim_lsp.util.root_pattern("*.csproj")(startpath)
+			or nvim_lsp.util.root_pattern("*.sln")(startpath)
+			or nvim_lsp.util.root_pattern("*.fsproj")(startpath)
+			or nvim_lsp.util.root_pattern(".git")(startpath)
+	end,
+	on_attach = M.on_attach,
+	capabilities = capabilities,
+})
+
 -- Map key combination to trigger lsp hover
 vim.api.nvim_set_keymap("n", "<C-,>", "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
 

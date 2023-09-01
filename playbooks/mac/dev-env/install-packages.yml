@@ -28,6 +28,9 @@
           - tmux
           - tmuxinator
           - lazygit
+          - dotnet-sdk
+          - omnisharp
+          - omnisharp-mono
 
         state: present
 

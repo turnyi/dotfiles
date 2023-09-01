@@ -148,6 +148,7 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'jackMort/ChatGPT.nvim'
 Plug 'MunifTanjim/nui.nvim'
 Plug 'dotsilas/darcubox-nvim'
+Plug 'OmniSharp/omnisharp-vim'
 call plug#end()
 
 
@@ -314,3 +315,27 @@ let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = ''
 let g:airline_theme='deus'
+
+
+" Toggle fullscreen mode
+nnoremap <silent> <Leader>ff :call ToggleFullscreen()<CR>
+
+let g:fullscreen_state = 0
+
+function! ToggleFullscreen()
+    if g:fullscreen_state == 0
+        " Save current window state
+        let g:fullscreen_win_state = winrestcmd()
+        " Maximize current window
+        wincmd _
+        wincmd |
+        let g:fullscreen_state = 1
+    else
+        " Restore previous window state
+        execute g:fullscreen_win_state
+        let g:fullscreen_state = 0
+    endif
+endfunction
+
+let g:OmniSharp_server_stdio = 1
+
