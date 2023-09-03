@@ -149,6 +149,7 @@ Plug 'jackMort/ChatGPT.nvim'
 Plug 'MunifTanjim/nui.nvim'
 Plug 'dotsilas/darcubox-nvim'
 Plug 'OmniSharp/omnisharp-vim'
+Plug 'folke/noice.nvim' " Cmd-line
 call plug#end()
 
 
