@@ -13,7 +13,7 @@ windows:
         - three:
             - cd cleanup-mobile && lazygit
   - web:
-      root: ~/Projects/QualityService/cleanup-web
+      root: ~/Projects/QualityService/cleanup-dashboard
       layout: even-horizontal
       panes:
         - nvim .
