@@ -9,7 +9,7 @@ require("plugins.whichKey")
 require("plugins.smoothCursor")
 require("plugins.chatgpt")
 require("plugins.diagnostics")
-require("plugins.noice")
+
 vim.api.nvim_exec(
 	[[
 augroup AutoFormat
