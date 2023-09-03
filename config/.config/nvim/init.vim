@@ -339,3 +339,4 @@ endfunction
 
 let g:OmniSharp_server_stdio = 1
 
+highlight SignColumn ctermbg=NONE guibg=NONE
