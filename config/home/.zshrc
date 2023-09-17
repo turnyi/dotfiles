@@ -114,3 +114,4 @@ bindkey '^[[1;5D' backward-word    # Ctrl + left arrow
 
 export PATH="/opt/homebrew/opt/curl/bin:$PATH"
 
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"

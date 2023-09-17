@@ -9,9 +9,8 @@ echo "$(pwd)"
 sudo stow -t ~ home
 
 # Install config files
-rm -rf ~/.config/ohmyposh ~/.config/nvim ~/.config/gh ~/.config/tmuxinator 
-mkdir -p .config && cd .config &&  mkdir -p ~/.config/ohmyposh && stow -t ~/.config/ohmyposh ohmyposh 
+rm -rf ~/.config/ohmyposh ~/.config/nvim ~/.config/gh ~/.config/tmuxinator
+mkdir -p .config && cd .config && mkdir -p ~/.config/ohmyposh && stow -t ~/.config/ohmyposh ohmyposh
 mkdir -p ~/.config/nvim && stow -t ~/.config/nvim nvim
 mkdir -p ~/.config/gh && stow -t ~/.config/gh gh
 mkdir -p ~/.config/tmuxinator && stow -t ~/.config/tmuxinator tmuxinator
-

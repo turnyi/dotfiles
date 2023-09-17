@@ -150,8 +150,13 @@ Plug 'MunifTanjim/nui.nvim'
 Plug 'dotsilas/darcubox-nvim'
 Plug 'OmniSharp/omnisharp-vim'
 Plug 'rebelot/kanagawa.nvim'
+
+Plug 'tpope/vim-dadbod'
+Plug 'kristijanhusak/vim-dadbod-completion'
+Plug 'kristijanhusak/vim-dadbod-ui'
 call plug#end()
 
+source ~/.config/nvim/db.config.vim
 
 let g:transparent_groups = extend(get(g:, 'transparent_groups', []), ['Pmenu', 'Float', 'NormalFloat'])
 " ctrlp show hidden files
@@ -282,6 +287,7 @@ nnoremap <leader>w :set wrap!<CR>
 nnoremap <S-f> <C-u>
 nnoremap <S-j> <C-d>
 nnoremap <silent> <leader>fs <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
+nnoremap <silent> <leader>db <cmd>DBUIToggle<CR>
 
 
 nnoremap <leader>c :ChatGPT<CR>
@@ -341,3 +347,5 @@ endfunction
 let g:OmniSharp_server_stdio = 1
 
 highlight SignColumn ctermbg=NONE guibg=NONE
+  autocmd FileType sql,mysql,plsql lua require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
+
