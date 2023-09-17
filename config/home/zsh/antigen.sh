@@ -27,5 +27,5 @@ antigen bundle buonomo/yarn-completion
 antigen bundle lukechilds/zsh-better-npm-completion
 antigen bundle mattberther/zsh-pyenv
 antigen bundle greymd/docker-zsh-completion
-
+antigen bundle nekofar/zsh-pnpm
 antigen apply

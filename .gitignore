@@ -7,3 +7,4 @@ gh/hosts
 config/.config/gh/hosts
 config/.config/gh/hosts.yml
 config/home/zsh/antigen.sh.zwc
+.DS_Store
