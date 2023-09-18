@@ -10,24 +10,33 @@ windows:
       layout: even-horizontal
       panes:
         - nvim
-        - cd .
+        -
   - web:
       layout: even-horizontal
+      root: ~/Documents/December/Stride/stride-origin/web
       panes:
-        - cd web && nvim
-        - cd web
+        - nvim
+        -
   - firebase:
       layout: even-horizontal
+      root: ~/Documents/December/Stride/stride-origin/firebase
       panes:
-        - cd firebase && nvim
-        - cd firebase
+        - nvim
+        -
   - cloudFunc:
       layout: even-horizontal
       panes:
         - cd functions && nvim
         - source .venv/bin/activate && cd functions
+  - admin:
+      layout: even-horizontal
+      root: ~/Documents/December/Stride/stride-origin/stride-origin-admin
+      panes:
+        - nvim
+        -
   - devops:
       layout: even-horizontal
+      root: ~/Documents/December/Stride/stride-origin/devops
       panes:
-        - cd devops && nvim
-        - cd devops
+        - nvim
+        -
