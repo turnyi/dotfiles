@@ -31,7 +31,7 @@
           - dotnet-sdk
           - omnisharp
           - omnisharp-mono
-
+          - swiftformat
         state: present
 
     - name: Install Vim-Plug for Neovim

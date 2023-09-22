@@ -349,3 +349,4 @@ let g:OmniSharp_server_stdio = 1
 highlight SignColumn ctermbg=NONE guibg=NONE
   autocmd FileType sql,mysql,plsql lua require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
 
+autocmd FileType swift autocmd BufWritePost *.swift :silent exec "!swiftformat %"
