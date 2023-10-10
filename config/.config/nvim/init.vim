@@ -154,6 +154,7 @@ Plug 'rebelot/kanagawa.nvim'
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-completion'
 Plug 'kristijanhusak/vim-dadbod-ui'
+Plug 'nvim-neorg/neorg'
 call plug#end()
 
 source ~/.config/nvim/db.config.vim
@@ -190,7 +191,8 @@ inoremap <A-Down> <Esc>:m+<CR>a
 set termguicolors
 syntax on
 autocmd ColorScheme * highlight Normal ctermbg=NONE guibg=NONE
-colorscheme darcubox
+colorscheme onedark
+" colorscheme darcubox
 highlight Pmenu guibg=NONE
 
 inoremap <expr> <Tab> pumvisible() ? coc#_select_confirm() : "<Tab>"

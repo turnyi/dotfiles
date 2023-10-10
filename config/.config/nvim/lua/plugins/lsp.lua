@@ -389,5 +389,5 @@ nvim_lsp.csharp_ls.setup({
 -- Map key combination to trigger lsp hover
 vim.api.nvim_set_keymap("n", "<C-,>", "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
 
-require("xbase").setup()
+-- require("xbase").setup()
 return M
