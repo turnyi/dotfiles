@@ -32,6 +32,7 @@
           - omnisharp
           - omnisharp-mono
           - swiftformat
+          - mysql
         state: present
 
     - name: Install Vim-Plug for Neovim

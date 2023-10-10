@@ -1,5 +1,6 @@
 require("plugins.lsp")
 require("plugins.telescope")
+-- require("plugins.image")
 require("plugins.null-ls")
 require("plugins.nvim-cmp")
 require("plugins.trouble")
@@ -7,8 +8,10 @@ require("plugins.bufferline")
 require("plugins.treesiter")
 require("plugins.whichKey")
 require("plugins.smoothCursor")
+require("plugins.neorg")
 require("plugins.chatgpt")
 require("plugins.diagnostics")
+require("plugins.live-share")
 
 vim.api.nvim_exec(
 	[[

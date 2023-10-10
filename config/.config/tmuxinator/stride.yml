@@ -34,6 +34,13 @@ windows:
       panes:
         - nvim
         -
+
+  - packages:
+      layout: even-horizontal
+      root: ~/Documents/December/Stride/stride-origin/packages/stride-lib
+      panes:
+        - nvim
+        -
   - devops:
       layout: even-horizontal
       root: ~/Documents/December/Stride/stride-origin/devops

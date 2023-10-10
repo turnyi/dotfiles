@@ -372,8 +372,10 @@ nvim_lsp.emmet_ls.setup({
 -- 	},
 -- 	capabilities = capabilities,
 -- })
+nvim_lsp.sourcekit.setup({})
 
 nvim_lsp.csharp_ls.setup({
+	AutomaticWorkspaceInit = true,
 	root_dir = function(startpath)
 		return nvim_lsp.util.root_pattern("*.csproj")(startpath)
 			or nvim_lsp.util.root_pattern("*.sln")(startpath)
@@ -387,4 +389,5 @@ nvim_lsp.csharp_ls.setup({
 -- Map key combination to trigger lsp hover
 vim.api.nvim_set_keymap("n", "<C-,>", "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
 
+require("xbase").setup()
 return M
