@@ -3,10 +3,12 @@ require("neorg").setup({
 		["core.defaults"] = {}, -- Loads default behaviour
 		["core.concealer"] = {}, -- Adds pretty icons to your documents
 		["core.summary"] = {}, -- Adds document stats on the footer
+		["core.export"] = {}, -- Exports documents
 		["core.dirman"] = { -- Manages Neorg workspaces
 			config = {
 				workspaces = {
 					finanzas_de_empresas = "~/notes/finanzas-de-empresas",
+					economia_y_sociedad_uruguaya = "~/Notes/economia-y-sociedad-uruguaya/",
 				},
 			},
 		},

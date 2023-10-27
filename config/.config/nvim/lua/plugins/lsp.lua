@@ -112,7 +112,7 @@ end
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 capabilities.textDocument.completion.completionItem.snippetSupport = true
-capabilities.textDocument.completion.completionItem.documentationFormat = { "markdown", "plaintext" }
+capabilities.textDocument.completion.completionItem.documentationFormat = { "markdown", "plaintext", "norg" }
 capabilities.textDocument.completion.completionItem.preselectSupport = true
 capabilities.textDocument.completion.completionItem.insertReplaceSupport = true
 capabilities.textDocument.completion.completionItem.labelDetailsSupport = true
@@ -307,7 +307,7 @@ nvim_lsp.rust_analyzer.setup({
 
 nvim_lsp.grammarly.setup({
 	on_attach = M.on_attach,
-	filetypes = { "html", "markdown", "markdown.pandoc", "text", "txt" },
+	filetypes = { "html", "markdown", "markdown.pandoc", "text", "txt", "norg" },
 })
 
 -- Change diagnostics signs

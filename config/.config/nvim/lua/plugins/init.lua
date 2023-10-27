@@ -1,6 +1,6 @@
 require("plugins.lsp")
 require("plugins.telescope")
--- require("plugins.image")
+require("plugins.catppuccin")
 require("plugins.null-ls")
 require("plugins.nvim-cmp")
 require("plugins.trouble")

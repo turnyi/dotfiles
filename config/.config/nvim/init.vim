@@ -1,6 +1,7 @@
 :set smarttab
 :set number
 :set tabstop=4
+:set breakindent
 :set relativenumber
 :set autoindent
 :set shiftwidth=4
@@ -122,7 +123,7 @@ Plug 'jose-elias-alvarez/null-ls.nvim'
 Plug 'othree/html5.vim'
 Plug 'mustache/vim-mustache-handlebars',
 Plug 'pangloss/vim-javascript',
-Plug 'sheerun/vim-polyglot'
+" Plug 'sheerun/vim-polyglot'
 
 "Emmet 
 Plug 'mattn/emmet-vim'
@@ -150,11 +151,13 @@ Plug 'MunifTanjim/nui.nvim'
 Plug 'dotsilas/darcubox-nvim'
 Plug 'OmniSharp/omnisharp-vim'
 Plug 'rebelot/kanagawa.nvim'
+Plug 'olimorris/onedarkpro.nvim'
 
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-completion'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'nvim-neorg/neorg'
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 call plug#end()
 
 source ~/.config/nvim/db.config.vim
@@ -191,8 +194,9 @@ inoremap <A-Down> <Esc>:m+<CR>a
 set termguicolors
 syntax on
 autocmd ColorScheme * highlight Normal ctermbg=NONE guibg=NONE
-colorscheme onedark
+" colorscheme onedark
 " colorscheme darcubox
+" colorscheme dracula
 highlight Pmenu guibg=NONE
 
 inoremap <expr> <Tab> pumvisible() ? coc#_select_confirm() : "<Tab>"
