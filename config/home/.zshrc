@@ -3,6 +3,7 @@
 #install plugins
 source "$HOME/zsh/antigen_install.zsh"
 source "$HOME/zsh/antigen.sh"
+source "$HOME/.env"
 
 # Add custom script stowed to ~/bin and ~/vntana_bin to path
 export PATH="$HOME/scripts:$PATH"

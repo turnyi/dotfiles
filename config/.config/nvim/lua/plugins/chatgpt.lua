@@ -1,5 +1,5 @@
 local gpt = require("chatgpt")
 gpt.setup({
-	api_key_cmd = "echo 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",
+	api_key_cmd = "echo $(OPEN_API_KEY)",
 	model = "gpt-4",
 })
