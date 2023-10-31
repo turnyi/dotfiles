@@ -3,15 +3,10 @@ root: ~/Projects/QualityService/
 windows:
   - gits:
       root: ~/Projects/QualityService
-      layout: main-vertical
-      main-pane-width: 50%
+      layout: even-horizontal
       panes:
-        - backend:
-            - cd cleanup-backend && lazygit
-        - web:
-            - cd cleanup-dashboard  && lazygit
-        - three:
-            - cd cleanup-mobile && lazygit
+        - cd cleanup-backend && lazygit
+        - cd infra && lazygit
   - web:
       root: ~/Projects/QualityService/cleanup-dashboard
       layout: even-horizontal
@@ -24,8 +19,14 @@ windows:
       panes:
         - nvim .
         - .
-  - web:
+  - mobile:
       root: ~/Projects/QualityService/cleanup-mobile
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
+  - infra:
+      root: ~/Projects/QualityService/infra
       layout: even-horizontal
       panes:
         - nvim .

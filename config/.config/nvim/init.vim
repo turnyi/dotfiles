@@ -158,6 +158,7 @@ Plug 'kristijanhusak/vim-dadbod-completion'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'nvim-neorg/neorg'
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+Plug 'nvim-pack/nvim-spectre'
 call plug#end()
 
 source ~/.config/nvim/db.config.vim
@@ -207,6 +208,10 @@ set wildmenu
 let g:NERDTreeShowHidden=1
 let g:NERDTreeWinPos = "right"
 
+" new buffer 
+nnoremap <C-n> :let g:temp = ''<CR>
+nnoremap <C-n>b :enew<CR>
+nnoremap <C-n>v :vnew<CR>
 " Telescope command line:
 " Find files using Telescope command-line sugar.
 nnoremap <C-p> <cmd>Telescope find_files hidden=true<cr>
@@ -292,7 +297,7 @@ nnoremap <silent> <leader>h  <cmd>WhichKey<cr>
 nnoremap <leader>w :set wrap!<CR>
 nnoremap <S-f> <C-u>
 nnoremap <S-j> <C-d>
-nnoremap <silent> <leader>fs <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
+" nnoremap <silent> <leader>fs <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
 nnoremap <silent> <leader>db <cmd>DBUIToggle<CR>
 
 

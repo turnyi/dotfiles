@@ -1,3 +1,5 @@
+local mocha = require("catppuccin.palettes").get_palette("mocha")
+
 require("catppuccin").setup({
 	flavour = "mocha", -- latte, frappe, macchiato, mocha
 	background = {
@@ -48,3 +50,9 @@ require("catppuccin").setup({
 })
 
 vim.cmd.colorscheme("catppuccin")
+
+vim.cmd ( [[
+highlight DiffAdd gui=bold guifg=#a3be8c guibg=NONE
+highlight DiffChange gui=bold guifg=#ebcb8b guibg=NONE
+highlight DiffDelete gui=bold guifg=#bf616a guibg=NONE
+]] )
