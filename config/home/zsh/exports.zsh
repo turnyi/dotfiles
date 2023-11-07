@@ -89,50 +89,5 @@ export RESET_ALL="${ESC_SEQ}0m"
 export RESET_BOLD="${ESC_SEQ}21m"
 export RESET_UL="${ESC_SEQ}24m"
 
-# Foreground colours
-export FG_BLACK="${ESC_SEQ}30;"
-export FG_RED="${ESC_SEQ}31;"
-export FG_GREEN="${ESC_SEQ}32;"
-export FG_YELLOW="${ESC_SEQ}33;"
-export FG_BLUE="${ESC_SEQ}34;"
-export FG_MAGENTA="${ESC_SEQ}35;"
-export FG_CYAN="${ESC_SEQ}36;"
-export FG_WHITE="${ESC_SEQ}37;"
-export FG_BR_BLACK="${ESC_SEQ}90;"
-export FG_BR_RED="${ESC_SEQ}91;"
-export FG_BR_GREEN="${ESC_SEQ}92;"
-export FG_BR_YELLOW="${ESC_SEQ}93;"
-export FG_BR_BLUE="${ESC_SEQ}94;"
-export FG_BR_MAGENTA="${ESC_SEQ}95;"
-export FG_BR_CYAN="${ESC_SEQ}96;"
-export FG_BR_WHITE="${ESC_SEQ}97;"
-
-# Background colours (optional)
-export BG_BLACK="40;"
-export BG_RED="41;"
-export BG_GREEN="42;"
-export BG_YELLOW="43;"
-export BG_BLUE="44;"
-export BG_MAGENTA="45;"
-export BG_CYAN="46;"
-export BG_WHITE="47;"
-
-# Font styles
-export FS_REG="21;24m"
-export FS_BOLD="1m"
-export FS_UL="4m"
-
-# Configure TMUX by default
-
-export ZSH_TMUX_AUTOSTART=true
-export ZSH_TMUX_ITERM2=true
-export ZSH_TMUX_CONFIG=$HOME/.tmux.conf
-
-# Configure ZK notes directory
-export ZK_NOTEBOOK_DIR=~/dotfiles/.dotfiles/home/Notes
-
-# Set default JAVA runtime version
-export JAVA_HOME=/opt/homebrew/Cellar/openjdk@11/11.0.18/libexec/openjdk.jdk/Contents/Home
-
-export ZSH_DOTENV_ALLOWED_LIST=~/dotenv/allowed.list
-export ZSH_DOTENV_DISALLOWED_LIST=~/dotenv/disallowed.list
+# Foreground colour?;q
+#
