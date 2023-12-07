@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGINS_DIR="$HOME/.tmux/plugins"
 TPM_DIR="$PWD"
 
@@ -14,10 +14,10 @@ source "$CURRENT_DIR/helpers/tpm.sh"
 # TMUX KEY-BINDING TESTS
 
 test_plugin_installation_via_tmux_key_binding() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	set -g @plugin "tmux-plugins/tmux-example-plugin"
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		set -g @plugin "tmux-plugins/tmux-example-plugin"
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	"$CURRENT_DIR/expect_successful_plugin_download" ||
@@ -30,10 +30,10 @@ test_plugin_installation_via_tmux_key_binding() {
 }
 
 test_plugin_installation_via_tmux_key_binding_set_option() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	set-option -g @plugin "tmux-plugins/tmux-example-plugin"
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		set-option -g @plugin "tmux-plugins/tmux-example-plugin"
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	"$CURRENT_DIR/expect_successful_plugin_download" ||
@@ -46,12 +46,12 @@ test_plugin_installation_via_tmux_key_binding_set_option() {
 }
 
 test_plugin_installation_custom_dir_via_tmux_key_binding() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	set-environment -g TMUX_PLUGIN_MANAGER_PATH '$CUSTOM_PLUGINS_DIR'
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		set-environment -g TMUX_PLUGIN_MANAGER_PATH '$CUSTOM_PLUGINS_DIR'
 
-	set -g @plugin "tmux-plugins/tmux-example-plugin"
-	run-shell "$TPM_DIR/tpm"
+		set -g @plugin "tmux-plugins/tmux-example-plugin"
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	"$CURRENT_DIR/expect_successful_plugin_download" ||
@@ -65,10 +65,10 @@ test_plugin_installation_custom_dir_via_tmux_key_binding() {
 }
 
 test_non_existing_plugin_installation_via_tmux_key_binding() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	set -g @plugin "tmux-plugins/non-existing-plugin"
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		set -g @plugin "tmux-plugins/non-existing-plugin"
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	"$CURRENT_DIR/expect_failed_plugin_download" ||
@@ -78,11 +78,11 @@ test_non_existing_plugin_installation_via_tmux_key_binding() {
 }
 
 test_multiple_plugins_installation_via_tmux_key_binding() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	set -g @plugin "tmux-plugins/tmux-example-plugin"
-	\ \ set  -g    @plugin 'tmux-plugins/tmux-copycat'
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		set -g @plugin "tmux-plugins/tmux-example-plugin"
+		\ \ set  -g    @plugin 'tmux-plugins/tmux-copycat'
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	"$CURRENT_DIR/expect_successful_multiple_plugins_download" ||
@@ -98,15 +98,15 @@ test_multiple_plugins_installation_via_tmux_key_binding() {
 }
 
 test_plugins_installation_from_sourced_file_via_tmux_key_binding() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	source '$ADDITIONAL_CONFIG_FILE_1'
-	set -g @plugin 'tmux-plugins/tmux-example-plugin'
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		source '$ADDITIONAL_CONFIG_FILE_1'
+		set -g @plugin 'tmux-plugins/tmux-example-plugin'
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	mkdir ~/.tmux
-	echo "set -g @plugin 'tmux-plugins/tmux-copycat'" > "$ADDITIONAL_CONFIG_FILE_1"
+	echo "set -g @plugin 'tmux-plugins/tmux-copycat'" >"$ADDITIONAL_CONFIG_FILE_1"
 
 	"$CURRENT_DIR/expect_successful_multiple_plugins_download" ||
 		fail_helper "[key-binding][sourced file] plugins installation fails"
@@ -121,16 +121,16 @@ test_plugins_installation_from_sourced_file_via_tmux_key_binding() {
 }
 
 test_plugins_installation_from_multiple_sourced_files_via_tmux_key_binding() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	\ \ source    '$ADDITIONAL_CONFIG_FILE_1'
-	source-file '$ADDITIONAL_CONFIG_FILE_2'
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		\ \ source    '$ADDITIONAL_CONFIG_FILE_1'
+		source-file '$ADDITIONAL_CONFIG_FILE_2'
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	mkdir ~/.tmux
-	echo "set -g @plugin 'tmux-plugins/tmux-example-plugin'" > "$ADDITIONAL_CONFIG_FILE_1"
-	echo "  set -g @plugin 'tmux-plugins/tmux-copycat'" > "$ADDITIONAL_CONFIG_FILE_2"
+	echo "set -g @plugin 'tmux-plugins/tmux-example-plugin'" >"$ADDITIONAL_CONFIG_FILE_1"
+	echo "  set -g @plugin 'tmux-plugins/tmux-copycat'" >"$ADDITIONAL_CONFIG_FILE_2"
 
 	"$CURRENT_DIR/expect_successful_multiple_plugins_download" ||
 		fail_helper "[key-binding][multiple sourced files] plugins installation fails"
@@ -147,10 +147,10 @@ test_plugins_installation_from_multiple_sourced_files_via_tmux_key_binding() {
 # SCRIPT TESTS
 
 test_plugin_installation_via_script() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	set -g @plugin "tmux-plugins/tmux-example-plugin"
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		set -g @plugin "tmux-plugins/tmux-example-plugin"
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	script_run_helper "$TPM_DIR/bin/install_plugins" '"tmux-example-plugin" download success' ||
@@ -166,12 +166,12 @@ test_plugin_installation_via_script() {
 }
 
 test_plugin_installation_custom_dir_via_script() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	set-environment -g TMUX_PLUGIN_MANAGER_PATH '$CUSTOM_PLUGINS_DIR'
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		set-environment -g TMUX_PLUGIN_MANAGER_PATH '$CUSTOM_PLUGINS_DIR'
 
-	set -g @plugin "tmux-plugins/tmux-example-plugin"
-	run-shell "$TPM_DIR/tpm"
+		set -g @plugin "tmux-plugins/tmux-example-plugin"
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	script_run_helper "$TPM_DIR/bin/install_plugins" '"tmux-example-plugin" download success' ||
@@ -188,10 +188,10 @@ test_plugin_installation_custom_dir_via_script() {
 }
 
 test_non_existing_plugin_installation_via_script() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	set -g @plugin "tmux-plugins/non-existing-plugin"
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		set -g @plugin "tmux-plugins/non-existing-plugin"
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	local expected_exit_code=1
@@ -202,11 +202,11 @@ test_non_existing_plugin_installation_via_script() {
 }
 
 test_multiple_plugins_installation_via_script() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	set -g @plugin "tmux-plugins/tmux-example-plugin"
-	\ \ set  -g    @plugin 'tmux-plugins/tmux-copycat'
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		set -g @plugin "tmux-plugins/tmux-example-plugin"
+		\ \ set  -g    @plugin 'tmux-plugins/tmux-copycat'
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	script_run_helper "$TPM_DIR/bin/install_plugins" '"tmux-example-plugin" download success' ||
@@ -225,15 +225,15 @@ test_multiple_plugins_installation_via_script() {
 }
 
 test_plugins_installation_from_sourced_file_via_script() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	source '$ADDITIONAL_CONFIG_FILE_1'
-	set -g @plugin 'tmux-plugins/tmux-example-plugin'
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		source '$ADDITIONAL_CONFIG_FILE_1'
+		set -g @plugin 'tmux-plugins/tmux-example-plugin'
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	mkdir ~/.tmux
-	echo "set -g @plugin 'tmux-plugins/tmux-copycat'" > "$ADDITIONAL_CONFIG_FILE_1"
+	echo "set -g @plugin 'tmux-plugins/tmux-copycat'" >"$ADDITIONAL_CONFIG_FILE_1"
 
 	script_run_helper "$TPM_DIR/bin/install_plugins" '"tmux-copycat" download success' ||
 		fail_helper "[script][sourced file] plugins installation fails"
@@ -251,17 +251,17 @@ test_plugins_installation_from_sourced_file_via_script() {
 }
 
 test_plugins_installation_from_multiple_sourced_files_via_script() {
-	set_tmux_conf_helper <<- HERE
-	set -g mode-keys vi
-	\ \ source    '$ADDITIONAL_CONFIG_FILE_1'
-	source-file '$ADDITIONAL_CONFIG_FILE_2'
-	set -g @plugin 'tmux-plugins/tmux-example-plugin'
-	run-shell "$TPM_DIR/tpm"
+	set_tmux_conf_helper <<-HERE
+		set -g mode-keys vi
+		\ \ source    '$ADDITIONAL_CONFIG_FILE_1'
+		source-file '$ADDITIONAL_CONFIG_FILE_2'
+		set -g @plugin 'tmux-plugins/tmux-example-plugin'
+		run-shell "$TPM_DIR/tpm"
 	HERE
 
 	mkdir ~/.tmux
-	echo " set   -g @plugin 'tmux-plugins/tmux-copycat'" > "$ADDITIONAL_CONFIG_FILE_1"
-	echo "set -g @plugin 'tmux-plugins/tmux-sensible'" > "$ADDITIONAL_CONFIG_FILE_2"
+	echo " set   -g @plugin 'tmux-plugins/tmux-copycat'" >"$ADDITIONAL_CONFIG_FILE_1"
+	echo "set -g @plugin 'tmux-plugins/tmux-sensible'" >"$ADDITIONAL_CONFIG_FILE_2"
 
 	script_run_helper "$TPM_DIR/bin/install_plugins" '"tmux-sensible" download success' ||
 		fail_helper "[script][multiple sourced files] plugins installation fails"

@@ -1,4 +1,4 @@
-local gpt = require("chatgpt")
-gpt.setup({
-	model = "gpt-4",
-})
+-- local gpt = require("chatgpt")
+-- gpt.setup({
+-- 	model = "gpt-4",
+-- })

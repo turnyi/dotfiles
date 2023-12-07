@@ -6,6 +6,9 @@ if [ -f "$ROOT/secrets.zsh" ]; then
   source "$ROOT/secrets.zsh"
 fi
 
+if [ -f "$ROOT/.env" ]; then
+  source "$ROOT/.env"
+fi
 # Configure default ansible config file
 export ANSIBLE_CONFIG=~/.ansible.cfg
 
