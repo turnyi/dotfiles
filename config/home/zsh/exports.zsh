@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 
 ROOT=$(dirname $(readlink -f $(which "$0")))
@@ -6,8 +7,8 @@ if [ -f "$ROOT/secrets.zsh" ]; then
   source "$ROOT/secrets.zsh"
 fi
 
-if [ -f "$ROOT/.env" ]; then
-  source "$ROOT/.env"
+if [ -f "$ROOT/secrets.zsh" ]; then
+  source "$ROOT/secrets.zsh"
 fi
 # Configure default ansible config file
 export ANSIBLE_CONFIG=~/.ansible.cfg
@@ -92,5 +93,10 @@ export RESET_ALL="${ESC_SEQ}0m"
 export RESET_BOLD="${ESC_SEQ}21m"
 export RESET_UL="${ESC_SEQ}24m"
 
-# Foreground colour?;q
-#
+export ZSH_TMUX_AUTOSTART=true
+export ZSH_TMUX_ITERM2=true
+export ZSH_TMUX_CONFIG=$HOME/.tmux.conf
+
+export ZSH_DOTENV_ALLOWED_LIST=~/dotenv/allowed.list
+export ZSH_DOTENV_DISALLOWED_LIST=~/dotenv/disallowed.list
+source ~/zsh/.env

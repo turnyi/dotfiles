@@ -5,4 +5,3 @@ playbook=$(ls "$HOME/Projects/Personal/ansible" | sed 's/ /\n/g' | grep yml | gr
 if [ -z "$playbook" ]; then exit 0; fi
 
 ansible-playbook "$HOME/Projects/Personal/ansible/$playbook" --extra-vars="root=$HOME/Projects/Personal"
-

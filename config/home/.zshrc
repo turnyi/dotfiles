@@ -3,6 +3,8 @@
 #install plugins
 source "$HOME/zsh/antigen_install.zsh"
 source "$HOME/zsh/antigen.sh"
+export ZSH_DOTENV_ALLOWED_LIST=~/dotenv/allowed.list
+export ZSH_DOTENV_DISALLOWED_LIST=~/dotenv/disallowed.list
 
 # Add custom script stowed to ~/bin and ~/vntana_bin to path
 export PATH="$HOME/scripts:$PATH"
