@@ -12,6 +12,7 @@ require("plugins.smoothCursor")
 require("plugins.neorg")
 require("plugins.chatgpt")
 require("plugins.diagnostics")
+require("plugins.ident-blankline")
 
 vim.api.nvim_exec(
 	[[

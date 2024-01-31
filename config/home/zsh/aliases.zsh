@@ -76,7 +76,7 @@ alias gwp='git whatchanged -p'
 alias lg='lazygit'
 alias npmi='npm_install_centralized.sh'
 alias yarni='yarn_install_centralized.sh'
-
+alias skim='/Applications/Skim.app/Contents/MacOS/Skim'
 # Vim
 if type nvim >/dev/null 2>&1; then
   alias vim='nvim'

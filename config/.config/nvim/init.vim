@@ -67,6 +67,8 @@
 :set foldmethod=expr                     " Kind of fold used for the current window.
 :set foldexpr=nvim_treesitter#foldexpr() " Use Treesitter to handle folds
 :set pumblend=0                         " Popup menu transparency
+set spelllang=en_us
+set nospell
 
 source ~/.config/nvim/plug.vim
 
@@ -159,6 +161,8 @@ Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'nvim-neorg/neorg'
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'nvim-pack/nvim-spectre'
+Plug 'lukas-reineke/indent-blankline.nvim'
+Plug 'lervag/vimtex'
 call plug#end()
 
 source ~/.config/nvim/db.config.vim
@@ -333,6 +337,12 @@ let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = ''
 let g:airline_theme='deus'
+
+" Latex viewl 
+let g:vimtex_view_general_viewer = 'okular'
+let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
+
+
 
 
 " Toggle fullscreen mode
