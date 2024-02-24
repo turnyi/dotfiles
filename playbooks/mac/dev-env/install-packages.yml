@@ -33,6 +33,7 @@
           - omnisharp-mono
           - swiftformat
           - mysql
+          - zoxide
         state: present
 
     - name: Install Vim-Plug for Neovim

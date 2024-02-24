@@ -36,6 +36,7 @@
           - notion
           - tmux
           - tmuxinator
+          - zoxide
         state: present
 
     - name: Install Vim-Plug for Neovim
