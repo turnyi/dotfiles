@@ -1,0 +1,9 @@
+name: Dictados 
+root: ~/Projects/Dictados/DA1/01-2024
+
+windows:
+  - M5D:
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .

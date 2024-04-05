@@ -1,0 +1,21 @@
+name: OrderQ 
+root: ~/Projects/orderq-org
+windows:
+  - gits:
+      root: ~/Projects/orderq-org
+      layout: even-horizontal
+      panes:
+        - cd backend && lazygit
+        - cd front && lazygit
+  - back:
+      root: ~/Projects/orderq-org/backend
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
+  - front:
+      root: ~/Projects/orderq-org/front
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
