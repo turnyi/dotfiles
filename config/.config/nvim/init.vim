@@ -163,6 +163,9 @@ Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'nvim-pack/nvim-spectre'
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'lervag/vimtex'
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'davidmh/cspell.nvim'
 call plug#end()
 
 source ~/.config/nvim/db.config.vim
