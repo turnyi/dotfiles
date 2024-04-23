@@ -85,7 +85,7 @@ Plug 'https://github.com/ryanoasis/vim-devicons' " Developer Iconsinit.
 Plug 'https://github.com/tc50cal/vim-terminal' " Vim Terminal
 Plug 'https://github.com/preservim/tagbar' " Tagbar for code navigation
 "Plug 'https://github.com/neoclide/coc.nvim'  " Auto Completion
-Plug 'https://github.com/github/copilot.vim.git' " Copilot1
+" Plug 'https://github.com/github/copilot.vim.git' " Copilot1
 Plug 'https://github.com/andviro/flake8-vim.git' " Flake8
 Plug 'ambv/black' " Black
 Plug 'mickael-menu/zk-nvim' " Zettelkasten
