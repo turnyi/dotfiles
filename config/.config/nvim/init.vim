@@ -158,7 +158,6 @@ Plug 'olimorris/onedarkpro.nvim'
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-completion'
 Plug 'kristijanhusak/vim-dadbod-ui'
-Plug 'nvim-neorg/neorg'
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'nvim-pack/nvim-spectre'
 Plug 'lukas-reineke/indent-blankline.nvim'

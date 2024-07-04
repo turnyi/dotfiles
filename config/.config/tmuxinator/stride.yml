@@ -28,13 +28,6 @@ windows:
       panes:
         - cd functions && nvim
         - source .venv/bin/activate && cd functions
-  - admin:
-      layout: even-horizontal
-      root: ~/Documents/December/Stride/stride-origin/stride-origin-admin
-      panes:
-        - nvim
-        -
-
   - packages:
       layout: even-horizontal
       root: ~/Documents/December/Stride/stride-origin/packages/stride-lib
@@ -44,6 +37,13 @@ windows:
   - devops:
       layout: even-horizontal
       root: ~/Documents/December/Stride/stride-origin/devops
+      panes:
+        - nvim
+        -
+
+  - adm:
+      layout: even-horizontal
+      root: ~/Documents/December/Stride/adm
       panes:
         - nvim
         -
