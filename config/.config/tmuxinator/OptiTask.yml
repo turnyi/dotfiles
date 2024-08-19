@@ -1,0 +1,27 @@
+name: OptiTask
+root: ~/Projects/OptiTask/
+windows:
+  - gits:
+      root: ~/Projects/OptiTask
+      layout: even-horizontal
+      panes:
+        - cd Backend && lazygit
+        - cd Backend && lazygit
+  - web:
+      root: ~/Projects/OptiTask/Web
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
+  - back:
+      root: ~/Projects/OptiTask/Backend
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
+  - mobile:
+      root: ~/Projects/OptiTask/Mobile
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .

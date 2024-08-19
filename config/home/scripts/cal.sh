@@ -40,6 +40,7 @@ get_next_meeting() {
 		--propertyOrder "datetime,title" \
 		--noCalendarNames \
 		--dateFormat "%A" \
+		--timeFormat "%H:%M" \
 		--includeOnlyEventsFromNowOn \
 		--limitItems 1 \
 		--excludeAllDayEvents \
@@ -85,22 +86,59 @@ calculate_times() {
 }
 
 display_popup() {
-	tmux display-popup \
-		-S "fg=#eba0ac" \
-		-w50% \
-		-h50% \
-		-d '#{pane_current_path}' \
-		-T meeting \
-		icalBuddy \
+	# Get event details from iCalBuddy
+	event_details=$(icalBuddy \
 		--propertyOrder "datetime,title" \
 		--noCalendarNames \
 		--formatOutput \
-		--includeEventProps "title,datetime,notes,url,attendees" \
+		--includeEventProps "title,datetime,notes,url,attendees,description" \
 		--includeOnlyEventsFromNowOn \
 		--limitItems 1 \
 		--excludeAllDayEvents \
 		--excludeCals "training" \
-		eventsToday
+		eventsToday)
+
+	event_title=$(icalBuddy \
+		--propertyOrder "title" \
+		--noCalendarNames \
+		--formatOutput \
+		--includeEventProps "title" \
+		--includeOnlyEventsFromNowOn \
+		--limitItems 1 \
+		--excludeAllDayEvents \
+		eventsToday)
+
+	event_time=$(icalBuddy \
+		--propertyOrder "datetime" \
+		--noCalendarNames \
+		--formatOutput \
+		--includeEventProps "datetime" \
+		--includeOnlyEventsFromNowOn \
+		--limitItems 1 \
+		--excludeAllDayEvents \
+		eventsToday)
+
+	attendees=$(icalBuddy \
+		--noCalendarNames \
+		--formatOutput \
+		--includeEventProps "attendees" \
+		--includeOnlyEventsFromNowOn \
+		--limitItems 1 \
+		--excludeAllDayEvents \
+		eventsToday)
+
+	urls=($(echo "$event_details" | grep -Eo 'https://(meet|zoom)\.[a-z./?=_-]+' | uniq))
+
+	header="$event_title - $event_time \n\n"
+
+	formatted_attendees=$(echo "$attendees" | sed -e 's/: /:\n/' -e 's/, /\n  • /g' | sed 's/\(.*:\)/\1\n  • /')
+	echo "$formatted_attendees"
+	selected_url=$(printf "%s\n" "${urls[@]}" | fzf-tmux --header="Select Meet URL" --preview="echo \"$header$formatted_attendees\"" --preview-window=right:50% --border --height=40% -p)
+	if [ -n "$selected_url" ]; then
+		open "$selected_url"
+	else
+		echo "No URL selected. Exiting..."
+	fi
 }
 
 print_tmux_status() {

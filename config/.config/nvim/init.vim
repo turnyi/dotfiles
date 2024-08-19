@@ -165,6 +165,7 @@ Plug 'lervag/vimtex'
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'davidmh/cspell.nvim'
+Plug 'kawre/leetcode.nvim'
 call plug#end()
 
 source ~/.config/nvim/db.config.vim
