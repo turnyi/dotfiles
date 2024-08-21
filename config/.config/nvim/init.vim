@@ -222,7 +222,7 @@ nnoremap <C-n>v :vnew<CR>
 " Telescope command line:
 " Find files using Telescope command-line sugar.
 nnoremap <C-p> <cmd>Telescope find_files hidden=true<cr>
-nnoremap <C-u> :Telescope buffers<CR>
+nnoremap <C-i> :Telescope buffers<CR>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap <C-b> :Telescope file_browser cwd=<C-R>=expand("%:p:h")<CR><CR>
@@ -302,8 +302,6 @@ nnoremap <leader>xq <cmd>TroubleToggle quickfix<cr>
 nnoremap <leader>xl <cmd>TroubleToggle loclist<cr>
 nnoremap <silent> <leader>h  <cmd>WhichKey<cr>
 nnoremap <leader>w :set wrap!<CR>
-nnoremap <S-f> <C-u>
-nnoremap <S-j> <C-d>
 " nnoremap <silent> <leader>fs <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
 nnoremap <silent> <leader>db <cmd>DBUIToggle<CR>
 
