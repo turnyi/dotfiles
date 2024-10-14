@@ -175,12 +175,21 @@ nvim_lsp.bashls.setup({
 	flags = { debounce_text_changes = 150 },
 	capabilities = capabilities,
 })
+local util = require("lspconfig.util")
 -- CSS --
 nvim_lsp.cssls.setup({
 	cmd = { "vscode-css-language-server", "--stdio" },
 	capabilities = capabilities,
+	filetypes = { "css", "scss", "less" },
 	on_attach = M.on_attach,
 	flags = { debounce_text_changes = 150 },
+	single_file_support = true,
+	root_dir = util.root_pattern("package.json", ".git"),
+	settings = {
+		css = { validate = true },
+		scss = { validate = true },
+		less = { validate = true },
+	},
 })
 -- Docker --
 nvim_lsp.dockerls.setup({
@@ -241,9 +250,11 @@ nvim_lsp.lua_ls.setup({
 		},
 	},
 })
-
+local mason_registry = require("mason-registry")
+local vue_language_server_path = mason_registry.get_package("vue-language-server"):get_install_path()
+	.. "/node_modules/@vue/language-server"
 -- Typescript --
-nvim_lsp.tsserver.setup({
+nvim_lsp.ts_ls.setup({
 	cmd = { "typescript-language-server", "--stdio" },
 	capabilities = capabilities,
 	-- on_attach = TSPrebuild.on_attach,
@@ -252,8 +263,24 @@ nvim_lsp.tsserver.setup({
 		client.config.flags.debounce_text_changes = 150
 	end,
 	flags = { debounce_text_changes = 150 },
+	init_options = {
+		plugins = {
+			{
+				name = "@vue/typescript-plugin",
+				location = vue_language_server_path,
+				languages = { "vue" },
+			},
+		},
+	},
 })
 
+nvim_lsp.volar.setup({
+	init_options = {
+		vue = {
+			hybridMode = false,
+		},
+	},
+})
 -- Vim --
 nvim_lsp.vimls.setup({
 	cmd = { "vim-language-server", "--stdio" },
@@ -325,52 +352,6 @@ nvim_lsp.ember.setup({
 	filetypes = { "handlebars", "html.handlebars", "javascript", "typescript" },
 })
 
-nvim_lsp.emmet_ls.setup({
-	-- on_attach = on_attach,
-	capabilities = capabilities,
-	filetypes = {
-		"css",
-		"eruby",
-		"html",
-		"javascriptreact",
-		"less",
-		"sass",
-		"scss",
-		"svelte",
-		"pug",
-		"typescriptreact",
-		"vue",
-	},
-	init_options = {
-		html = {
-			options = {
-				-- For possible options, see: https://github.com/emmetio/emmet/blob/master/src/config.ts#L79-L267
-				["bem.enabled"] = true,
-			},
-		},
-	},
-})
-
--- 	on_attach = M.on_attach,
--- 	cmd = { "tailwindcss-language-server", "--stdio" },
--- 	filetypes = { "handlebars", "hbs" },
--- 	settings = {
--- 		tailwindCSS = {
--- 			classAttributes = { "class", "className", "classList", "ngClass" },
--- 			lint = {
--- 				cssConflict = "warning",
--- 				invalidApply = "error",
--- 				invalidConfigPath = "error",
--- 				invalidScreen = "error",
--- 				invalidTailwindDirective = "error",
--- 				invalidVariant = "error",
--- 				recommendedVariantOrder = "warning",
--- 			},
--- 			validate = true,
--- 		},
--- 	},
--- 	capabilities = capabilities,
--- })
 nvim_lsp.sourcekit.setup({})
 
 nvim_lsp.csharp_ls.setup({

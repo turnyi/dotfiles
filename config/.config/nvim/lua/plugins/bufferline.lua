@@ -10,6 +10,6 @@ require("bufferline").setup({
 			end
 			return s
 		end,
-		diagnostics_update_in_insert = true,
+		vim.diagnostic.config({ update_in_insert = true }),
 	},
 })

@@ -96,7 +96,6 @@ display_popup() {
 		--excludeAllDayEvents \
 		--excludeCals "training" \
 		eventsToday)
-	echo $event_details
 
 	event_title=$(icalBuddy \
 		--propertyOrder "title" \

@@ -180,15 +180,14 @@ print_tmux_status() {
 		echo "#[bold,bg=$CATPUCCIN_BG] $NERD_FONT_SEPARATOR $NERD_FONT_FREE"
 	fi
 
-	if [[ $epoc_diff -gt $ALERT_POPUP_BEFORE_SECONDS && epoc_diff -lt $ALERT_POPUP_BEFORE_SECONDS+10 ]]; then
-		display_popup
-	fi
+	display_popup
 }
 
 main() {
 	get_attendees
 	parse_attendees
 	get_next_meeting
+	echo $next_meeting
 	parse_result "$next_meeting"
 	calculate_times
 	# always show the next calendar event

@@ -100,16 +100,13 @@ Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
-" For vsnip users.
 Plug 'hrsh7th/cmp-vsnip'
-Plug 'hrsh7th/vim-vsnip'
-" For luasnip users.
-Plug 'L3MON4D3/LuaSnip'
-Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'SirVer/ultisnips'
+Plug 'hrsh7th/vim-vsnip'
+Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'quangnguyen30192/cmp-nvim-ultisnips'
-Plug 'dcampos/nvim-snippy'
-" Plug 'dcampos/cmp-snip'
+Plug 'L3MON4D3/LuaSnip'
+Plug 'rafamadriz/friendly-snippets'
 Plug 'williamboman/nvim-lsp-installer'
 Plug 'f-person/git-blame.nvim'
 Plug 'dyng/ctrlsf.vim'
@@ -121,23 +118,12 @@ Plug 'folke/trouble.nvim'
 Plug 'adoyle-h/ad-telescope-extensions.nvim'
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/fzf.vim'
-Plug 'jose-elias-alvarez/null-ls.nvim'
+Plug 'mhartington/formatter.nvim'
 Plug 'othree/html5.vim'
 Plug 'mustache/vim-mustache-handlebars',
 Plug 'pangloss/vim-javascript',
-" Plug 'sheerun/vim-polyglot'
-
-"Emmet 
-Plug 'mattn/emmet-vim'
-
-" React snippets
-Plug 'SirVer/ultisnips'
-Plug 'mlaursen/vim-react-snippets'
-
-"Bufferline
 Plug 'nvim-tree/nvim-web-devicons' " Recommended (for coloured icons)
 Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
-
 Plug 'nvim-treesitter/nvim-treesitter',
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'romgrk/nvim-treesitter-context'
@@ -166,6 +152,7 @@ Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'davidmh/cspell.nvim'
 Plug 'kawre/leetcode.nvim'
+Plug 'ray-x/lsp_signature.nvim'
 call plug#end()
 
 source ~/.config/nvim/db.config.vim
@@ -370,4 +357,5 @@ let g:OmniSharp_server_stdio = 1
 
 highlight SignColumn ctermbg=NONE guibg=NONE
   autocmd FileType sql,mysql,plsql lua require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
+
 
