@@ -79,6 +79,10 @@ parse_result() {
 }
 
 calculate_times() {
+  if [ -z "$time" ]; then
+    echo "No meetings"
+  fi
+
 	epoc_meeting=$(date -j -f "%T" "$time:00" +%s)
 	epoc_now=$(date +%s)
 	epoc_diff=$((epoc_meeting - epoc_now))

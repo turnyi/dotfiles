@@ -132,7 +132,7 @@ Plug 'folke/which-key.nvim'
 Plug 'ThePrimeagen/harpoon'
 Plug 'christoomey/vim-tmux-navigator'
 " Plug 'xiyaowong/transparent.nvim'
-Plug 'gen740/SmoothCursor.nvim' 
+Plug 'gen740/SmoothCursor.nvim'
 Plug 'nvim-lua/plenary.nvim'
 " Plug 'jackMort/ChatGPT.nvim'
 Plug 'MunifTanjim/nui.nvim'
@@ -167,7 +167,7 @@ let g:ctrlp_show_hidden = 1
 " " Enable Coc on normal mode
 " nmap <silent><leader>g <Plug>(coc-cmd)
 
-" Set keybinds 
+" Set keybinds
 nnoremap <C-l> :call CocActionAsync('jumpDefinition')<CR>
 nnoremap <C-s> :w<CR>  " save with ctrl+s
 vnoremap <silent><c-s> <c-c>:update<cr>gv
@@ -202,7 +202,7 @@ set wildmenu
 let g:NERDTreeShowHidden=1
 let g:NERDTreeWinPos = "right"
 
-" new buffer 
+" new buffer
 nnoremap <C-n> :let g:temp = ''<CR>
 nnoremap <C-n>b :enew<CR>
 nnoremap <C-n>v :vnew<CR>
@@ -271,22 +271,23 @@ xnoremap <silent> <cr> "*y:silent! let searchTerm = '\V'.substitute(escape(@*, '
 set updatetime=10
 
 function! HighlightWordUnderCursor()
-    if getline(".")[col(".")-1] !~# '[[:punct:][:blank:]]' 
-        exec 'match' 'Search' '/\V\<'.expand('<cword>').'\>/' 
-    else 
-        match none 
+    if getline(".")[col(".")-1] !~# '[[:punct:][:blank:]]'
+        exec 'match' 'Search' '/\V\<'.expand('<cword>').'\>/'
+    else
+        match none
     endif
 endfunction
 
 autocmd! CursorHold,CursorHoldI * call HighlightWordUnderCursor()
 nnoremap <silent> ga <cmd>lua vim.lsp.buf.code_action()<CR>
-nnoremap <silent> <leader>t :TroubleToggle<CR>
+nnoremap <silent> <leader>tg :Trouble diagnostics<CR>
+nnoremap <silent> <leader>tl :Trouble diagnostics toggle focus=false filter.buf=0<CR>
 nnoremap <leader>z :vsplit \| terminal<CR>
-nnoremap <leader>xx <cmd>TroubleToggle<cr>
-nnoremap <leader>xw <cmd>TroubleToggle workspace_diagnostics<cr>
-nnoremap <leader>xd <cmd>TroubleToggle document_diagnostics<cr>
-nnoremap <leader>xq <cmd>TroubleToggle quickfix<cr>
-nnoremap <leader>xl <cmd>TroubleToggle loclist<cr>
+" nnoremap <leader>xx <cmd>Trouble<cr>
+" nnoremap <leader>xw <cmd>Trouble workspace_diagnostics<cr>
+" nnoremap <leader>xd <cmd>Trouble document_diagnostics<cr>
+" nnoremap <leader>xq <cmd>Trouble quickfix<cr>
+" nnoremap <leader>xl <cmd>Trouble loclist<cr>
 nnoremap <silent> <leader>h  <cmd>WhichKey<cr>
 nnoremap <leader>w :set wrap!<CR>
 " nnoremap <silent> <leader>fs <cmd>lua require("telescope").extensions.live_grep_args.live_grep_args()<CR>
@@ -326,7 +327,7 @@ let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = ''
 let g:airline_theme='deus'
 
-" Latex viewl 
+" Latex viewl
 let g:vimtex_view_general_viewer = 'okular'
 let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
 
@@ -357,5 +358,3 @@ let g:OmniSharp_server_stdio = 1
 
 highlight SignColumn ctermbg=NONE guibg=NONE
   autocmd FileType sql,mysql,plsql lua require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
-
-

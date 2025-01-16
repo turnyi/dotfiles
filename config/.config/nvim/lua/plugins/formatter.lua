@@ -43,6 +43,10 @@ formatter.setup({
 				}
 			end,
 		},
+		html = {
+			require("formatter.filetypes.html").prettier,
+			require("formatter.filetypes.html").eslint_d,
+		},
 		typescript = {
 			require("formatter.filetypes.javascript").prettier,
 			require("formatter.filetypes.javascript").eslint_d,
@@ -65,6 +69,23 @@ formatter.setup({
 		},
 		python = {
 			require("formatter.filetypes.python").black,
+		},
+		cs = {
+			require("formatter.filetypes.cs").default,
+		},
+		yaml = {
+			-- Use Prettier for YAML (Docker Compose, GitHub workflows, etc.)
+			function()
+				return {
+					exe = "prettier",
+					args = {
+						"--stdin-filepath",
+						util.escape_path(util.get_current_buffer_file_path()),
+						"--",
+					},
+					stdin = true,
+				}
+			end,
 		},
 		["*"] = {
 			require("formatter.filetypes.any").remove_trailing_whitespace,

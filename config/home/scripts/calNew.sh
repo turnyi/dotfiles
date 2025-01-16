@@ -1,7 +1,5 @@
-#!/bin/bash
-
 ALERT_IF_IN_NEXT_MINUTES=300
-ALERT_POPUP_BEFORE_SECONDS=1
+ALERT_POPUP_BEFORE_SECONDS=10000
 CATPUCCIN_BG=#1e1e2e
 CATPUCCIN_RED=#f38ba8
 NERD_FONT_FREE="󱁕"
@@ -54,53 +52,41 @@ print_tmux_status() {
 open_chrome_profile() {
 	local attendees="$1"
 	local selected_url="$2"
-	local LOGFILE="$HOME/scripts/chrome_profile.log"
+	declare -A email_to_profile=(
+		["martin.radovitzky@gmail.com"]="Profile 1"
+		["402martin@gmail.com"]="Profile 1"
+		["martin.radovitzky@stridefunding.com"]="Profile 2"
+		["martin.radovitzky@qubika.com"]="Profile 4"
+	)
+	local matched=false
 
-	# Start logging to the specific log file
-	{
-		echo "Running open_chrome_profile at: $(date)"
-		echo "Attendees: $attendees"
-		echo "Selected URL: $selected_url"
+	for email in "${!email_to_profile[@]}"; do
+		if echo "$attendees" | grep -q "$email"; then
+			local profile="${email_to_profile[$email]}"
+			echo "Matching email found: $email"
+			echo "Opening Chrome with profile: $profile"
 
-    declare -A email_to_profile=(
-        ["martin.radovitzky@gmail.com"]="Profile 1"
-        ["402martin@gmail.com"]="Profile 1"
-        ["martin.radovitzky@stridefunding.com"]="Profile 2"
-        ["martin.radovitzky@qubika.com"]="Profile 4"
-    )
-    local matched=false
-
-    for email in "${!email_to_profile[@]}"; do
-        # Use awk to check for the email match in attendees list
-        if echo "$attendees" | awk -v email="$email" '$0 ~ email {exit 0} END {exit 1}'; then
-            local profile="${email_to_profile[$email]}"
-            echo "Matching email found: $email"
-            echo "Opening Chrome with profile: $profile"
-            bash "$HOME/scripts/launch_chrome.sh" "$profile" "$selected_url"
-            matched=true
-            break
-        fi
-    done
-		if [ "$matched" = false ]; then
-			echo "No matching email found. Opening Chrome with the default profile."
-			tmux new-window "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --profile-directory='Default' '$selected_url'"
+     bash "$HOME/scripts/launch_chrome.sh" "$profile" "$selected_url"
+			matched=true
+			break
 		fi
-
-		echo "open_chrome_profile finished at: $(date)"
-	} >> "$LOGFILE" 2>&1  # Append output to the log file and capture both stdout and stderr
+	done
+	if [ "$matched" = false ]; then
+		echo "No matching email found. Opening Chrome with the default profile."
+    tmux new-window "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --profile-directory='Default' '$selected_url'"
+	fi
 }
 
 display_popup() {
-  echo "comments"
-	# header="$title - $date_time \n\n"
+	header="$title - $date_time \n\n"
 
-	# formatted_attendees=$(echo "$attendees" | sed -e 's/: /:\n/' -e 's/, /\n  • /g' | sed 's/\(.*:\)/\1\n  • /')
-	# selected_url=$(printf "%s\n" "${meet_url[@]}" | fzf-tmux --header="Select Meet URL" --preview="echo \"$header$formatted_attendees\"" --preview-window=right:50% --border --height=40% -p)
-	# if [ -n "$selected_url" ]; then
-	# 	open_chrome_profile "$attendees" "$selected_url"
-	# else
-	# 	echo "No URL selected. Exiting..."
-	# fi
+	formatted_attendees=$(echo "$attendees" | sed -e 's/: /:\n/' -e 's/, /\n  • /g' | sed 's/\(.*:\)/\1\n  • /')
+	selected_url=$(printf "%s\n" "${meet_url[@]}" | fzf-tmux --header="Select Meet URL" --preview="echo \"$header$formatted_attendees\"" --preview-window=right:50% --border --height=40% -p)
+	if [ -n "$selected_url" ]; then
+		open_chrome_profile "$attendees" "$selected_url"
+	else
+		echo "No URL selected. Exiting..."
+	fi
 
 }
 

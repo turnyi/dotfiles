@@ -104,6 +104,6 @@ export ZSH_DOTENV_DISALLOWED_LIST=~/dotenv/disallowed.list
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH="/opt/homebrew/bin:$PATH"
 
 source ~/zsh/.env
-
