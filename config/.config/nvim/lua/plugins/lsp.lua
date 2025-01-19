@@ -289,11 +289,21 @@ nvim_lsp.vimls.setup({
 	flags = { debounce_text_changes = 150 },
 })
 
--- Python --
 nvim_lsp.pyright.setup({
 	on_attach = M.on_attach,
-	cmd = { "pyright-langserver", "--stdio" },
 	capabilities = capabilities,
+	cmd = { "pyright-langserver", "--stdio" },
+	settings = {
+		python = {
+			pythonPath = "./.venv/bin/python",
+			analysis = {
+				autoSearchPaths = true,
+				diagnosticMode = "workspace",
+				useLibraryCodeForTypes = true,
+				extraPaths = { "./.venv/lib/python3.11/site-packages" }, -- Replace X.X with your Python version (e.g., 3.9)
+			},
+		},
+	},
 })
 
 -- EFM Lang server --

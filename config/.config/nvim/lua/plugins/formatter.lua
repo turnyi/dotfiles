@@ -4,13 +4,9 @@ local util = require("formatter.util")
 local formatter = require("formatter")
 
 formatter.setup({
-	-- Enable or disable logging
-	logging = true,
-	-- Set the log level
+	logging = false,
 	log_level = vim.log.levels.WARN,
-	-- All formatter configurations are opt-in
 	filetype = {
-		-- Luatry_node_modules formatting with stylua
 		lua = {
 			require("formatter.filetypes.lua").stylua,
 			function()
@@ -74,7 +70,6 @@ formatter.setup({
 			require("formatter.filetypes.cs").default,
 		},
 		yaml = {
-			-- Use Prettier for YAML (Docker Compose, GitHub workflows, etc.)
 			function()
 				return {
 					exe = "prettier",
