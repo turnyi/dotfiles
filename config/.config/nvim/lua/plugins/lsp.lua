@@ -297,9 +297,6 @@ nvim_lsp.pyright.setup({
 		python = {
 			pythonPath = "./.venv/bin/python",
 			analysis = {
-				autoSearchPaths = true,
-				diagnosticMode = "workspace",
-				useLibraryCodeForTypes = true,
 				extraPaths = { "./.venv/lib/python3.11/site-packages" }, -- Replace X.X with your Python version (e.g., 3.9)
 			},
 		},

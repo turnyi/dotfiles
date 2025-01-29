@@ -4,7 +4,7 @@ local util = require("formatter.util")
 local formatter = require("formatter")
 
 formatter.setup({
-	logging = false,
+	logging = true,
 	log_level = vim.log.levels.WARN,
 	filetype = {
 		lua = {
@@ -65,6 +65,8 @@ formatter.setup({
 		},
 		python = {
 			require("formatter.filetypes.python").black,
+			require("formatter.filetypes.python").isort,
+			require("formatter.filetypes.python").flake8,
 		},
 		cs = {
 			require("formatter.filetypes.cs").default,
