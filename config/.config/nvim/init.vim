@@ -80,18 +80,11 @@ Plug 'https://github.com/vim-airline/vim-airline' " Status bar
 Plug 'vim-airline/vim-airline-themes'
 Plug 'https://github.com/lifepillar/pgsql.vim' " PSQL Pluging needs :SQLSetType pgsql.vim
 Plug 'https://github.com/ap/vim-css-color' " CSS Color Preview
-Plug 'https://github.com/rafi/awesome-vim-colorschemes' " Retro Scheme
 Plug 'https://github.com/ryanoasis/vim-devicons' " Developer Iconsinit.
-Plug 'https://github.com/tc50cal/vim-terminal' " Vim Terminal
-Plug 'https://github.com/preservim/tagbar' " Tagbar for code navigation
-"Plug 'https://github.com/neoclide/coc.nvim'  " Auto Completion
-" Plug 'https://github.com/github/copilot.vim.git' " Copilot1
 Plug 'https://github.com/andviro/flake8-vim.git' " Flake8
 Plug 'ambv/black' " Black
 Plug 'mickael-menu/zk-nvim' " Zettelkasten
 Plug 'eslint/eslint' "eslint
-Plug 'sbdchd/neoformat' " Neoformat
-Plug 'neomake/neomake'
 Plug 'neovim/nvim-lspconfig' " lsp plug languages
 Plug 'nvim-lua/lsp-status.nvim'
 Plug 'hrsh7th/nvim-compe'
@@ -105,7 +98,6 @@ Plug 'SirVer/ultisnips'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'quangnguyen30192/cmp-nvim-ultisnips'
-Plug 'L3MON4D3/LuaSnip'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'williamboman/nvim-lsp-installer'
 Plug 'f-person/git-blame.nvim'
@@ -131,28 +123,23 @@ Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 Plug 'folke/which-key.nvim'
 Plug 'ThePrimeagen/harpoon'
 Plug 'christoomey/vim-tmux-navigator'
-" Plug 'xiyaowong/transparent.nvim'
 Plug 'gen740/SmoothCursor.nvim'
 Plug 'nvim-lua/plenary.nvim'
-" Plug 'jackMort/ChatGPT.nvim'
 Plug 'MunifTanjim/nui.nvim'
 Plug 'dotsilas/darcubox-nvim'
 Plug 'OmniSharp/omnisharp-vim'
 Plug 'rebelot/kanagawa.nvim'
 Plug 'olimorris/onedarkpro.nvim'
-
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-completion'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'nvim-pack/nvim-spectre'
 Plug 'lukas-reineke/indent-blankline.nvim'
-Plug 'lervag/vimtex'
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'davidmh/cspell.nvim'
-Plug 'kawre/leetcode.nvim'
-Plug 'ray-x/lsp_signature.nvim'
+Plug 'frankroeder/parrot.nvim'
 call plug#end()
 
 source ~/.config/nvim/db.config.vim
