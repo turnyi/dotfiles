@@ -1,1 +1,6 @@
-require("trouble").setup({ mode = "document_diagnostics", auto_open = false, auto_close = true })
+return {
+	"folke/trouble.nvim",
+	opts = {},
+	cmd = "Trouble",
+	kys = require("config.keymaps").trouble,
+}

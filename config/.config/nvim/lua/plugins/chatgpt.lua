@@ -1,4 +1,0 @@
--- local gpt = require("chatgpt")
--- gpt.setup({
--- 	model = "gpt-4",
--- })
