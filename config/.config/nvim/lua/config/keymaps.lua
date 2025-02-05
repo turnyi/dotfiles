@@ -5,6 +5,7 @@ local nvim_set_keymap = vim.api.nvim_set_keymap
 
 local global = vim.g
 
+local cmp = require("cmp")
 M.generalMappings = function()
 	global.mapleader = " "
 	global.maplocalleader = "\\"
@@ -75,5 +76,12 @@ M.init = function()
 	M.telescope()
 	M.lspMappings()
 end
+
+M.autocomplete = {
+	["<C-Space>"] = cmp.mapping.complete(), -- Show completion menu manually
+	["<CR>"] = cmp.mapping.confirm({ select = true }), -- Confirm selection
+	["<Tab>"] = cmp.mapping.select_next_item(), -- Navigate forward
+	["<S-Tab>"] = cmp.mapping.select_prev_item(), -- Navigate backward
+}
 
 return M

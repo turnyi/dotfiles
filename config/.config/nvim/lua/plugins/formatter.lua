@@ -5,7 +5,6 @@ return {
 		config = function()
 			local conform = require("conform")
 
-			-- Formatter list (excluding gofmt)
 			local formatters = {
 				"prettier", -- JavaScript, TypeScript, HTML, CSS
 				"stylua", -- Lua
@@ -25,10 +24,16 @@ return {
 
 			-- Configure Conform
 			conform.setup({
+				formatters = {
+					prettier = {
+						require_cwd = true,
+					},
+				},
 				formatters_by_ft = {
 					lua = { "stylua" },
 					javascript = { "prettier" },
 					typescript = { "prettier" },
+					vue = { "prettier" },
 					json = { "prettier" },
 					html = { "prettier" },
 					css = { "prettier" },
