@@ -2,6 +2,8 @@ local M = {}
 local opts = { noremap = true, silent = true }
 
 local nvim_set_keymap = vim.api.nvim_set_keymap
+local vim_set = vim.keymap.set
+local vim_cmd = vim.cmd
 
 local global = vim.g
 
@@ -10,7 +12,7 @@ M.generalMappings = function()
 	global.mapleader = " "
 	global.maplocalleader = "\\"
 	nvim_set_keymap("n", "<C-s>", ":w<CR>", opts)
-	vim.keymap.set("n", "<leader>w", function()
+	vim_set("n", "<leader>w", function()
 		vim.wo.wrap = not vim.wo.wrap
 	end, { desc = "Toggle line wrap" })
 end
@@ -33,10 +35,10 @@ end
 M.lspMappings = function()
 	local buf = vim.lsp.buf
 
-	vim.keymap.set("n", "gD", function()
-		vim.cmd("vsplit | lua vim.lsp.buf.definition()")
+	vim_set("n", "gD", function()
+		vim_cmd("vsplit | lua vim.lsp.buf.definition()")
 	end, { noremap = true, silent = true })
-	vim.keymap.set("n", "ga", buf.code_action, { noremap = true, silent = true })
+	vim_set("n", "ga", buf.code_action, { noremap = true, silent = true })
 end
 
 M.trouble = {
@@ -59,18 +61,31 @@ M.navigation = {
 	{ "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
 	{ "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
 }
+
+M.autocomplete = {
+	["<C-Space>"] = cmp.mapping.complete(),
+	["<CR>"] = cmp.mapping.confirm({ select = true }),
+	["<Tab>"] = cmp.mapping.select_next_item(),
+	["<S-Tab>"] = cmp.mapping.select_prev_item(),
+}
+
+M.spell = function()
+	global.spelllang_toggle = { "en", "es" }
+	global.current_spelllang_index = 1
+	function ToggleSpellLang()
+		vim.g.current_spelllang_index = vim.g.current_spelllang_index % #vim.g.spelllang_toggle + 1
+		local new_lang = vim.g.spelllang_toggle[vim.g.current_spelllang_index]
+		vim.opt.spelllang = new_lang
+		print("Spell language set to: " .. new_lang)
+	end
+	vim_set("n", "<leader>sl", ToggleSpellLang, { desc = "Toggle Spell Language (EN/ES)" })
+end
+
 M.init = function()
 	M.generalMappings()
 	M.saveMappings()
 	M.telescope()
 	M.lspMappings()
+	M.spell()
 end
-
-M.autocomplete = {
-	["<C-Space>"] = cmp.mapping.complete(), -- Show completion menu manually
-	["<CR>"] = cmp.mapping.confirm({ select = true }), -- Confirm selection
-	["<Tab>"] = cmp.mapping.select_next_item(), -- Navigate forward
-	["<S-Tab>"] = cmp.mapping.select_prev_item(), -- Navigate backward
-}
-
 return M
