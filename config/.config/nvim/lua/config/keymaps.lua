@@ -9,6 +9,10 @@ local cmp = require("cmp")
 M.generalMappings = function()
 	global.mapleader = " "
 	global.maplocalleader = "\\"
+	nvim_set_keymap("n", "<C-s>", ":w<CR>", opts)
+	vim.keymap.set("n", "<leader>w", function()
+		vim.wo.wrap = not vim.wo.wrap
+	end, { desc = "Toggle line wrap" })
 end
 
 M.saveMappings = function()
@@ -37,29 +41,14 @@ end
 
 M.trouble = {
 	{
-		"<leader>xx",
+		"<leader>tg",
 		"<cmd>Trouble diagnostics toggle<cr>",
 		desc = "Diagnostics (Trouble)",
 	},
 	{
-		"<leader>xX",
+		"<leader>tl",
 		"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
 		desc = "Buffer Diagnostics (Trouble)",
-	},
-	{
-		"<leader>cs",
-		"<cmd>Trouble symbols toggle focus=false<cr>",
-		desc = "Symbols (Trouble)",
-	},
-	{
-		"<leader>cl",
-		"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-		desc = "LSP Definitions / references / ... (Trouble)",
-	},
-	{
-		"<leader>xL",
-		"<cmd>Trouble loclist toggle<cr>",
-		desc = "Location List (Trouble)",
 	},
 }
 
