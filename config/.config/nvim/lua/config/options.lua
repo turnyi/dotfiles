@@ -42,7 +42,6 @@ vim.opt.wildmode = { "longest", "list" }
 vim.opt.laststatus = 3
 vim.opt.foldmethod = "expr"
 vim.opt.pumblend = 0
-vim.opt.spelllang = "en_us"
 vim.opt.hlsearch = false
 
 vim.api.nvim_create_autocmd("CursorMoved", {

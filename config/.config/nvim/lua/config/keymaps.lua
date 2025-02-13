@@ -10,7 +10,7 @@ local global = vim.g
 
 local cmp = require("cmp")
 function OpenFloatingDiagnostics()
-	diagnostic.open_float({ scope = "line" })
+	diagnostic.open_float({ scope = "line", border = "rounded" })
 end
 
 M.generalMappings = function()
