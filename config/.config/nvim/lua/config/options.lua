@@ -46,11 +46,11 @@ vim.opt.spelllang = "en_us"
 vim.opt.hlsearch = false
 
 vim.api.nvim_create_autocmd("CursorMoved", {
-  pattern = "*",
-  callback = function()
-    vim.opt.relativenumber = true
-    vim.opt.number = true
-  end,
+	pattern = "*",
+	callback = function()
+		vim.opt.relativenumber = true
+		vim.opt.number = true
+	end,
 })
 
 vim.opt.clipboard = "unnamedplus"
@@ -58,3 +58,9 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.scrolloff = 8
 
 vim.opt.fillchars = { eob = " " }
+
+vim.diagnostic.config({
+	float = {
+		border = "rounded", -- You can use "single", "double", "shadow", or "rounded"
+	},
+})
