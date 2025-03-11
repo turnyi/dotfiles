@@ -36,6 +36,16 @@ M.telescope = function()
 	nvim_set_keymap("n", "<leader>fs", ":Telescope live_grep_args<CR>", opts)
 	nvim_set_keymap("n", "gd", "<cmd>Telescope lsp_definitions<CR>", { noremap = true, silent = true })
 	nvim_set_keymap("n", "ga", "<cmd>Telescope lsp_code_actions<CR>", { noremap = true, silent = true })
+	vim_set("n", "gld", function()
+		vim_cmd("vsplit")
+		vim_cmd("wincmd h")
+		require("telescope.builtin").lsp_definitions()
+	end, { noremap = true, silent = true })
+	vim_set("n", "grd", function()
+		vim_cmd("vsplit")
+		vim_cmd("wincmd h")
+		require("telescope.builtin").lsp_definitions()
+	end, { noremap = true, silent = true })
 end
 M.telescopeBuffers = {
 	["<c-d>"] = "delete_buffer",

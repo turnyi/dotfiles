@@ -60,6 +60,19 @@ return {
 				},
 				filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
 			})
+			local venv_path = vim.fn.getcwd() .. "/.venv/bin/python"
+			lspconfig.pyright.setup({
+				settings = {
+					python = {
+						pythonPath = venv_path,
+						analysis = {
+							autoSearchPaths = true,
+							useLibraryCodeForTypes = true,
+							diagnosticMode = "workspace",
+						},
+					},
+				},
+			})
 		end,
 	},
 	{ "neovim/nvim-lspconfig" },
