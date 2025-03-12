@@ -14,3 +14,4 @@ mkdir -p .config && cd .config && mkdir -p ~/.config/ohmyposh && stow -t ~/.conf
 mkdir -p ~/.config/nvim && stow -t ~/.config/nvim nvim
 mkdir -p ~/.config/gh && stow -t ~/.config/gh gh
 mkdir -p ~/.config/tmuxinator && stow -t ~/.config/tmuxinator tmuxinator
+mkdir -p .config && cd .config && mkdir -p ~/.config/sketchybar && stow -t ~/.config/sketchybar sketchybar

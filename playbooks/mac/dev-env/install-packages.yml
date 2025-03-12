@@ -38,6 +38,9 @@
           - watchman
           - FelixKratz/formulae
           - sketchybar
+          - borders
+          - switchaudio-osx
+          - sf-symbols
 
 
         state: present
@@ -57,3 +60,7 @@
       pip:
         name: ansible-lint
         state: present
+    - name: Install Vim-Plug for Neovim
+      # become: true
+      ansible.builtin.shell: >
+        curl -L https://github.com/kvndrsslr/sketchybar-app-font/releases/download/v1.0.4/sketchybar-app-font.ttf -o $HOME/Library/Fonts/sketchybar-app-font.ttf
