@@ -36,6 +36,8 @@
           - zoxide
           - node
           - watchman
+          - FelixKratz/formulae
+          - sketchybar
 
 
         state: present
