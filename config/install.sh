@@ -9,9 +9,11 @@ rm -rf ~/.fonts ~/.tmux ~/.dotenv ~/scripts ~/zsh ~/.bashrc ~/.tmux.conf ~/.zpro
 sudo stow -t ~ home
 
 # Install config files
-rm -rf ~/.config/ohmyposh ~/.config/nvim ~/.config/gh ~/.config/tmuxinator
-mkdir -p .config && cd .config && mkdir -p ~/.config/ohmyposh && stow -t ~/.config/ohmyposh ohmyposh
+rm ~/.config/nvim ~/.config/gh ~/.config/tmuxinator
+mkdir -p .config && cd .config
 mkdir -p ~/.config/nvim && stow -t ~/.config/nvim nvim
 mkdir -p ~/.config/gh && stow -t ~/.config/gh gh
 mkdir -p ~/.config/tmuxinator && stow -t ~/.config/tmuxinator tmuxinator
 mkdir -p .config && cd .config && mkdir -p ~/.config/sketchybar && stow -t ~/.config/sketchybar sketchybar
+
+ln -s ~/config/.config/starship.toml ~/.config/starship.toml

@@ -48,7 +48,9 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
 # Also see: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
-automatically-unhide-macos-hidden-apps = false
+automatically-unhide-macos-hidden-apps = true 
+# cmd-h = [] # Disable "hide application"
+# cmd-alt-h = [] # Disable "hide others"
 
 # Possible values: (qwerty|dvorak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
@@ -111,8 +113,9 @@ automatically-unhide-macos-hidden-apps = false
     alt-h = 'focus left'
     alt-j = 'focus down'
     alt-k = 'focus up'
-    alt-l = 'focus right'
+    alt-l = 'focus right' 
 
+    alt-p ='focus-monitor next --wrap-around'
     # See: https://nikitabobko.github.io/AeroSpace/commands#move
     alt-shift-h = 'move left'
     alt-shift-j = 'move down'
@@ -129,6 +132,7 @@ automatically-unhide-macos-hidden-apps = false
     alt-m = 'workspace M'
     alt-w = 'workspace W'
     alt-t = 'workspace T'
+    alt-n = 'workspace N'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-1 = 'move-node-to-workspace 1'
@@ -136,6 +140,7 @@ automatically-unhide-macos-hidden-apps = false
     alt-shift-m = 'move-node-to-workspace M'
     alt-shift-w = 'move-node-to-workspace W'
     alt-shift-t = 'move-node-to-workspace T'
+    alt-shift-n = 'move-node-to-workspace N'
 
     alt-shift-f = 'fullscreen'
 
@@ -147,6 +152,7 @@ automatically-unhide-macos-hidden-apps = false
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
     alt-shift-semicolon = 'mode service'
     alt-shift-o = 'mode apps'
+    alt-shift-r = ['balance-sizes']
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -166,9 +172,7 @@ automatically-unhide-macos-hidden-apps = false
 
     down = 'volume down'
     up = 'volume up'
-    shift-down = ['volume set 0', 'mode main']
-    shift-up = ['volume set 100', 'mode main']
-    shift-right = ['volume set 50', 'mode main']
+    shift-down = ['volume mute-toggle', 'mode main']
     alt-shift-semicolon = 'mode main'
     alt-shift-o = 'mode open'
 
@@ -178,6 +182,10 @@ run = "move-node-to-workspace T"
 
 [[on-window-detected]]
 if.app-id = 'net.whatsapp.WhatsApp'
+run = "move-node-to-workspace W"
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome.app.hnpfjngllnobngcgfapefoaidbinmjnm'
 run = "move-node-to-workspace W"
 
 [[on-window-detected]]
@@ -191,6 +199,10 @@ run = "move-node-to-workspace M"
 [[on-window-detected]]
 if.app-id = 'com.webcatalog.switchbar'
 run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = "move-node-to-workspace N"
 
 [mode.apps.binding]
     alt-t = ['exec-and-forget open -a /Applications/kitty.app', 'mode main']
