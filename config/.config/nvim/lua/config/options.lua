@@ -41,6 +41,7 @@ vim.opt.wildmenu = true
 vim.opt.wildmode = { "longest", "list" }
 vim.opt.laststatus = 3
 vim.opt.foldmethod = "expr"
+vim.opt.foldlevel = 99
 vim.opt.pumblend = 0
 vim.opt.hlsearch = false
 

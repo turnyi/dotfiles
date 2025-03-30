@@ -1,6 +1,7 @@
 local M = {}
 local opts = { noremap = true, silent = true }
 local diagnostic = require("vim.diagnostic")
+local harpoon = require("harpoon")
 
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local vim_set = vim.keymap.set
@@ -17,6 +18,9 @@ M.generalMappings = function()
 	global.mapleader = " "
 	global.maplocalleader = "\\"
 	nvim_set_keymap("n", "<C-s>", ":w<CR>", opts)
+
+	vim_set("n", "X", '"_d', { noremap = true })
+	vim_set("v", "X", '"_d', { noremap = true })
 	vim_set("n", "<leader>w", function()
 		vim.wo.wrap = not vim.wo.wrap
 	end, { desc = "Toggle line wrap" })
@@ -90,6 +94,60 @@ M.autocomplete = {
 	["<S-Tab>"] = cmp.mapping.select_prev_item(),
 }
 
+M.harpoon = function()
+	harpoon:setup()
+	vim_set("n", "<leader>ha", function()
+		harpoon:list():add()
+	end, { desc = "Harpoon Add File" })
+
+	vim_set("n", "<leader>h1", function()
+		harpoon:list():select(1)
+	end, { desc = "Harpoon File 1" })
+
+	vim_set("n", "<leader>h2", function()
+		harpoon:list():select(2)
+	end, { desc = "Harpoon File 2" })
+
+	vim_set("n", "<leader>h3", function()
+		harpoon:list():select(3)
+	end, { desc = "Harpoon File 3" })
+
+	vim_set("n", "<leader>h4", function()
+		harpoon:list():select(4)
+	end, { desc = "Harpoon File 4" })
+
+	vim_set("n", "<leader>hp", function()
+		harpoon:list():prev()
+	end, { desc = "Harpoon Prev" })
+
+	vim_set("n", "<leader>hn", function()
+		harpoon:list():next()
+	end, { desc = "Harpoon Next" })
+
+	local conf = require("telescope.config").values
+	local function toggle_telescope(harpoon_files)
+		local file_paths = {}
+		for _, item in ipairs(harpoon_files.items) do
+			table.insert(file_paths, item.value)
+		end
+
+		require("telescope.pickers")
+			.new({}, {
+				prompt_title = "Harpoon",
+				finder = require("telescope.finders").new_table({
+					results = file_paths,
+				}),
+				previewer = conf.file_previewer({}),
+				sorter = conf.generic_sorter({}),
+			})
+			:find()
+	end
+
+	vim.keymap.set("n", "<leader>hh", function()
+		toggle_telescope(harpoon:list())
+	end, { desc = "Harpoon Telescope Picker" })
+end
+
 M.spell = function()
 	global.spelllang_toggle = { "en", "es" }
 	global.current_spelllang_index = 1
@@ -109,5 +167,6 @@ M.init = function()
 	M.lspMappings()
 	M.spell()
 	M.troubleMappings()
+	M.harpoon()
 end
 return M

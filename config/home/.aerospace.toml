@@ -181,7 +181,7 @@ if.app-id = 'net.kovidgoyal.kitty'
 run = "move-node-to-workspace T"
 
 [[on-window-detected]]
-if.app-id = 'net.whatsapp.WhatsApp'
+if.app-id = 'com.google.Chrome.app.hnpfjngllnobngcgfapefoaidbinmjnm'
 run = "move-node-to-workspace W"
 
 [[on-window-detected]]
