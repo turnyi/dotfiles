@@ -34,9 +34,9 @@ M.saveMappings = function()
 end
 
 M.telescope = function()
-	nvim_set_keymap("n", "<C-p>", ":Telescope find_files<CR>", opts)
-	nvim_set_keymap("n", "<C-b>", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", opts)
-	nvim_set_keymap("n", "<C-i>", ":Telescope buffers<CR>", opts)
+	nvim_set_keymap("n", "<leader>ff", ":Telescope find_files<CR>", opts)
+	nvim_set_keymap("n", "<leader>fd", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", opts)
+	nvim_set_keymap("n", "<leader>fb", ":Telescope buffers<CR>", opts)
 	nvim_set_keymap("n", "<leader>fs", ":Telescope live_grep_args<CR>", opts)
 	nvim_set_keymap("n", "gd", "<cmd>Telescope lsp_definitions<CR>", { noremap = true, silent = true })
 	nvim_set_keymap("n", "ga", "<cmd>Telescope lsp_code_actions<CR>", { noremap = true, silent = true })
