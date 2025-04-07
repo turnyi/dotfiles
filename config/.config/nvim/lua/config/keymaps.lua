@@ -116,6 +116,18 @@ M.harpoon = function()
 		harpoon:list():select(4)
 	end, { desc = "Harpoon File 4" })
 
+	vim_set("n", "<leader>hr2", function()
+		harpoon:list():removeAt(2)
+	end, { desc = "Remove Harpoon File 2" })
+
+	vim_set("n", "<leader>hr3", function()
+		harpoon:list():removeAt(3)
+	end, { desc = "Remove Harpoon File 3" })
+
+	vim_set("n", "<leader>hr4", function()
+		harpoon:list():removeAt(4)
+	end, { desc = "Remove Harpoon File 4" })
+
 	vim_set("n", "<leader>hp", function()
 		harpoon:list():prev()
 	end, { desc = "Harpoon Prev" })
