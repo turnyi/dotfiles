@@ -1,7 +1,6 @@
 local M = {}
 local opts = { noremap = true, silent = true }
 local diagnostic = require("vim.diagnostic")
-local harpoon = require("harpoon")
 
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local vim_set = vim.keymap.set
@@ -38,6 +37,8 @@ M.telescope = function()
 	nvim_set_keymap("n", "<leader>fd", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", opts)
 	nvim_set_keymap("n", "<leader>fb", ":Telescope buffers<CR>", opts)
 	nvim_set_keymap("n", "<leader>fs", ":Telescope live_grep_args<CR>", opts)
+	nvim_set_keymap("n", "<leader>mf", ":Telescope marks<CR>", opts)
+	nvim_set_keymap("n", "<leader>md", "<Cmd>delmarks A-Z0-9<CR>", opts)
 	nvim_set_keymap("n", "gd", "<cmd>Telescope lsp_definitions<CR>", { noremap = true, silent = true })
 	nvim_set_keymap("n", "ga", "<cmd>Telescope lsp_code_actions<CR>", { noremap = true, silent = true })
 	vim_set("n", "gld", function()
@@ -94,72 +95,6 @@ M.autocomplete = {
 	["<S-Tab>"] = cmp.mapping.select_prev_item(),
 }
 
-M.harpoon = function()
-	harpoon:setup()
-	vim_set("n", "<leader>ha", function()
-		harpoon:list():add()
-	end, { desc = "Harpoon Add File" })
-
-	vim_set("n", "<leader>h1", function()
-		harpoon:list():select(1)
-	end, { desc = "Harpoon File 1" })
-
-	vim_set("n", "<leader>h2", function()
-		harpoon:list():select(2)
-	end, { desc = "Harpoon File 2" })
-
-	vim_set("n", "<leader>h3", function()
-		harpoon:list():select(3)
-	end, { desc = "Harpoon File 3" })
-
-	vim_set("n", "<leader>h4", function()
-		harpoon:list():select(4)
-	end, { desc = "Harpoon File 4" })
-
-	vim_set("n", "<leader>hr2", function()
-		harpoon:list():removeAt(2)
-	end, { desc = "Remove Harpoon File 2" })
-
-	vim_set("n", "<leader>hr3", function()
-		harpoon:list():removeAt(3)
-	end, { desc = "Remove Harpoon File 3" })
-
-	vim_set("n", "<leader>hr4", function()
-		harpoon:list():removeAt(4)
-	end, { desc = "Remove Harpoon File 4" })
-
-	vim_set("n", "<leader>hp", function()
-		harpoon:list():prev()
-	end, { desc = "Harpoon Prev" })
-
-	vim_set("n", "<leader>hn", function()
-		harpoon:list():next()
-	end, { desc = "Harpoon Next" })
-
-	local conf = require("telescope.config").values
-	local function toggle_telescope(harpoon_files)
-		local file_paths = {}
-		for _, item in ipairs(harpoon_files.items) do
-			table.insert(file_paths, item.value)
-		end
-
-		require("telescope.pickers")
-			.new({}, {
-				prompt_title = "Harpoon",
-				finder = require("telescope.finders").new_table({
-					results = file_paths,
-				}),
-				previewer = conf.file_previewer({}),
-				sorter = conf.generic_sorter({}),
-			})
-			:find()
-	end
-
-	vim.keymap.set("n", "<leader>hh", function()
-		toggle_telescope(harpoon:list())
-	end, { desc = "Harpoon Telescope Picker" })
-end
-
 M.spell = function()
 	global.spelllang_toggle = { "en", "es" }
 	global.current_spelllang_index = 1
@@ -170,6 +105,16 @@ M.spell = function()
 		print("Spell language set to: " .. new_lang)
 	end
 	vim_set("n", "<leader>sl", ToggleSpellLang, { desc = "Toggle Spell Language (EN/ES)" })
+	local filename = vim.fn.expand("%:t")
+	if filename:match("^es%..*") then
+		vim.opt.spelllang = "es"
+		vim.g.current_spelllang_index = 2
+		print("Auto-detected Spanish file: Spell language set to ES")
+	else
+		vim.opt.spelllang = "en"
+		vim.g.current_spelllang_index = 1
+		print("Default spell language set to EN")
+	end
 end
 
 M.init = function()
@@ -179,6 +124,5 @@ M.init = function()
 	M.lspMappings()
 	M.spell()
 	M.troubleMappings()
-	M.harpoon()
 end
 return M

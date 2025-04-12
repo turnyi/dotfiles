@@ -132,7 +132,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-m = 'workspace M'
     alt-w = 'workspace W'
     alt-t = 'workspace T'
-    alt-n = 'workspace N'
+    alt-c = 'workspace C'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-1 = 'move-node-to-workspace 1'
@@ -140,7 +140,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-shift-m = 'move-node-to-workspace M'
     alt-shift-w = 'move-node-to-workspace W'
     alt-shift-t = 'move-node-to-workspace T'
-    alt-shift-n = 'move-node-to-workspace N'
+    alt-shift-c = 'move-node-to-workspace C'
 
     alt-shift-f = 'fullscreen'
 
@@ -185,8 +185,8 @@ if.app-id = 'com.google.Chrome.app.hnpfjngllnobngcgfapefoaidbinmjnm'
 run = "move-node-to-workspace W"
 
 [[on-window-detected]]
-if.app-id = 'com.google.Chrome.app.hnpfjngllnobngcgfapefoaidbinmjnm'
-run = "move-node-to-workspace W"
+if.app-id = 'com.google.Chrome'
+1un = "move-node-to-workspace B"
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
@@ -207,8 +207,9 @@ run = "move-node-to-workspace N"
 [mode.apps.binding]
     alt-t = ['exec-and-forget open -a /Applications/kitty.app', 'mode main']
     alt-s = ['exec-and-forget open -a /Applications/Slack.app','mode main']
-    alt-w = ['exec-and-forget open -a /Applications/WhatsApp.app','mode main']
-    alt-b = ['exec-and-forget open -a /Applications/Google\ Chrome.app','mode main']
+    alt-w = ['exec-and-forget open -a "/Users/martinradovitzky/Applications/Chrome Apps.localized/WhatsApp Web.app"','mode main']
+    alt-b = ['exec-and-forget open -n -a "Google Chrome" --args --profile-directory="Profile 1"','mode main']
+    alt-shift-b = ['exec-and-forget open -n -a "Google Chrome" --args --profile-directory="Profile 2"','mode main']
     alt-m = ['exec-and-forget open -a /Applications/Spotify.app','mode main']
 
     alt-shift-semicolon = 'mode service'
