@@ -43,7 +43,9 @@ default-root-container-orientation = 'auto'
 # See https://nikitabobko.github.io/AeroSpace/guide#on-focus-changed-callbacks
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
-on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+
+# on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-focus-changed = ['move-mouse window-lazy-center']
 
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
@@ -72,6 +74,15 @@ automatically-unhide-macos-hidden-apps = true
     outer.bottom =     10
     outer.top =        50
     outer.right =      10
+
+[workspace-to-monitor-force-assignment]
+  1 = 'primary'                            
+  T = 'primary'                            
+  B = 'primary'                            
+  N = 'primary'                            
+  M = 'secondary'                            
+  W = 'secondary'                            
+  S = 'secondary'                            
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -127,20 +138,22 @@ automatically-unhide-macos-hidden-apps = true
     alt-equal = 'resize smart +50'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-    alt-1 = 'workspace 1'
+    alt-t = 'workspace T'
+    alt-s = 'workspace S'
     alt-b = 'workspace B'
     alt-m = 'workspace M'
     alt-w = 'workspace W'
-    alt-t = 'workspace T'
-    alt-c = 'workspace C'
+    alt-d = 'workspace D'
+    alt-1 = 'workspace 1'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-    alt-shift-1 = 'move-node-to-workspace 1'
+    alt-shift-t = 'move-node-to-workspace T'
+    alt-shift-s = 'move-node-to-workspace S'
     alt-shift-b = 'move-node-to-workspace B'
     alt-shift-m = 'move-node-to-workspace M'
     alt-shift-w = 'move-node-to-workspace W'
-    alt-shift-t = 'move-node-to-workspace T'
-    alt-shift-c = 'move-node-to-workspace C'
+    alt-shift-d = 'move-node-to-workspace D'
+    alt-shift-1 = 'move-node-to-workspace 1'
 
     alt-shift-f = 'fullscreen'
 
@@ -186,11 +199,11 @@ run = "move-node-to-workspace W"
 
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
-1un = "move-node-to-workspace B"
+run = "move-node-to-workspace B"
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
-run = "move-node-to-workspace W"
+run = "move-node-to-workspace S"
 
 [[on-window-detected]]
 if.app-id = 'com.spotify.client'
@@ -204,6 +217,14 @@ run = 'layout floating'
 if.app-id = 'md.obsidian'
 run = "move-node-to-workspace N"
 
+[[on-window-detected]]
+if.app-id = 'com.hnc.Discord'
+run = "move-node-to-workspace D"
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome.app.picebhhlijnlefeleilfbanaghjlkkna'
+run = "move-node-to-workspace 1"
+
 [mode.apps.binding]
     alt-t = ['exec-and-forget open -a /Applications/kitty.app', 'mode main']
     alt-s = ['exec-and-forget open -a /Applications/Slack.app','mode main']
@@ -211,6 +232,8 @@ run = "move-node-to-workspace N"
     alt-b = ['exec-and-forget open -n -a "Google Chrome" --args --profile-directory="Profile 1"','mode main']
     alt-shift-b = ['exec-and-forget open -n -a "Google Chrome" --args --profile-directory="Profile 2"','mode main']
     alt-m = ['exec-and-forget open -a /Applications/Spotify.app','mode main']
+    alt-1 = ['exec-and-forget open -a "/Users/martinradovitzky/Applications/Chrome Apps.localized/Monkeytype.app"','mode main']
+    alt-d = ['exec-and-forget open -a /Applications/Discord.app','mode main']
 
     alt-shift-semicolon = 'mode service'
     alt-shift-o = 'mode main'
