@@ -145,6 +145,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-w = 'workspace W'
     alt-d = 'workspace D'
     alt-1 = 'workspace 1'
+    alt-z = 'workspace Z'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-t = 'move-node-to-workspace T'
@@ -154,6 +155,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-shift-w = 'move-node-to-workspace W'
     alt-shift-d = 'move-node-to-workspace D'
     alt-shift-1 = 'move-node-to-workspace 1'
+    alt-shift-z = 'move-node-to-workspace Z'
 
     alt-shift-f = 'fullscreen'
 
@@ -223,6 +225,10 @@ run = "move-node-to-workspace D"
 
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome.app.picebhhlijnlefeleilfbanaghjlkkna'
+run = "move-node-to-workspace 1"
+
+[[on-window-detected]]
+if.app-id = 'io.zsa.keymapp'
 run = "move-node-to-workspace 1"
 
 [mode.apps.binding]
