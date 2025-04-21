@@ -12,6 +12,7 @@ sudo stow -t ~ home
 rm ~/.config/nvim ~/.config/gh ~/.config/tmuxinator
 mkdir -p .config && cd .config
 mkdir -p ~/.config/nvim && stow -t ~/.config/nvim nvim
+mkdir -p ~/.config/svim && stow -t ~/.config/svim svim
 mkdir -p ~/.config/gh && stow -t ~/.config/gh gh
 mkdir -p ~/.config/tmuxinator && stow -t ~/.config/tmuxinator tmuxinator
 mkdir -p .config && cd .config && mkdir -p ~/.config/sketchybar && stow -t ~/.config/sketchybar sketchybar
