@@ -106,6 +106,7 @@ export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 export PATH="/opt/homebrew/bin:$PATH"
+export FZF_BASE=$HOME/.fzf
 if type brew &>/dev/null
 then
   HOMEBREW_PREFIX="$(brew --prefix)"
