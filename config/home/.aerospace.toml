@@ -200,7 +200,7 @@ if.app-id = 'com.google.Chrome.app.hnpfjngllnobngcgfapefoaidbinmjnm'
 run = "move-node-to-workspace W"
 
 [[on-window-detected]]
-if.app-id = 'company.thebrowser.Browser'
+if.app-id = 'app.zen-browser.zen'
 run = "move-node-to-workspace B"
 
 [[on-window-detected]]
@@ -239,7 +239,7 @@ run = "move-node-to-workspace 1"
     alt-t = ['exec-and-forget open -a /Applications/kitty.app', 'mode main']
     alt-s = ['exec-and-forget open -a /Applications/Slack.app','mode main']
     alt-w = ['exec-and-forget open -a "/Users/martinradovitzky/Applications/Chrome Apps.localized/WhatsApp Web.app"','mode main']
-    alt-b = ['exec-and-forget open -a "Arc"', 'mode main']
+    alt-b = ['exec-and-forget open -a "zen"', 'mode main']
     alt-m = ['exec-and-forget open -a /Applications/Spotify.app','mode main']
     alt-1 = ['exec-and-forget open -a "/Users/martinradovitzky/Applications/Chrome Apps.localized/Monkeytype.app"','mode main']
     alt-d = ['exec-and-forget open -a /Applications/Discord.app','mode main']

@@ -32,7 +32,6 @@ alias reload="source $HOME/.zshrc"
 alias ..='cd ..'
 alias la='ls -la'
 alias mkdir='mkdir -p'
-alias cd='z'
 
 # Git
 alias gs='git status'

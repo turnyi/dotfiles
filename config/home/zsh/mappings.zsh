@@ -9,6 +9,7 @@ bindkey '^ ' autosuggest-accept
 # # =============
 bindkey -s '^b' 'tls^M'
 bindkey -s '^p' 'tmuxinator-list.sh^M'
+bindkey -s '^f' 'tmux-sessionizer.sh^M'
 bindkey -s '^n' 'tns^M'
 bindkey -s '^e' 'hexec.sh^M'
 bindkey -s '^h' 'history.sh^M'
