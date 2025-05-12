@@ -1,141 +1,138 @@
 * {
-  font-size: 9px;
-  font-family: "CodeNewRoman Nerd Font Propo";
-}
-
-window#waybar {
-  all: unset;
+  font-family: JetbrainsMono Nerd Font;
+  font-size: 20px;
   min-height: 0;
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-bottom: 0px;
 }
 
-.modules-left,
-.modules-center,
-.modules-right {
-  padding: 2px 4px;
-  margin: 0 0 0 4px;
-  border-radius: 6px;
-  background: alpha(@background, .6);
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, .4);
-}
-
-.modules-center {
-  margin: 0;
-}
-
-.modules-right {
-  margin: 0 4px 0 0;
-}
-
-tooltip {
-  background: @background;
-  color: @color7;
-}
-
-#clock,
-#custom-pacman,
-#custom-notification,
-#bluetooth,
-#network,
-#battery,
-#cpu,
-#memory,
-#temperature,
-#group-expand,
-#custom-expand,
-#custom-colorpicker,
-#tray {
-  padding: 0 4px;
-  transition: all .3s ease;
-  color: @color7;
-}
-
-#custom-notification:hover,
-#clock:hover,
-#custom-pacman:hover,
-#bluetooth:hover,
-#network:hover,
-#battery:hover,
-#cpu:hover,
-#memory:hover,
-#temperature:hover {
-  color: @color9;
+#waybar {
+  background: transparent;
+  color: #c6d0f5;
+  margin: 2px 2px;
 }
 
 #workspaces {
-  padding: 0 4px;
+  border-radius: 5px;
+  margin: 5px;
+  background: #101010;
+  margin-left: 1rem;
 }
 
 #workspaces button {
-  all: unset;
-  padding: 0 4px;
-  color: alpha(@color9, .4);
-  transition: all .2s ease;
-}
-
-#workspaces button:hover {
-  color: rgba(0, 0, 0, 0);
-  text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
-  transition: all 1s ease;
+  color: #babbf1;
+  border-radius: 5px;
+  padding: 0.4rem;
 }
 
 #workspaces button.active {
-  color: @color9;
-  text-shadow: 0px 0px 2px rgba(0, 0, 0, .5);
+  color: #99d1db;
+  border-radius: 5px;
 }
 
-#workspaces button.empty {
-  color: rgba(0, 0, 0, 0);
-  text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .2);
+#workspaces button:hover {
+  color: #85c1dc;
+  border-radius: 5px;
 }
 
-#workspaces button.empty:hover {
-  text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
-  transition: all 1s ease;
+#custom-music,
+#tray,
+#backlight,
+#clock,
+#battery,
+#pulseaudio,
+#network,
+#cpu,
+#memory,
+#custom-lock,
+#custom-power {
+  background-color: #101010;
+  padding: 0.5rem 1rem;
+  margin: 5px 0;
+  margin-left: 1rem;
+  border-radius: 5px;
 }
 
-#workspaces button.empty.active {
-  color: @color9;
-  text-shadow: 0px 0px 2px rgba(0, 0, 0, .5);
+#custom-stream_status {
+  background-color: #101010;
+  padding: 0.5rem 1rem;
+  margin: 5px 0;
+  border-radius: 0px 5px 5px 0px;
+}
+
+#custom-stream_status.up {
+  color: #c3e88d;
+}
+
+#custom-stream_status.warning {
+  color: #ff9e64;
+}
+
+#custom-stream_status.down {
+  color: #ea999c;
+}
+
+#memory {
+  border-radius: 0px 5px 5px 0px;
+}
+
+#clock {
+  color: #8caaee;
+  border-radius: 5px;
+  margin-right: 1rem;
+}
+
+#battery {
+  color: #a6d189;
 }
 
 #battery.charging {
-  color: #26A65B;
+  color: #a6d189;
 }
 
 #battery.warning:not(.charging) {
-  color: #ffbe61;
+  color: #e78284;
 }
 
-#battery.critical:not(.charging) {
-  color: #f53c3c;
-  animation-name: blink;
-  animation-duration: 0.5s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
+#backlight {
+  color: #e5c890;
 }
 
-#custom-expand {
-  color: alpha(@foreground, .2);
-  text-shadow: 0px 0px 2px rgba(0, 0, 0, .7);
+#backlight,
+#battery {
+  border-radius: 0;
 }
 
-#custom-expand:hover {
-  color: rgba(255, 255, 255, .2);
-  text-shadow: 0px 0px 2px rgba(255, 255, 255, .5);
+#pulseaudio {
+  color: #ea999c;
+  border-radius: 5px 0px 0px 5%;
 }
 
-#custom-endpoint {
-  color: transparent;
-  text-shadow: 0px 0px 1.5px rgba(0, 0, 0, 1);
+#custom-music {
+  color: #ca9ee6;
+  border-radius: 5px;
 }
 
-#tray menu * {
-  padding: 0 4px;
-  transition: all .3s ease;
+#custom-lock {
+  border-radius: 5px 0px 0px 5px;
+  color: #babbf1;
 }
 
-#tray menu separator {
-  padding: 0 4px;
-  transition: all .3s ease;
+#custom-power {
+  margin-right: 1rem;
+  border-radius: 0px 5px 5px 0px;
+  color: #e78284;
+}
+
+#tray {
+  margin-right: 1rem;
+  margin-left: 1rem;
+  border-radius: 5px;
+}
+
+#custom-pad5120 {
+  /* 5120 / 2 / 4 = 640 */
+  padding-left: 700;
+  padding-right: 700;
 }
