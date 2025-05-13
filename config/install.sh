@@ -15,8 +15,8 @@
 # mkdir -p ~/.config/svim && stow -t ~/.config/svim svim
 cd .config
 # mkdir -p ~/.config/rofi && stow -t ~/.config/rofi rofi
-mkdir -p ~/.config/hypr && stow -t ~/.config/hypr hypr
-# mkdir -p ~/.config/waybar && stow -t ~/.config/waybar waybar
+# mkdir -p ~/.config/hypr && stow -t ~/.config/hypr hypr
+mkdir -p ~/.config/waybar && stow -t ~/.config/waybar waybar
 # mkdir -p ~/.config/gh && stow -t ~/.config/gh gh
 # mkdir -p ~/.config/tmuxinator && stow -t ~/.config/tmuxinator tmuxinator
 # mkdir -p ~/.config/kitty && stow -t ~/.config/kitty kitty
