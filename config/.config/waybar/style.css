@@ -58,7 +58,7 @@
   background-color: #101010;
   padding: 0.5rem 1rem;
   margin: 5px 0;
-  border-radius: 0px 5px 5px 0px;
+  border-radius: 5px;
 }
 
 #custom-stream_status.up {
@@ -74,7 +74,7 @@
 }
 
 #memory {
-  border-radius: 0px 5px 5px 0px;
+  border-radius: 5px;
 }
 
 #clock {
@@ -101,12 +101,12 @@
 
 #backlight,
 #battery {
-  border-radius: 0;
+  border-radius: 5px;
 }
 
 #pulseaudio {
   color: #ea999c;
-  border-radius: 5px 0px 0px 5%;
+  border-radius: 5px;
 }
 
 #custom-music {
@@ -115,13 +115,13 @@
 }
 
 #custom-lock {
-  border-radius: 5px 0px 0px 5px;
+  border-radius: 5px;
   color: #babbf1;
 }
 
 #custom-power {
   margin-right: 1rem;
-  border-radius: 0px 5px 5px 0px;
+  border-radius: 5px;
   color: #e78284;
 }
 
