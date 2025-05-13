@@ -19,7 +19,7 @@ if [ -n "$WINDOW_ID" ]; then
 fi
 
 # Buscar .desktop file que contenga el nombre
-DESKTOP_PATH=$(grep -ril --include="*.desktop" "Name=WhatsApp Web" ~/.local/share/applications /usr/share/applications)
+DESKTOP_PATH=$(grep -ril --include="*.desktop" "Name=$QUERY" ~/.local/share/applications /usr/share/applications)
 
 if [ -z "$DESKTOP_PATH" ]; then
   echo "No matching .desktop file found for '$QUERY'"
