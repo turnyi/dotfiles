@@ -11,6 +11,7 @@
     "pulseaudio",
     "battery",
     "network",
+    "custom/bluetooth",
     "cpu",
     "memory",
     "tray",
@@ -76,5 +77,11 @@
 		"hide-empty-text": true,
 		"exec": "/bin/bash -c \"(hyprctl monitors -j | jq -r '.[] | select(.width == 5120) | .name') && echo -n ​\""
 	},
+  "custom/bluetooth": {
+    "format": "", 
+    "tooltip": false,
+    "on-click": "bash ~/.config/rofi/rofi-bluetooth.sh",
+    "interval": 10
+  }
 
 }
