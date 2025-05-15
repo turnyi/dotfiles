@@ -1,8 +1,0 @@
-- name: Include a play after another play
-  import_playbook: dev-env/dev-env.yml
-
-- name: Install Main Apps
-  import_playbook: generic-apps/install-apps.yml
-
-- name: Install Hack font
-  import_playbook: ../generic/hack-font-install.yml
