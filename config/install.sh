@@ -8,60 +8,55 @@ CONFIG_DIR="$HOME/.config"
 
 echo "🔧 Starting dotfiles setup..."
 
-echo -e "\n📁 Processing .config directories:"
-CONFIGS=($(find "$CONFIG_PATH" -mindepth 1 -maxdepth 1 -type d | sed "s|^$CONFIG_PATH/||"))
+process_directories() {
+  local source_path="$1"
+  local target_base="$2"
+  local label="$3"
 
-cd "$CONFIG_PATH"
-for dir in "${CONFIGS[@]}"; do
-  targetDir="$CONFIG_DIR/$dir"
-  echo "  ➤ 🧹 Removing existing directory: $targetDir"
-  rm -rf "$targetDir"
+  echo -e "\n📁 Processing $label directories:"
+  local dirs=($(find "$source_path" -mindepth 1 -maxdepth 1 -type d | sed "s|^$source_path/||"))
 
-  echo "  ➤ 🔗 Stowing directory: $dir → $targetDir"
-  mkdir -p "$targetDir"
-  stow -t "$targetDir" "$dir"
-done
+  cd "$source_path"
+  for dir in "${dirs[@]}"; do
+    local target_dir="$target_base/$dir"
+    echo "  ➤ 🧹 Removing existing directory: $target_dir"
+    rm -rf "$target_dir"
 
-echo -e "\n📄 Processing individual files in .config:"
-FILES=($(find "$CONFIG_PATH" -mindepth 1 -maxdepth 1 -type f ! -name '.DS_Store' | sed "s|^$CONFIG_PATH/||"))
+    echo "  ➤ 🔗 Stowing directory: $dir → $target_dir"
+    mkdir -p "$target_dir"
+    stow -t "$target_dir" "$dir"
+  done
+}
 
-for file in "${FILES[@]}"; do
-  sourceFile="$CONFIG_PATH/$file"
-  targetFile="$CONFIG_DIR/$file"
-  echo "  ➤ 🧹 Removing existing file: $targetFile"
-  rm -f "$targetFile"
+process_files() {
+  local source_path="$1"
+  local target_base="$2"
+  local label="$3"
 
-  echo "  ➤ 🔗 Symlinking file: $sourceFile → $targetFile"
-  ln -s "$sourceFile" "$targetFile"
-done
+  echo -e "\n📄 Processing $label files:"
+  local files=($(find "$source_path" -mindepth 1 -maxdepth 1 -type f ! -name '.DS_Store' | sed "s|^$source_path/||"))
 
-cd "$DOTFILES_DIR"
+  for file in "${files[@]}"; do
+    local source_file="$source_path/$file"
+    local target_file="$target_base/$file"
+    echo "  ➤ 🧹 Removing existing file: $target_file"
+    rm -f "$target_file"
 
-echo -e "\n🏠 Processing HOME directories:"
+    echo "  ➤ 🔗 Symlinking file: $source_file → $target_file"
+    ln -s "$source_file" "$target_file"
+  done
+}
 
-HOME_DIRS=($(find "$HOME_SOURCE" -mindepth 1 -maxdepth 1 -type d | sed "s|^$HOME_SOURCE/||"))
+process_path() {
+  local source_path="$1"
+  local target_path="$2"
+  local label="$3"
 
-cd "$HOME_SOURCE"
-for dir in "${HOME_DIRS[@]}"; do
-  targetDir="$HOME/$dir"
-  echo "  ➤ 🧹 Removing existing HOME directory: $targetDir"
-  rm -rf "$targetDir"
+  process_directories "$source_path" "$target_path" "$label"
+  process_files "$source_path" "$target_path" "$label"
+}
 
-  echo "  ➤ 🔗 Stowing HOME directory: $dir → $targetDir"
-  mkdir -p "$targetDir"
-  stow -t "$targetDir" "$dir"
-done
+process_path "$CONFIG_PATH" "$CONFIG_DIR" ".config"
+process_path "$HOME_SOURCE" "$HOME" "HOME"
 
 echo -e "\n✅ Dotfiles setup completed successfully."
-
-FILES=($(find "$HOME_SOURCE" -mindepth 1 -maxdepth 1 -type f ! -name '.DS_Store' | sed "s|^$HOME_SOURCE/||"))
-
-for file in "${FILES[@]}"; do
-  sourceFile="$HOME_SOURCE/$file"
-  targetFile="$HOME/$file"
-  echo "  ➤ 🧹 Removing existing file: $targetFile"
-  rm -f "$targetFile"
-
-  echo "  ➤ 🔗 Symlinking file: $sourceFile → $targetFile"
-  ln -s "$sourceFile" "$targetFile"
-done
