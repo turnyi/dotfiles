@@ -57,8 +57,8 @@ process_path() {
   process_files "$source_path" "$target_path" "$label"
 }
 
-# process_path "$CONFIG_PATH" "$CONFIG_DIR" ".config"
-# process_path "$HOME_SOURCE" "$HOME" "HOME"
+process_path "$CONFIG_PATH" "$CONFIG_DIR" ".config"
+process_path "$HOME_SOURCE" "$HOME" "HOME"
 
 if grep -qi "arch" /etc/os-release; then
   echo "🟢 Running on Arch Linux"
