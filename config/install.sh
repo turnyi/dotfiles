@@ -59,4 +59,8 @@ process_path() {
 process_path "$CONFIG_PATH" "$CONFIG_DIR" ".config"
 process_path "$HOME_SOURCE" "$HOME" "HOME"
 
+if grep -qi "arch" /etc/os-release; then
+  echo "🟢 Running on Arch Linux"
+fi
+
 echo -e "\n✅ Dotfiles setup completed successfully."
