@@ -1,45 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-# Where to store the hook
-HOOK_PATH="/etc/pacman.d/hooks/save-packages.hook"
-SCRIPT_PATH="/usr/local/bin/save-installed-packages"
+echo "🔧 Installing pacman hook and save script..."
 
-echo "🔧 Setting up pacman hook to auto-save package lists..."
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Create the update script
-sudo tee "$SCRIPT_PATH" >/dev/null <<'EOF'
-#!/usr/bin/env bash
+sudo mkdir -p /etc/pacman.d/hooks
+sudo ln -sf "$SCRIPT_DIR/hooks/pacman/save-packages.hook" /etc/pacman.d/hooks/save-packages.hook
 
-# Save package lists to user's dotfiles
-USER_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
-DOTFILES="$USER_HOME/Projects/dotfiles/packages"
+sudo install -Dm755 "$SCRIPT_DIR/hooks/pacman/save-packages.sh" /usr/local/bin/save-installed-packages
 
-mkdir -p "$DOTFILES"
-
-# Save explicitly installed packages (non-AUR)
-comm -23 <(pacman -Qq | sort) <(pacman -Qqm | sort) > "$DOTFILES/pacman-packages.txt"
-
-# Save AUR packages
-pacman -Qmq > "$DOTFILES/yay-packages.txt"
-EOF
-
-# Make the script executable
-sudo chmod +x "$SCRIPT_PATH"
-
-# Create the pacman hook
-sudo tee "$HOOK_PATH" >/dev/null <<EOF
-[Trigger]
-Operation = Install
-Operation = Upgrade
-Operation = Remove
-Type = Package
-Target = *
-
-[Action]
-Description = Saving installed packages to dotfiles...
-When = PostTransaction
-Exec = $SCRIPT_PATH
-EOF
-
-echo "✅ Hook installed at $HOOK_PATH"
+echo "✅ Pacman hook and save-packages script installed."

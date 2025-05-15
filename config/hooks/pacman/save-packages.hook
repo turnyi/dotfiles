@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Install
+Operation = Remove
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Save installed packages to dotfiles...
+When = PostTransaction
+Exec = /usr/local/bin/save-packages.sh
