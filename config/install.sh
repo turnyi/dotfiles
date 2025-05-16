@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+PATTERN="$1"
 DOTFILES_DIR=~/Projects/dotfiles
 CONFIG_PATH="$DOTFILES_DIR/config/.config"
 HOME_SOURCE="$DOTFILES_DIR/config/home"
@@ -16,6 +17,9 @@ process_directories() {
 
   echo -e "\n📁 Processing $label directories:"
   local dirs=($(find "$source_path" -mindepth 1 -maxdepth 1 -type d | sed "s|^$source_path/||"))
+  if [[ -n "$PATTERN" ]]; then
+    dirs=($(printf "%s\n" "${dirs[@]}" | grep -E "^$PATTERN$"))
+  fi
 
   cd "$source_path"
   for dir in "${dirs[@]}"; do
@@ -36,7 +40,9 @@ process_files() {
 
   echo -e "\n📄 Processing $label files:"
   local files=($(find "$source_path" -mindepth 1 -maxdepth 1 -type f ! -name '.DS_Store' | sed "s|^$source_path/||"))
-
+  if [[ -n "$PATTERN" ]]; then
+    files=($(printf "%s\n" "${files[@]}" | grep -E "^$PATTERN$"))
+  fi
   for file in "${files[@]}"; do
     local source_file="$source_path/$file"
     local target_file="$target_base/$file"

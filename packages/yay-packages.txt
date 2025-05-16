@@ -6,6 +6,7 @@ i3lock-color
 i3lock-color-debug
 ruby-xdg
 tmuxinator
+ulauncher
 yay
 yay-debug
 zen-browser-bin
