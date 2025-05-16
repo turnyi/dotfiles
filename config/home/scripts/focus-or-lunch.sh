@@ -11,7 +11,8 @@ fi
 LOWER_QUERY=$(echo "$QUERY" | tr '[:upper:]' '[:lower:]')
 
 # Buscar ventana cuyo title contenga el término (case-insensitive)
-WINDOW_ID=$(hyprctl clients -j | jq -r --arg q "$LOWER_QUERY" '.[] | select(.title | ascii_downcase | contains($q)) | .address' | head -n 1)
+WINDOW_ID=$(hyprctl clients -j | jq -r --arg q "$LOWER_QUERY" \
+  '.[] | select((.title // "" | ascii_downcase | contains($q)) or (.class // "" | ascii_downcase | contains($q))) | .address' | head -n 1)
 
 if [ -n "$WINDOW_ID" ]; then
   hyprctl dispatch focuswindow address:$WINDOW_ID

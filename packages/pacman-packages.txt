@@ -95,6 +95,7 @@ dolphin
 double-conversion
 drkonqi
 duktape
+dunst
 e2fsprogs
 ebook-tools
 editorconfig-core-c
@@ -186,6 +187,7 @@ gsettings-desktop-schemas
 gsettings-system-schemas
 gsm
 gssdp
+gst-plugin-pipewire
 gst-plugins-bad-libs
 gst-plugins-base
 gst-plugins-base-libs
@@ -280,6 +282,7 @@ kdesu
 kdnssd
 kdsoap-qt6
 kdsoap-ws-discovery-client
+keyd
 keyutils
 kfilemetadata
 kgamma
@@ -533,6 +536,7 @@ libutf8proc
 libuv
 libva
 libva-intel-driver
+libva-utils
 libvdpau
 libverto
 libvorbis
@@ -646,6 +650,7 @@ nss
 nvidia-dkms
 nvidia-settings
 nvidia-utils
+nwg-look
 ocean-sound-theme
 ocl-icd
 onetbb
@@ -830,6 +835,7 @@ smbclient
 snappy
 sndio
 socat
+sof-firmware
 solid
 sonnet
 sord
@@ -877,6 +883,7 @@ tree-sitter-vimdoc
 tslib
 ttf-font-awesome
 ttf-hack
+ttf-jetbrains-mono-nerd
 ttf-liberation
 tzdata
 uchardet
@@ -932,6 +939,7 @@ xcb-util-renderutil
 xcb-util-wm
 xcb-util-xrm
 xclip
+xcur2png
 xdg-dbus-proxy
 xdg-desktop-portal
 xdg-desktop-portal-gnome
@@ -945,6 +953,7 @@ xf86-input-libinput
 xf86-input-wacom
 xf86-video-amdgpu
 xf86-video-ati
+xf86-video-nouveau
 xf86-video-vmware
 xkeyboard-config
 xorg-fonts-encodings
@@ -975,6 +984,7 @@ zimg
 zip
 zix
 zlib
+zlib-ng
 zoxide
 zram-generator
 zsh
