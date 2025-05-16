@@ -1,8 +1,6 @@
 @define-color foreground rgba(255, 255, 255, 0.85);
 @define-color background rgba(30, 30, 30, 0.7);
-/* <-- Gray with 40% opacity */
 @define-color selection rgba(124, 104, 255, 0.2);
-/* a soft teal glow */
 
 #window,
 #box,
