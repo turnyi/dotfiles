@@ -11,8 +11,7 @@
   background: transparent;
   color: #c6d0f5;
   margin: 2px 2px;
-  background-color: rgba(30, 30, 46, 0.4);
-  border-radius: 10px;
+  background-color: rgba(30, 30, 46, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -133,7 +132,7 @@
 }
 
 #custom-pad5120 {
-  /* 5120 / 2 / 4 = 640 */
+  color: rgba(30, 30, 46, 0.4);
   padding-left: 700;
   padding-right: 700;
 }
