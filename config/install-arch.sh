@@ -29,4 +29,32 @@ if command -v keyd &>/dev/null; then
   sudo systemctl enable --now keyd
 fi
 
+# Check and enable NetworkManager
+if systemctl list-unit-files | grep -q '^NetworkManager.service'; then
+  echo "🔍 NetworkManager is installed."
+
+  if ! systemctl is-enabled --quiet NetworkManager; then
+    echo "⚙️ Enabling and starting NetworkManager..."
+    sudo systemctl enable --now NetworkManager
+  else
+    echo "✅ NetworkManager is already enabled."
+  fi
+else
+  echo "❌ NetworkManager is not installed."
+fi
+
+# Check and enable bluetooth
+if systemctl list-unit-files | grep -q '^bluetooth.service'; then
+  echo "🔍 Bluetooth service is installed."
+
+  if ! systemctl is-enabled --quiet bluetooth; then
+    echo "⚙️ Enabling and starting Bluetooth..."
+    sudo systemctl enable --now bluetooth
+  else
+    echo "✅ Bluetooth is already enabled."
+  fi
+else
+  echo "❌ Bluetooth service is not installed."
+fi
+
 echo "✅ System-wide and user dotfiles installed successfully."
