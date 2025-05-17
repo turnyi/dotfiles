@@ -106,3 +106,7 @@ alias docker-off='sudo systemctl disable --now docker'
 alias docker-start='sudo systemctl start docker'
 alias docker-stop='sudo systemctl stop docker'
 alias docker-status='systemctl status docker'
+
+# sync 
+alias arch-sync='bash ~/Projects/dotfiles/setup-arch.sh --sync'
+alias arch-clean-setup='bash ~/Projects/dotfiles/setup-arch.sh'

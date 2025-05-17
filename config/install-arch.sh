@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-# PATTERN="$1"
-#
-# echo "🔧 Installing system-wide and user-specific configurations..."
-#
+PATTERN="$1"
+echo "🔧 Installing system-wide and user-specific configurations..."
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 UTILS_FILE="$SCRIPT_DIR/utils.sh"
 

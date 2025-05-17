@@ -3,6 +3,12 @@ set -e
 
 echo "🏗️ Installing Arch Linux packages..."
 
+SYNC_ONLY=false
+if [[ "$1" == "--sync" ]]; then
+  SYNC_ONLY=true
+  echo "🔁 Sync-only mode enabled — skipping post-install script."
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACMAN_FILE="$SCRIPT_DIR/packages/pacman-packages.txt"
 YAY_FILE="$SCRIPT_DIR/packages/yay-packages.txt"
@@ -29,13 +35,16 @@ else
   echo "⚠️  No yay package list found at $YAY_FILE"
 fi
 
-POST_INSTALL="$SCRIPT_DIR/config/install.sh"
+if [[ "$SYNC_ONLY" = false ]]; then
+  echo "✅ Arch setup complete."
+  exit 0
+fi
 
+POST_INSTALL="$SCRIPT_DIR/config/install.sh"
 if [[ -f "$POST_INSTALL" ]]; then
   echo "🚀 Running $POST_INSTALL..."
   bash "$POST_INSTALL"
 else
   echo "⚠️  No post-install script found at $POST_INSTALL"
 fi
-
 echo "✅ Arch setup complete."
