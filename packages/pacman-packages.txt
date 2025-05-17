@@ -47,7 +47,6 @@ boost-libs
 breeze
 breeze-gtk
 breeze-icons
-brightnessctl
 brotli
 bubblewrap
 bzip2
@@ -88,6 +87,7 @@ default-cursors
 desktop-file-utils
 device-mapper
 diffutils
+discord
 discount
 discover
 dkms
@@ -98,7 +98,6 @@ dolphin
 double-conversion
 drkonqi
 duktape
-dunst
 e2fsprogs
 ebook-tools
 editorconfig-core-c
@@ -190,7 +189,6 @@ gsettings-desktop-schemas
 gsettings-system-schemas
 gsm
 gssdp
-gst-plugin-pipewire
 gst-plugins-bad-libs
 gst-plugins-base
 gst-plugins-base-libs
@@ -286,7 +284,6 @@ kdesu
 kdnssd
 kdsoap-qt6
 kdsoap-ws-discovery-client
-keyd
 keyutils
 kfilemetadata
 kgamma
@@ -442,7 +439,6 @@ libisl
 libjpeg-turbo
 libjxl
 libkexiv2
-libkeybinder3
 libksba
 libkscreen
 libksysguard
@@ -518,7 +514,6 @@ libsixel
 libsm
 libsndfile
 libsodium
-libsoup
 libsoup3
 libsoxr
 libspng
@@ -545,7 +540,6 @@ libutf8proc
 libuv
 libva
 libva-intel-driver
-libva-utils
 libvdpau
 libverto
 libvips
@@ -756,22 +750,16 @@ python-cairo
 python-certifi
 python-cffi
 python-cryptography
-python-dbus
 python-filelock
 python-gobject
-python-levenshtein
 python-packaging
 python-pip
 python-psutil
 python-pycparser
 python-pygdbmi
-python-pyinotify
 python-pywal
-python-pyxdg
-python-rapidfuzz
 python-sentry_sdk
 python-urllib3
-python-websocket-client
 python-wheel
 qca-qt6
 qcoro
@@ -852,7 +840,6 @@ smbclient
 snappy
 sndio
 socat
-sof-firmware
 solid
 sonnet
 sord
@@ -902,6 +889,8 @@ ttf-font-awesome
 ttf-hack
 ttf-jetbrains-mono-nerd
 ttf-liberation
+ttf-nerd-fonts-symbols
+ttf-nerd-fonts-symbols-common
 tzdata
 uchardet
 udisks2
@@ -933,7 +922,6 @@ waybar
 wayland
 wayland-protocols
 wayland-utils
-webkit2gtk
 webkitgtk-6.0
 webrtc-audio-processing-1
 wget
@@ -941,7 +929,6 @@ which
 wireless_tools
 wireplumber
 wl-clipboard
-wmctrl
 woff2
 wofi
 wpa_supplicant
@@ -972,7 +959,6 @@ xf86-input-libinput
 xf86-input-wacom
 xf86-video-amdgpu
 xf86-video-ati
-xf86-video-nouveau
 xf86-video-vmware
 xkeyboard-config
 xorg-fonts-encodings
