@@ -10,6 +10,7 @@ iwmenu
 iwmenu-debug
 ruby-xdg
 tmuxinator
+ulauncher
 walker-bin
 walker-bin-debug
 yay

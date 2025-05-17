@@ -1,25 +1,32 @@
 #!/usr/bin/env bash
 set -e
 
-echo "🔧 Installing pacman hook and save script..."
-
+# PATTERN="$1"
+#
+# echo "🔧 Installing system-wide and user-specific configurations..."
+#
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+UTILS_FILE="$SCRIPT_DIR/utils.sh"
 
-sudo mkdir -p /etc/pacman.d/hooks
-sudo ln -sf "$SCRIPT_DIR/hooks/pacman/save-packages.hook" /etc/pacman.d/hooks/save-packages.hook
+echo $UTILS_FILE
+source "$UTILS_FILE"
+#
+ETC_SOURCE="$SCRIPT_DIR/etc"
+LOCAL_SHARE_SOURCE="$SCRIPT_DIR/.local/share"
 
-sudo install -Dm755 "$SCRIPT_DIR/hooks/pacman/save-packages.sh" /usr/local/bin/save-packages.sh
+echo "📁 Stowing system configurations..."
+process_path "$ETC_SOURCE/keyd" "/etc/keyd" "keyd"
+process_path "$ETC_SOURCE/pacman.d/hooks" "/etc/pacman.d/hooks" "pacman hooks"
 
-echo "✅ Pacman hook and save-packages script installed."
+# Process user-specific launchers
+echo "🎯 Stowing application launchers to ~/.local/share/applications..."
+mkdir -p "$HOME/.local/share/applications"
+process_path "$LOCAL_SHARE_SOURCE/applications" "$HOME/.local/share/applications" "user applications"
 
-ETC_DIR="$SCRIPT_DIR/etc"
-
-if [[ -d "$ETC_DIR/keyd" ]]; then
-  echo "🔑 Stowing keyd config into /etc/keyd..."
-  sudo mkdir -p /etc/keyd
-  cd "$ETC_DIR"
-  sudo stow --target=/etc/keyd keyd
+# Enable keyd if present
+if command -v keyd &>/dev/null; then
+  echo "🔑 Enabling keyd service..."
   sudo systemctl enable --now keyd
-else
-  echo "⚠️  No keyd directory found at $ETC_DIR/keyd"
 fi
+
+echo "✅ System-wide and user dotfiles installed successfully."
