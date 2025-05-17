@@ -61,13 +61,15 @@
     "format": "  {used:0.1f}G/{total:0.1f}G"
   },
   "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-muted": "",
+    "format": "{icon} {volume}% {format_source}",
+    "format-muted": " {format_source}",
+    "format-source": "",
+    "format-source-muted": "",
     "format-icons": {
       "default": [
-        "",
-        "",
-        " "
+        "", // very low
+        "", // medium
+        "" // high
       ]
     },
     "on-click": "pavucontrol"

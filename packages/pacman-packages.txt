@@ -47,6 +47,7 @@ boost-libs
 breeze
 breeze-gtk
 breeze-icons
+brightnessctl
 brotli
 bubblewrap
 bzip2
