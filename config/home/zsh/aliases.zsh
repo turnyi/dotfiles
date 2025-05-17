@@ -19,8 +19,6 @@ alias rm='rm -i'
 # Kitty alias
 alias kitty="/Applications/kitty.app/Contents/MacOS/kitty"
 
-# }}}
-# {{{ *** *** Aliases *** ***
 
 # ZSH
 alias ls="ls -al"
@@ -51,8 +49,6 @@ alias ghi='git hist'
 alias gho='$(git remote -v | grep github | sed -e "s/.*git\:\/\/\([a-z]\.\)*/\1/" -e "s/\.git$//g" -e "s/.*@\(.*\)$/\1/g" | tr ":" "/" | tr -d "\011" | sed -e "s/^/open http:\/\//g")'
 alias gl='git pull'
 alias glr='git pull --rebase'
-alias glu='git config user.name "Stefan Imhoff" && git config user.email "stefan@imhoff.name";'
-alias glx='git config user.name "Stefan Imhoff" && git config user.email "stefan.imhoff@xing.com";'
 alias gmb='git merge-base master HEAD'
 alias gp='git push'
 alias gpf='git push --force-with-lease'
@@ -103,3 +99,10 @@ alias ubudev="ssh liveofit@triactivesoft.com -p 2712"
 
 # files
 alias pcat="bat"
+
+# docker
+alias docker-on='sudo systemctl enable --now docker'
+alias docker-off='sudo systemctl disable --now docker'
+alias docker-start='sudo systemctl start docker'
+alias docker-stop='sudo systemctl stop docker'
+alias docker-status='systemctl status docker'
