@@ -1,0 +1,9 @@
+[general]
+style = "style.css"        # Style file name (optional)
+
+[ui]
+fullscreen = false
+ignore_exclusive = true
+
+[modules]
+dmenu = true
