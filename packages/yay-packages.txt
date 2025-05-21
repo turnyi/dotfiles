@@ -8,8 +8,11 @@ i3lock-color
 i3lock-color-debug
 iwmenu
 iwmenu-debug
+ride-bin-debug
+rider
 ruby-xdg
 tmuxinator
+ulauncher
 walker-bin
 walker-bin-debug
 yay
