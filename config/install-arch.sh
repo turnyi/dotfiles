@@ -15,6 +15,7 @@ LOCAL_SHARE_SOURCE="$SCRIPT_DIR/.local/share"
 
 echo "📁 Stowing system configurations..."
 process_path "$ETC_SOURCE/keyd" "/etc/keyd" "keyd"
+process_path "$ETC_SOURCE/NetworkManager/conf.d" "/etc/NetworkManager/conf.d/" "conf.d"
 process_path "$ETC_SOURCE/pacman.d/hooks" "/etc/pacman.d/hooks" "pacman hooks"
 
 # Process user-specific launchers
