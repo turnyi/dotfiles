@@ -1,0 +1,9 @@
+name: OptiTask
+root: ~/Projects/CommitAnalyzer/
+
+windows:
+  - back:
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
