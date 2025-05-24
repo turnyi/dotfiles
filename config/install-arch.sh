@@ -17,6 +17,7 @@ echo "📁 Stowing system configurations..."
 process_path "$ETC_SOURCE/keyd" "/etc/keyd" "keyd"
 process_path "$ETC_SOURCE/NetworkManager/conf.d" "/etc/NetworkManager/conf.d/" "conf.d"
 process_path "$ETC_SOURCE/pacman.d/hooks" "/etc/pacman.d/hooks" "pacman hooks"
+process_path "$ETC_SOURCE/udev/rules.d" "/etc/udev/rules.d/" "rules"
 
 # Process user-specific launchers
 echo "🎯 Stowing application launchers to ~/.local/share/applications..."
@@ -56,5 +57,20 @@ if systemctl list-unit-files | grep -q '^bluetooth.service'; then
 else
   echo "❌ Bluetooth service is not installed."
 fi
+
+echo "🔒 Verificando grupo plugdev..."
+if ! getent group plugdev >/dev/null; then
+  echo "➕ Grupo 'plugdev' no existe. Creando..."
+  sudo groupadd plugdev
+else
+  echo "✅ Grupo 'plugdev' ya existe."
+fi
+
+echo "👤 Agregando usuario actual al grupo 'plugdev'..."
+sudo usermod -aG plugdev "$USER"
+
+echo "🔄 Recargando reglas udev..."
+sudo udevadm control --reload-rules
+sudo udevadm trigger
 
 echo "✅ System-wide and user dotfiles installed successfully."
