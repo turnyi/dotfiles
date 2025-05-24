@@ -95,41 +95,6 @@ M.autocomplete = {
 	["<S-Tab>"] = cmp.mapping.select_prev_item(),
 }
 
-M.aiderMappings = function()
-	vim_set("n", "<leader>a/", "<cmd>Aider toggle<cr>", { desc = "Toggle Aider", noremap = true, silent = true })
-	vim_set(
-		{ "n", "v" },
-		"<leader>as",
-		"<cmd>Aider send<cr>",
-		{ desc = "Send to Aider", noremap = true, silent = true }
-	)
-	vim_set("n", "<leader>ac", "<cmd>Aider command<cr>", { desc = "Aider Commands", noremap = true, silent = true })
-	vim_set("n", "<leader>ab", "<cmd>Aider buffer<cr>", { desc = "Send Buffer", noremap = true, silent = true })
-	vim_set("n", "<leader>a+", "<cmd>Aider add<cr>", { desc = "Add File", noremap = true, silent = true })
-	vim_set("n", "<leader>a-", "<cmd>Aider drop<cr>", { desc = "Drop File", noremap = true, silent = true })
-	vim_set("n", "<leader>ar", "<cmd>Aider add readonly<cr>", { desc = "Add Read-Only", noremap = true, silent = true })
-	vim_set("n", "<leader>aR", "<cmd>Aider reset<cr>", { desc = "Reset Session", noremap = true, silent = true })
-
-	-- NvimTree-specific bindings
-	vim.api.nvim_create_autocmd("FileType", {
-		pattern = "NvimTree",
-		callback = function()
-			vim_set(
-				"n",
-				"<leader>a+",
-				"<cmd>AiderTreeAddFile<cr>",
-				{ desc = "Add File from Tree to Aider", noremap = true, silent = true, buffer = true }
-			)
-			vim_set(
-				"n",
-				"<leader>a-",
-				"<cmd>AiderTreeDropFile<cr>",
-				{ desc = "Drop File from Tree from Aider", noremap = true, silent = true, buffer = true }
-			)
-		end,
-	})
-end
-
 M.spell = function()
 	global.spelllang_toggle = { "en", "es" }
 	global.current_spelllang_index = 1
@@ -158,7 +123,6 @@ M.init = function()
 	M.telescope()
 	M.lspMappings()
 	M.spell()
-	M.aiderMappings()
 	M.troubleMappings()
 end
 return M

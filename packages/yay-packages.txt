@@ -5,6 +5,7 @@ bzmenu-debug
 commitizen-go
 commitizen-go-debug
 doppler-cli-debug
+cursor-bin
 google-chrome
 i3lock-color
 i3lock-color-debug

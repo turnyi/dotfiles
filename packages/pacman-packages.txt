@@ -142,6 +142,7 @@ freeglut
 freerdp2
 freetype2
 fribidi
+fuse2
 fuse3
 fuse-common
 fzf
