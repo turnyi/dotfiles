@@ -21,9 +21,20 @@ require("lazy").setup({
 		-- import your plugins
 		{ import = "plugins" },
 	},
-	-- Configure any other settings here. See the documentation for more details.
-	-- colorscheme that will be used when installing plugins.
 	install = { colorscheme = { "habamax" } },
-	-- automatically check for plugin updates
 	checker = { enabled = true },
 })
+
+-- 👇 Only show Lazy update notification if >= 10 plugins have updates
+local checker = require("lazy.manage.checker")
+local original_notify = checker.notify
+checker.notify = function(...)
+	local updates = require("lazy.manage.checker").updated or {}
+	local count = 0
+	for _, plugins in pairs(updates) do
+		count = count + #plugins
+	end
+	if count >= 10 then
+		original_notify(...)
+	end
+end

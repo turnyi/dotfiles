@@ -3,6 +3,7 @@
 #install plugins
 source "$HOME/zsh/antigen_install.zsh"
 source "$HOME/zsh/antigen.sh"
+source "$HOME/.env"
 export ZSH_DOTENV_ALLOWED_LIST=~/dotenv/allowed.list
 export ZSH_DOTENV_DISALLOWED_LIST=~/dotenv/disallowed.list
 

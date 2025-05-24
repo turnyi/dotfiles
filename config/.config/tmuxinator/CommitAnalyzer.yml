@@ -2,6 +2,9 @@ name: OptiTask
 root: ~/Projects/CommitAnalyzer/
 
 windows:
+  - git:
+      panes:
+        - lazygit
   - back:
       layout: even-horizontal
       panes:
