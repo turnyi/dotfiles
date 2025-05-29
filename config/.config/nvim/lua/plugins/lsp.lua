@@ -20,7 +20,6 @@ return {
 				"pyright",
 				"clangd",
 				"omnisharp",
-				"volar",
 				"emmet_ls",
 			}
 			local default_config_servers = {
@@ -50,7 +49,7 @@ return {
 
 			lspconfig.ts_ls.setup({
 				init_options = {
-					plugins = { -- I think this was my breakthrough that made it work
+					plugins = {
 						{
 							name = "@vue/typescript-plugin",
 							location = "/opt/homebrew/lib/node_modules/@vue/language-server",
@@ -60,6 +59,7 @@ return {
 				},
 				filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
 			})
+
 			local venv_path = vim.fn.getcwd() .. "/.venv/bin/python"
 			lspconfig.pyright.setup({
 				settings = {
@@ -72,6 +72,20 @@ return {
 						},
 					},
 				},
+			})
+
+			-- ✅ Configuración específica para omnisharp
+			lspconfig.omnisharp.setup({
+				cmd = {
+					vim.fn.stdpath("data") .. "/mason/packages/omnisharp/OmniSharp", -- ✅ el binario correcto
+					"--languageserver",
+					"--hostPID",
+					tostring(vim.fn.getpid()),
+				},
+				enable_editorconfig_support = true,
+				enable_roslyn_analyzers = true,
+				organize_imports_on_format = true,
+				enable_import_completion = true,
 			})
 		end,
 	},
