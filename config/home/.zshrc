@@ -10,6 +10,7 @@ export ZSH_DOTENV_DISALLOWED_LIST=~/dotenv/disallowed.list
 # Add custom script stowed to ~/bin and ~/vntana_bin to path
 export PATH="$HOME/scripts:$PATH"
 export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
+export PATH="$PATH:$HOME/.dotnet/tools"
 
 # Configure the folder where all zsh configuration will live.
 export ZDOTDIR=$HOME
