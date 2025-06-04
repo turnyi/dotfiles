@@ -4,8 +4,8 @@ bzmenu
 bzmenu-debug
 commitizen-go
 commitizen-go-debug
+datagrip
 doppler-cli-debug
-cursor-bin
 google-chrome
 i3lock-color
 i3lock-color-debug

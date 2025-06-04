@@ -38,6 +38,7 @@ bc
 binutils
 bison
 blas
+blosc
 bluedevil
 blueman
 bluez
@@ -142,7 +143,6 @@ freeglut
 freerdp2
 freetype2
 fribidi
-fuse2
 fuse3
 fuse-common
 fzf
@@ -166,6 +166,8 @@ giflib
 git
 github-cli
 gjs
+gl2ps
+glew
 glib2
 glibc
 glibmm
@@ -270,6 +272,7 @@ jbigkit
 jdk17-openjdk
 jdk21-openjdk
 jdk-openjdk
+jemalloc
 jq
 js128
 json-c
@@ -652,6 +655,7 @@ llvm-libs
 lmdb
 lm_sensors
 localsearch
+log4cplus
 lpsolve
 l-smash
 lua
@@ -687,6 +691,7 @@ mtdev
 mujs
 mutter
 nano
+nanosvg
 nasm
 nautilus
 ncurses
@@ -697,6 +702,7 @@ nettle
 networkmanager
 network-manager-applet
 networkmanager-qt
+nlopt
 nm-connection-editor
 node-gyp
 nodejs-lts-iron
@@ -717,12 +723,15 @@ ocl-icd
 onetbb
 oniguruma
 openal
+opencascade
 opencore-amr
+opencsg
 opencv
 openexr
 openjpeg2
 openssh
 openssl
+openvdb
 openxr
 opus
 orc
@@ -808,6 +817,7 @@ print-manager
 prison
 procps-ng
 protobuf
+prusa-slicer
 psmisc
 pugixml
 pulseaudio-qt
@@ -833,6 +843,7 @@ python-urllib3
 python-wheel
 qca-qt6
 qcoro
+qhull
 qqc2-breeze-style
 qqc2-desktop-style
 qrencode
@@ -942,11 +953,13 @@ systemsettings
 taglib
 talloc
 tar
+tcl
 tdb
 tectonic
 tevent
 texinfo
 tinysparql
+tk
 tmux
 tomlplusplus
 totem-pl-parser
@@ -1037,6 +1050,7 @@ vim
 vim-runtime
 vmaf
 volume_key
+vtk
 vulkan-icd-loader
 vulkan-intel
 vulkan-nouveau
@@ -1051,6 +1065,7 @@ waybar
 wayland
 wayland-protocols
 wayland-utils
+webkit2gtk-4.1
 webkitgtk-6.0
 webrtc-audio-processing-1
 wget
@@ -1115,6 +1130,7 @@ xxhash
 xz
 yarn
 yasm
+z3
 zeromq
 zimg
 zip
