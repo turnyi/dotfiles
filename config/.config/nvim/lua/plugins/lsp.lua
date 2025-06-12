@@ -36,12 +36,10 @@ return {
 				"emmet_ls",
 			}
 
-			-- Ensure servers are installed via Mason
 			require("mason-lspconfig").setup({
 				ensure_installed = servers,
 			})
 
-			-- Set up LSP servers with lspconfig
 			local lspconfig = require("lspconfig")
 			for _, server in ipairs(default_config_servers) do
 				lspconfig[server].setup({})
@@ -52,12 +50,23 @@ return {
 					plugins = {
 						{
 							name = "@vue/typescript-plugin",
-							location = "/opt/homebrew/lib/node_modules/@vue/language-server",
+							location = "/home/turny/.npm-global/lib",
 							languages = { "vue" },
 						},
 					},
 				},
 				filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
+			})
+
+			lspconfig.volar.setup({
+				capabilities = capabilities,
+				filetypes = { "vue" },
+				init_options = {
+					typescript = {
+						tsdk = vim.fn.stdpath("data")
+							.. "/mason/packages/typescript-language-server/node_modules/typescript/lib",
+					},
+				},
 			})
 
 			local venv_path = vim.fn.getcwd() .. "/.venv/bin/python"
