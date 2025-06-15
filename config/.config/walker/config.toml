@@ -1,5 +1,5 @@
 [general]
-style = "style.css"        # Style file name (optional)
+theme = "style" 
 
 [ui]
 fullscreen = false

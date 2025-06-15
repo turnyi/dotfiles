@@ -59,8 +59,8 @@ return {
 			})
 
 			lspconfig.volar.setup({
-				capabilities = capabilities,
 				filetypes = { "vue" },
+				capabilities = capabilities,
 				init_options = {
 					typescript = {
 						tsdk = vim.fn.stdpath("data")

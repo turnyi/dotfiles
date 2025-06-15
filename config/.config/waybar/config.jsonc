@@ -11,7 +11,7 @@
   ],
   "modules-right": [
     "pulseaudio",
-    "battery",
+    "custom/battery",
     "network",
     "custom/bluetooth",
     "cpu",
@@ -38,9 +38,15 @@
   "network": {
     "format-wifi": "󰤢",
     "format-ethernet": "󰈀",
-    "format-disconnected": "󰤠",
+    "format-disconnected": "睊",
     "interval": 5,
-    "tooltip": false
+    "tooltip": true,
+    "tooltip-format": "SSID: {essid}\nSignal: {signalStrength}%\nIP: {ipaddr}\nDown: {bandwidthDownBytes} ↓\nUp: {bandwidthUpBytes} ↑",
+    "on-click": "sh -c 'rm -f /tmp/walker-dmenu.sock && iwmenu -l walker'"
+  },
+  "custom/battery": {
+    "exec": "~/.config/waybar/scripts/battery_status.sh",
+    "interval": 5
   },
   "cpu": {
     "interval": 1,
@@ -61,15 +67,15 @@
     "format": "  {used:0.1f}G/{total:0.1f}G"
   },
   "pulseaudio": {
-    "format": "{icon} {volume}% {format_source}",
-    "format-muted": " {format_source}",
+    "format": "{volume}% {icon}  {format_source}",
+    "format-muted": "   {format_source}",
     "format-source": "",
     "format-source-muted": "",
     "format-icons": {
       "default": [
-        "", // very low
-        "", // medium
-        "" // high
+        "",
+        "",
+        ""
       ]
     },
     "on-click": "pavucontrol"
@@ -91,12 +97,14 @@
   },
   "custom/pad5120": {
     "hide-empty-text": true,
-    "exec": "/bin/bash -c 'hyprctl monitors -j | jq -r \".[] | select(.width == 5120) | .name\"'",
+    "exec": "/bin/bash -c 'hyprctl monitors -j | jq -r \".[] | select(.width == 5120) | .name\"'"
   },
   "custom/bluetooth": {
-    "format": "",
-    "tooltip": false,
-    "on-click": "bash ~/.config/rofi/rofi-bluetooth.sh",
-    "interval": 10
+    "exec": "~/.config/waybar/scripts/bluetooth_status.sh",
+    "interval": 10,
+    "return-type": "json",
+    "tooltip": true,
+    "format": "{}",
+    "on-click": "bzmenu -l walker"
   }
 }
