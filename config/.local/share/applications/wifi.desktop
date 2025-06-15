@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Wi-Fi Menu 
+Comment=Launch rofi-wifi-menu for Wi-Fi device
+Exec=/home/turny/scripts/rofi-wifi-menu.sh
+Icon=network-wireless
+Terminal=false
+Type=Application
+Categories=Network;Utility;
+

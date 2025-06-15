@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Bluetooth Menu (Bzmenu)
-Comment=Launch Bzmenu for Bluetooth device control via Walker
-Exec=bzmenu -l walker
-Icon=blueman
-Terminal=false
-Type=Application
-Categories=Settings;Utility;

@@ -42,7 +42,7 @@
     "interval": 5,
     "tooltip": true,
     "tooltip-format": "SSID: {essid}\nSignal: {signalStrength}%\nIP: {ipaddr}\nDown: {bandwidthDownBytes} ↓\nUp: {bandwidthUpBytes} ↑",
-    "on-click": "sh -c 'rm -f /tmp/walker-dmenu.sock && iwmenu -l walker'"
+    "on-click": "gtk-launch wifi"
   },
   "custom/battery": {
     "exec": "~/.config/waybar/scripts/battery_status.sh",
@@ -105,6 +105,6 @@
     "return-type": "json",
     "tooltip": true,
     "format": "{}",
-    "on-click": "bzmenu -l walker"
+    "on-click": "gtk-launch bluetooth"
   }
 }

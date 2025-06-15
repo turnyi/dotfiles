@@ -866,8 +866,8 @@ readline
 redland
 ripgrep
 ripgrep-all
-rofi
 rofi-calc
+rofi-wayland
 rsync
 rtkit
 rubberband

@@ -18,6 +18,8 @@ iwmenu-debug
 jetbrains-toolbox
 ride-bin-debug
 rider
+rofi-bluetooth-git
+rofi-wifi-menu-git
 ruby-xdg
 tmuxinator
 ulauncher

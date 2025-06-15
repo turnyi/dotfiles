@@ -11,13 +11,13 @@ source "$SCRIPT_DIR/utils.sh"
 
 echo "🔧 Starting dotfiles setup..."
 
-process_path "$CONFIG_PATH" "$CONFIG_DIR" ".config"
+# process_path "$CONFIG_PATH" "$CONFIG_DIR" ".config"
 process_path "$HOME_SOURCE" "$HOME" "HOME"
 
-if grep -qi "arch" /etc/os-release; then
-  echo "🟢 Running on Arch Linux"
-  arch_install="$SCRIPT_DIR/install-arch.sh"
-  bash $arch_install
-fi
+# if grep -qi "arch" /etc/os-release; then
+#   echo "🟢 Running on Arch Linux"
+#   arch_install="$SCRIPT_DIR/install-arch.sh"
+#   bash $arch_install
+# fi
 
 echo -e "\n✅ Dotfiles setup completed successfully."

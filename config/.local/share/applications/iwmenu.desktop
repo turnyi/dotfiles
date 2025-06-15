@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Wi-Fi Menu (Iwmenu)
-Comment=Launch Iwmenu for Wi-Fi device control via Walker
-Exec=sh -c 'rm -f /tmp/walker-dmenu.sock && iwmenu -l walker'
-Icon=network-wireless
-Terminal=false
-Type=Application
-Categories=Network;Utility;
-
