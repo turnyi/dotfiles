@@ -18,17 +18,18 @@ LOCAL_SHARE_SOURCE="$SCRIPT_DIR/.local/share"
 # process_path "$ETC_SOURCE/NetworkManager/conf.d" "/etc/NetworkManager/conf.d/" "conf.d"
 # process_path "$ETC_SOURCE/pacman.d/hooks" "/etc/pacman.d/hooks" "pacman hooks"
 # process_path "$ETC_SOURCE/udev/rules.d" "/etc/udev/rules.d/" "rules"
+
+# Process user-specific launchers
 #
-# # Process user-specific launchers
-# echo "🎯 Stowing application launchers to ~/.local/share/applications..."
-# mkdir -p "$HOME/.local/share/applications"
-# process_path "$LOCAL_SHARE_SOURCE/applications" "$HOME/.local/share/applications" "user applications"
-
-# Process user-specific rofi
 echo "🎯 Stowing application launchers to ~/.local/share/applications..."
-mkdir -p "$HOME/.local/share/rofi"
-process_path "$LOCAL_SHARE_SOURCE/rofi" "$HOME/.local/share/rofi" "rofi"
+mkdir -p "$HOME/.local/share/applications"
+process_path "$LOCAL_SHARE_SOURCE/applications" "$HOME/.local/share/applications" "user applications"
 
+# # Process user-specific rofi
+# echo "🎯 Stowing application launchers to ~/.local/share/applications..."
+# mkdir -p "$HOME/.local/share/rofi"
+# process_path "$LOCAL_SHARE_SOURCE/rofi" "$HOME/.local/share/rofi" "rofi"
+#
 # # Enable keyd if present
 # if command -v keyd &>/dev/null; then
 #   echo "🔑 Enabling keyd service..."
