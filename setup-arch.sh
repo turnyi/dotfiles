@@ -13,13 +13,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACMAN_FILE="$SCRIPT_DIR/packages/pacman-packages.txt"
 YAY_FILE="$SCRIPT_DIR/packages/yay-packages.txt"
 
-if [[ -f "$PACMAN_FILE" ]]; then
-  echo "📦 Installing pacman packages from $PACMAN_FILE..."
-  sudo pacman -Syu --needed --noconfirm $(<"$PACMAN_FILE")
-else
-  echo "⚠️  No pacman package list found at $PACMAN_FILE"
-fi
-
+# if [[ -f "$PACMAN_FILE" ]]; then
+#   echo "📦 Installing pacman packages from $PACMAN_FILE..."
+#   sudo pacman -Syu --needed --noconfirm $(<"$PACMAN_FILE")
+# else
+#   echo "⚠️  No pacman package list found at $PACMAN_FILE"
+# fi
+#
 if ! command -v yay &>/dev/null; then
   echo "🔧 yay not found — installing yay..."
   sudo pacman -S --needed --noconfirm git base-devel

@@ -19,5 +19,5 @@ process_path "$HOME_SOURCE" "$HOME" "HOME"
 #   arch_install="$SCRIPT_DIR/install-arch.sh"
 #   bash $arch_install
 # fi
-
-echo -e "\n✅ Dotfiles setup completed successfully."
+#
+# echo -e "\n✅ Dotfiles setup completed successfully."

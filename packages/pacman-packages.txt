@@ -700,9 +700,6 @@ npm
 npth
 nspr
 nss
-nvidia-dkms
-nvidia-settings
-nvidia-utils
 nwg-look
 obsidian
 ocean-sound-theme
