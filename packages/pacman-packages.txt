@@ -1,3 +1,5 @@
+a52dec
+aalib
 abseil-cpp
 accounts-qml-module
 accountsservice
@@ -187,6 +189,7 @@ gobject-introspection-runtime
 gparted
 gperftools
 gpgme
+gpgmepp
 gpm
 granite
 graphene
@@ -203,7 +206,10 @@ gst-plugin-pipewire
 gst-plugins-bad-libs
 gst-plugins-base
 gst-plugins-base-libs
+gst-plugins-good
+gst-plugins-ugly
 gstreamer
+gstreamer-vaapi
 gtest
 gtk3
 gtk4
@@ -250,6 +256,7 @@ ijs
 imagemagick
 imake
 imath
+imlib2
 inetutils
 intel-gmmlib
 intel-media-driver
@@ -261,8 +268,11 @@ iso-codes
 iwd
 jansson
 jasper
+java-environment-common
+java-runtime-common
 jbig2dec
 jbigkit
+jdk-openjdk
 jemalloc
 jq
 js128
@@ -327,6 +337,7 @@ knotifications
 knotifications5
 knotifyconfig
 konsole
+kooha
 kpackage
 kparts
 kpipewire
@@ -389,6 +400,7 @@ libbpf
 libbs2b
 libbsd
 libbytesize
+libcaca
 libcanberra
 libcap
 libcap-ng
@@ -413,6 +425,7 @@ libdisplay-info
 libdmtx
 libdovi
 libdrm
+libdv
 libdvdnav
 libdvdread
 libe-book
@@ -483,12 +496,14 @@ libmnl
 libmodplug
 libmpc
 libmpdclient
+libmpeg2
 libmspub
 libmtp
 libmwaw
 libmysofa
 libnautilus-extension
 libndp
+libnet
 libnetfilter_conntrack
 libnewt
 libnfnetlink
@@ -543,6 +558,7 @@ libsasl
 libsass
 libseccomp
 libsecret
+libshout
 libsigc++
 libsigc++-3.0
 libsixel
@@ -922,6 +938,7 @@ startup-notification
 stow
 sudo
 svt-av1
+swappy
 swaync
 syndication
 syntax-highlighting
@@ -955,6 +972,7 @@ ttf-font-awesome
 ttf-hack
 ttf-jetbrains-mono-nerd
 ttf-liberation
+twolame
 tzdata
 uchardet
 udisks2
@@ -983,6 +1001,7 @@ wasi-compiler-rt
 wasi-libc
 wasi-libc++
 wasi-libc++abi
+wavpack
 waybar
 wayland
 wayland-protocols

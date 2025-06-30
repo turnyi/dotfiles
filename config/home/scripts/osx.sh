@@ -4,9 +4,9 @@ sudo -v
 
 # Keep-alive: update existing `sudo` timestamp until `osx.sh` has finished.
 while true; do
-	sudo -n true
-	sleep 60
-	kill -0 "$$" || exit
+  sudo -n true
+  sleep 60
+  kill -0 "$$" || exit
 done 2>/dev/null &
 
 ###############################################################################
@@ -76,9 +76,9 @@ defaults write com.apple.finder WarnOnEmptyTrash -bool false
 ###############################################################################
 
 for app in "Activity Monitor" "Address Book" "Calendar" "Contacts" "cfprefsd" \
-	"Dock" "Finder" "Google Chrome" "Google Chrome Canary" "Mail" "Messages" \
-	"Opera" "Safari" "SizeUp" "Spectacle" "SystemUIServer" \
-	"Transmission" "Twitter" "iCal"; do
-	killall "${app}" >/dev/null 2>&1
+  "Dock" "Finder" "Google Chrome" "Google Chrome Canary" "Mail" "Messages" \
+  "Opera" "Safari" "SizeUp" "Spectacle" "SystemUIServer" \
+  "Transmission" "Twitter" "iCal"; do
+  killall "${app}" >/dev/null 2>&1
 done
 echo "Done. Note that some of these changes require a logout/restart of your OS to take effect.  At a minimum, be sure to restart your Terminal."

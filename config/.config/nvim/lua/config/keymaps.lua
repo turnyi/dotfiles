@@ -36,7 +36,12 @@ M.telescope = function()
 	nvim_set_keymap("n", "<leader>ff", ":Telescope find_files<CR>", opts)
 	nvim_set_keymap("n", "<leader>fd", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", opts)
 	nvim_set_keymap("n", "<leader>fb", ":Telescope buffers<CR>", opts)
-	nvim_set_keymap("n", "<leader>fs", ":Telescope live_grep_args<CR>", opts)
+	vim.api.nvim_set_keymap(
+		"n",
+		"<leader>fs",
+		"<cmd>lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>",
+		{ noremap = true, silent = true }
+	)
 	nvim_set_keymap("n", "<leader>mf", ":Telescope marks<CR>", opts)
 	nvim_set_keymap("n", "<leader>md", "<Cmd>delmarks A-Z0-9<CR>", opts)
 	nvim_set_keymap("n", "gd", "<cmd>Telescope lsp_definitions<CR>", { noremap = true, silent = true })
