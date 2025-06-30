@@ -25,6 +25,8 @@ tmuxinator
 ulauncher
 walker-bin
 walker-bin-debug
+wf-recorder-gui
+wf-recorder-gui-debug
 xf86-video-vmware
 yay
 yay-debug

@@ -67,6 +67,7 @@ cbindgen
 cblas
 cdparanoia
 cfitsio
+chromaprint
 cifs-utils
 clang
 clinfo
@@ -120,6 +121,8 @@ enchant
 exempi
 exiv2
 expat
+faac
+faad2
 fakeroot
 ffmpeg
 fftw
@@ -130,6 +133,7 @@ firefox
 firefoxpwa
 flac
 flex
+fluidsynth
 fmt
 fontconfig
 frameworkintegration
@@ -202,7 +206,9 @@ gsettings-desktop-schemas
 gsettings-system-schemas
 gsm
 gssdp
+gst-libav
 gst-plugin-pipewire
+gst-plugins-bad
 gst-plugins-bad-libs
 gst-plugins-base
 gst-plugins-base-libs
@@ -386,6 +392,7 @@ libatasmart
 libatomic_ops
 libavc1394
 libavif
+libavtp
 libb2
 libblockdev
 libblockdev-crypto
@@ -401,6 +408,8 @@ libbs2b
 libbsd
 libbytesize
 libcaca
+libcamera
+libcamera-ipa
 libcanberra
 libcap
 libcap-ng
@@ -419,6 +428,8 @@ libdbusmenu-glib
 libdbusmenu-gtk3
 libdbusmenu-qt5
 libdc1394
+libdca
+libde265
 libdecor
 libdeflate
 libdisplay-info
@@ -452,6 +463,7 @@ libgee
 libgexiv2
 libgirepository
 libglvnd
+libgme
 libgpg-error
 libgsf
 libgudev
@@ -470,6 +482,7 @@ libimobiledevice
 libimobiledevice-glue
 libinih
 libinput
+libinstpatch
 libiptcdata
 libisl
 libixion
@@ -486,15 +499,19 @@ libldac
 libldap
 libliftoff
 liblqr
+liblrdf
+libltc
 libluv
 libmanette
 libmbim
 libmd
+libmicrodns
 libmm-glib
 libmng
 libmnl
 libmodplug
 libmpc
+libmpcdec
 libmpdclient
 libmpeg2
 libmspub
@@ -569,6 +586,7 @@ libsoup
 libsoup3
 libsoxr
 libspng
+libsrtp
 libssh
 libssh2
 libstaroffice
@@ -680,6 +698,7 @@ mesa-utils
 meson
 milou
 minizip
+mjpegtools
 mkinitcpio
 mkinitcpio-busybox
 mobile-broadband-provider-info
@@ -728,6 +747,7 @@ opencore-amr
 opencsg
 opencv
 openexr
+openh264
 openjpeg2
 openssh
 openssl
@@ -766,6 +786,7 @@ pipewire
 pipewire-alsa
 pipewire-audio
 pipewire-jack
+pipewire-libcamera
 pipewire-pulse
 pipewire-session-manager
 pixman
@@ -877,12 +898,14 @@ rav1e
 re2
 readline
 redland
+reflector
 ripgrep
 ripgrep-all
 rofi-calc
 rofi-wayland
 rsync
 rtkit
+rtmpdump
 rubberband
 ruby
 ruby-bundler
@@ -924,7 +947,9 @@ solid
 sonnet
 sord
 sound-theme-freedesktop
+soundtouch
 source-highlight
+spandsp
 spdlog
 spectacle
 speex
@@ -938,6 +963,7 @@ startup-notification
 stow
 sudo
 svt-av1
+svt-hevc
 swappy
 swaync
 syndication
@@ -1010,8 +1036,10 @@ webkit2gtk
 webkit2gtk-4.1
 webkitgtk-6.0
 webrtc-audio-processing-1
+wf-recorder
 wget
 which
+wildmidi
 wireless_tools
 wireplumber
 wl-clipboard
@@ -1073,6 +1101,7 @@ xxhash
 xz
 yasm
 z3
+zbar
 zeromq
 zimg
 zip
@@ -1083,4 +1112,5 @@ zoxide
 zram-generator
 zsh
 zstd
+zvbi
 zxing-cpp
