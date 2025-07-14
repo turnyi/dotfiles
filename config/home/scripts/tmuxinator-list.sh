@@ -55,10 +55,7 @@ project=$(printf "%s\n" "${sortedProjects[@]}" | fzf-tmux -p 80%,60% \
   --bind "ctrl-x:execute-silent(tmux kill-session -t \"\$(echo {+} | cut -d ' ' -f 1)\")+reload($0 --reload)" \
   --header 'Press CTRL-X to close a session.')
 
-if [[ $project == *" (Open)" ]]; then
-  project="${project} (Open\)}"
-fi
-
 if [ -n "$project" ]; then
-  tmuxinator start "$project" 2>/dev/null
+  cleanProject=$(echo "$project" | sed 's/ (Open)//')
+  tmuxinator start "$cleanProject" 2>/dev/null
 fi

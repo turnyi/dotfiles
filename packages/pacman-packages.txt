@@ -735,6 +735,9 @@ npm
 npth
 nspr
 nss
+nvidia-dkms
+nvidia-settings
+nvidia-utils
 nwg-look
 obsidian
 ocean-sound-theme
@@ -819,6 +822,8 @@ poppler-glib
 poppler-qt6
 popt
 portaudio
+postgresql
+postgresql-libs
 powerdevil
 ppp
 print-manager

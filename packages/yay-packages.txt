@@ -16,6 +16,7 @@ intellij-idea-ultimate-edition
 iwmenu
 iwmenu-debug
 jetbrains-toolbox
+postman-bin
 ride-bin-debug
 rider
 rofi-bluetooth-git
