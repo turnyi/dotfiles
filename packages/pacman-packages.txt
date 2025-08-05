@@ -79,6 +79,8 @@ convertlit
 copyq
 coreutils
 cryptsetup
+cups
+cups-filters
 curl
 dav1d
 db5.3
@@ -299,12 +301,14 @@ kcompletion
 kconfig
 kconfig5
 kconfigwidgets
+kcontacts
 kcoreaddons
 kcoreaddons5
 kcrash
 kdbusaddons
 kdeclarative
 kde-cli-tools
+kdeconnect
 kdecoration
 kded
 kde-gtk-config
@@ -346,6 +350,7 @@ konsole
 kooha
 kpackage
 kparts
+kpeople
 kpipewire
 kpty
 kquickcharts
@@ -422,6 +427,7 @@ libcmis
 libcolord
 libcue
 libcups
+libcupsfilters
 libdaemon
 libdatrie
 libdbusmenu-glib
@@ -452,6 +458,7 @@ libevdev
 libevent
 libexif
 libexttextcat
+libfakekey
 libfdk-aac
 libffi
 libfontenc
@@ -556,6 +563,7 @@ libplist
 libpng
 libportal
 libportal-gtk4
+libppd
 libproxy
 libpsl
 libpulse
@@ -783,7 +791,6 @@ perl-error
 perl-mailtools
 perl-timedate
 phonon-qt6
-phonon-qt6-mpv
 pinentry
 pipewire
 pipewire-alsa
@@ -851,6 +858,7 @@ python-packaging
 python-pip
 python-psutil
 python-pycparser
+python-pycups
 python-pygdbmi
 python-pyinotify
 python-pywal
@@ -864,19 +872,25 @@ python-wheel
 qca-qt6
 qcoro
 qhull
+qpdf
 qqc2-breeze-style
 qqc2-desktop-style
 qrencode
 qt5-base
 qt5-declarative
+qt5-location
 qt5-multimedia
+qt5-remoteobjects
 qt5-speech
 qt5-svg
 qt5-translations
 qt5-wayland
+qt5-webchannel
+qt5-webengine
 qt5-x11extras
 qt6-5compat
 qt6-base
+qt6-connectivity
 qt6-declarative
 qt6-imageformats
 qt6-multimedia
@@ -906,6 +920,7 @@ redland
 reflector
 ripgrep
 ripgrep-all
+rnote
 rofi-calc
 rofi-wayland
 rsync
@@ -973,6 +988,7 @@ swappy
 swaync
 syndication
 syntax-highlighting
+system-config-printer
 systemd
 systemd-libs
 systemd-sysvcompat
@@ -999,7 +1015,6 @@ tree-sitter-query
 tree-sitter-vim
 tree-sitter-vimdoc
 tslib
-ttf-font-awesome
 ttf-hack
 ttf-jetbrains-mono-nerd
 ttf-liberation

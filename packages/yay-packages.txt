@@ -3,6 +3,7 @@ bzmenu
 bzmenu-debug
 commitizen-go
 commitizen-go-debug
+cura-bin
 cursor-bin
 databricks-cli-bin
 databricks-cli-bin-debug
@@ -16,6 +17,7 @@ intellij-idea-ultimate-edition
 iwmenu
 iwmenu-debug
 jetbrains-toolbox
+phonon-qt6-mpv
 postman-bin
 ride-bin-debug
 rider
@@ -23,6 +25,7 @@ rofi-bluetooth-git
 rofi-wifi-menu-git
 ruby-xdg
 tmuxinator
+ttf-font-awesome
 ulauncher
 walker-bin
 walker-bin-debug
@@ -32,3 +35,4 @@ xf86-video-vmware
 yay
 yay-debug
 zen-browser-bin
+zoom
