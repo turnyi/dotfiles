@@ -3,25 +3,29 @@ root: ~/Projects/OptiTask/
 windows:
   - gits:
       root: ~/Projects/OptiTask
-      layout: even-horizontal
+      layout: main-vertical
       panes:
         - cd Backend && lazygit
-        - cd Backend && lazygit
+        - cd Web && lazygit
+        - cd Mobile && lazygit
   - web:
       root: ~/Projects/OptiTask/Web
-      layout: even-horizontal
+      layout: main-vertical
       panes:
         - nvim .
+        - yarn dev
         - .
   - back:
       root: ~/Projects/OptiTask/Backend
-      layout: even-horizontal
+      layout: main-vertical
       panes:
         - nvim .
+        - yarn docker:dev
         - .
   - mobile:
       root: ~/Projects/OptiTask/Mobile
-      layout: even-horizontal
+      layout: main-vertical
       panes:
         - nvim .
+        - yarn dev
         - .
