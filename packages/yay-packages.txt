@@ -17,6 +17,7 @@ intellij-idea-ultimate-edition
 iwmenu
 iwmenu-debug
 jetbrains-toolbox
+opencode-bin
 phonon-qt6-mpv
 postman-bin
 ride-bin-debug
