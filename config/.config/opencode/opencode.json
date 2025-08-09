@@ -1,0 +1,209 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "lsp": {
+    "lua_ls": {
+      "command": [
+        "lua-language-server",
+        "--stdio"
+      ],
+      "extensions": [
+        ".lua"
+      ]
+    },
+    "ts_ls": {
+      "command": [
+        "typescript-language-server",
+        "--stdio"
+      ],
+      "extensions": [
+        ".ts",
+        ".tsx",
+        ".js",
+        ".jsx",
+        ".mjs",
+        ".cjs",
+        ".mts",
+        ".cts"
+      ],
+      "initialization": {
+        "plugins": [
+          {
+            "name": "@vue/typescript-plugin",
+            "location": "/home/turny/.npm-global/lib",
+            "languages": [
+              "vue"
+            ]
+          }
+        ]
+      }
+    },
+    "html": {
+      "command": [
+        "html-languageserver",
+        "--stdio"
+      ],
+      "extensions": [
+        ".html"
+      ]
+    },
+    "cssls": {
+      "command": [
+        "css-languageserver",
+        "--stdio"
+      ],
+      "extensions": [
+        ".css",
+        ".scss",
+        ".less"
+      ]
+    },
+    "eslint": {
+      "command": [
+        "vscode-eslint-language-server",
+        "--stdio"
+      ],
+      "extensions": [
+        ".js",
+        ".jsx",
+        ".ts",
+        ".tsx"
+      ]
+    },
+    "jsonls": {
+      "command": [
+        "vscode-json-languageserver",
+        "--stdio"
+      ],
+      "extensions": [
+        ".json"
+      ]
+    },
+    "bashls": {
+      "command": [
+        "bash-language-server",
+        "start"
+      ],
+      "extensions": [
+        ".sh"
+      ]
+    },
+    "pyright": {
+      "command": [
+        "pyright-langserver",
+        "--stdio"
+      ],
+      "extensions": [
+        ".py",
+        ".pyi"
+      ],
+      "initialization": {
+        "python": {
+          "pythonPath": "${workspaceFolder}/.venv/bin/python",
+          "analysis": {
+            "autoSearchPaths": true,
+            "useLibraryCodeForTypes": true,
+            "diagnosticMode": "workspace"
+          }
+        }
+      }
+    },
+    "clangd": {
+      "command": [
+        "clangd"
+      ],
+      "extensions": [
+        ".c",
+        ".h",
+        ".cpp",
+        ".hpp",
+        ".cc",
+        ".hh",
+        ".cxx"
+      ]
+    },
+    "omnisharp": {
+      "command": [
+        "OmniSharp",
+        "--languageserver",
+        "--hostPID",
+        "${hostPID}"
+      ],
+      "extensions": [
+        ".cs"
+      ],
+      "initialization": {
+        "enableEditorConfigSupport": true,
+        "enableRoslynAnalyzers": true,
+        "organizeImportsOnFormat": true,
+        "enableImportCompletion": true
+      }
+    },
+    "emmet_ls": {
+      "command": [
+        "emmet-ls",
+        "--stdio"
+      ],
+      "extensions": [
+        ".html",
+        ".css",
+        ".js",
+        ".jsx",
+        ".ts",
+        ".tsx"
+      ]
+    },
+    "volar": {
+      "command": [
+        "vue-language-server",
+        "--stdio"
+      ],
+      "extensions": [
+        ".vue"
+      ],
+      "initialization": {
+        "typescript": {
+          "tsdk": "${data}/mason/packages/typescript-language-server/node_modules/typescript/lib"
+        }
+      }
+    }
+  },
+  "formatter": {
+    "prettier": {
+      "command": ["npx", "prettier", "--write", "$FILE"],
+      "environment": { "NODE_ENV": "development" },
+      "extensions": [".js", ".ts", ".jsx", ".tsx", ".vue", ".json", ".css", ".scss", ".html"]
+    },
+    "stylua": {
+      "command": ["stylua", "$FILE"],
+      "extensions": [".lua"]
+    },
+    "black": {
+      "command": ["black", "$FILE"],
+      "extensions": [".py"]
+    },
+    "isort": {
+      "command": ["isort", "$FILE"],
+      "extensions": [".py"]
+    },
+    "clang-format": {
+      "command": ["clang-format", "-i", "$FILE"],
+      "extensions": [".c", ".cpp", ".h", ".hpp"]
+    },
+    "shfmt": {
+      "command": ["shfmt", "-w", "$FILE"],
+      "extensions": [".sh"]
+    },
+    "rustfmt": {
+      "command": ["rustfmt", "$FILE"],
+      "extensions": [".rs"]
+    },
+    "biome": {
+      "command": ["biome", "format", "$FILE"],
+      "extensions": [".js", ".ts", ".jsx", ".tsx"]
+    },
+    "gofmt": {
+      "command": ["gofmt", "-w", "$FILE"],
+      "extensions": [".go"]
+    }
+  }
+}
