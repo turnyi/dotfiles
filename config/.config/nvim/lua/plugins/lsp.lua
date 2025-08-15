@@ -20,7 +20,7 @@ return {
 				"pyright",
 				"clangd",
 				"omnisharp",
-				"emmet_ls",
+				-- "emmet_ls",
 			}
 			local default_config_servers = {
 				"lua_ls",
@@ -33,7 +33,7 @@ return {
 				"clangd",
 				"omnisharp",
 				"volar",
-				"emmet_ls",
+				-- "emmet_ls",
 			}
 
 			require("mason-lspconfig").setup({
@@ -58,17 +58,7 @@ return {
 				filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
 			})
 
-			lspconfig.volar.setup({
-				filetypes = { "vue" },
-				capabilities = capabilities,
-				init_options = {
-					typescript = {
-						tsdk = vim.fn.stdpath("data")
-							.. "/mason/packages/typescript-language-server/node_modules/typescript/lib",
-					},
-				},
-			})
-
+			lspconfig.volar.setup({})
 			local venv_path = vim.fn.getcwd() .. "/.venv/bin/python"
 			lspconfig.pyright.setup({
 				settings = {
@@ -99,4 +89,8 @@ return {
 		end,
 	},
 	{ "neovim/nvim-lspconfig" },
+
+	lspconfig.emmet_ls.setup({
+		filetypes = { "html", "css" },
+	}),
 }
