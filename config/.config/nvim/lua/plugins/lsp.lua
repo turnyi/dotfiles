@@ -58,7 +58,17 @@ return {
 				filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
 			})
 
-			lspconfig.volar.setup({})
+			lspconfig.volar.setup({
+				filetypes = {
+					"vue",
+				},
+				init_options = {
+					typescript = {
+						tsdk = vim.fn.stdpath("data")
+							.. "/mason/packages/typescript-language-server/node_modules/typescript/lib",
+					},
+				},
+			})
 			local venv_path = vim.fn.getcwd() .. "/.venv/bin/python"
 			lspconfig.pyright.setup({
 				settings = {
@@ -73,7 +83,6 @@ return {
 				},
 			})
 
-			-- ✅ Configuración específica para omnisharp
 			lspconfig.omnisharp.setup({
 				cmd = {
 					vim.fn.stdpath("data") .. "/mason/packages/omnisharp/OmniSharp", -- ✅ el binario correcto
@@ -89,8 +98,4 @@ return {
 		end,
 	},
 	{ "neovim/nvim-lspconfig" },
-
-	lspconfig.emmet_ls.setup({
-		filetypes = { "html", "css" },
-	}),
 }

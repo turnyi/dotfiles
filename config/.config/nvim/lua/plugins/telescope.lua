@@ -34,5 +34,14 @@ return {
 		telescope.load_extension("file_browser")
 		telescope.load_extension("live_grep_args")
 		telescope.load_extension("zk")
+		local hl = vim.api.nvim_set_hl
+		hl(0, "TelescopeNormal", { bg = "none" })
+		hl(0, "TelescopeBorder", { bg = "none" })
+		hl(0, "TelescopePromptNormal", { bg = "none" })
+		hl(0, "TelescopePromptBorder", { bg = "none" })
+		hl(0, "TelescopeResultsNormal", { bg = "none" })
+		hl(0, "TelescopeResultsBorder", { bg = "none" })
+		hl(0, "TelescopePreviewNormal", { bg = "none" })
+		hl(0, "TelescopePreviewBorder", { bg = "none" })
 	end,
 }

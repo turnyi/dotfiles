@@ -1,5 +1,40 @@
 {
   "$schema": "https://opencode.ai/config.json",
+"provider": {
+  "ollama": {
+    "npm": "@ai-sdk/openai-compatible",
+    "name": "Ollama (local)",
+    "options": {
+      "baseURL": "http://localhost:11434/v1"
+    },
+  "models": {
+      "qwen3-coder:30b": {
+        "name": "qwen3-coder:30b",
+        "size": "≈20 GB (VRAM)"
+      },
+      "qwen2.5-coder:14b-instruct": {
+        "name": "qwen2.5-coder:14b-instruct",
+        "size": "≈9.0 GB"
+      },
+      "qwen2.5-coder:7b-instruct": {
+        "name": "qwen2.5-coder:7b-instruct",
+        "size": "≈4.7 GB"
+      }
+    }
+  },    
+  "lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LM Studio (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:1234/v1"
+      },
+      "models": {
+        "qwen/qwen3-coder-30b": {
+          "name": "qwen3-coder-30b (local)"
+        }
+      }
+    }
+},
   "lsp": {
     "lua_ls": {
       "command": [
