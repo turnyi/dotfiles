@@ -1,6 +1,7 @@
 format = """
 [╭](fg:current_line)\
 $os\
+$hostname\
 $directory\
 $git_branch\
 $fill\
@@ -129,3 +130,8 @@ format = """
 [╰─$symbol](fg:current_line) """
 success_symbol = '[λ](fg:current_line)'
 error_symbol = '[×](fg:bold red)'
+
+[hostname]
+ssh_only = false
+format = '[─](fg:current_line)[](fg:cyan)[$hostname](fg:primary bg:cyan)[](fg:cyan)'
+disabled = false
