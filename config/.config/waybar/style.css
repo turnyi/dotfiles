@@ -48,7 +48,8 @@
 #memory,
 #custom-lock,
 #custom-bluetooth,
-#custom-power {
+#custom-power,
+#custom-lms_status {
   padding: 0.5rem 1rem;
   margin: 5px 0;
   margin-left: 1rem;
@@ -135,4 +136,48 @@
   color: rgba(30, 30, 46, 0.4);
   padding-left: 700;
   padding-right: 700;
+}
+
+#custom-lms_status.high {
+  color: #e78284;
+}
+
+#custom-lms_status.medium {
+  color: #e5c890;
+}
+
+#custom-lms_status.low {
+  color: #a6d189;
+}
+
+#custom-lms_status.inactive {
+  color: #6c7086;
+}
+
+#custom-lms_status.warning {
+  color: #ef9f76;
+}
+
+#cpu.high {
+  color: #e78284;
+}
+
+#cpu.medium {
+  color: #e5c890;
+}
+
+#cpu:not(.high):not(.medium) {
+  color: #a6d189;
+}
+
+#memory.high {
+  color: #e78284;
+}
+
+#memory.medium {
+  color: #e5c890;
+}
+
+#memory:not(.high):not(.medium) {
+  color: #a6d189;
 }

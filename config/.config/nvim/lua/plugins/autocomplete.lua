@@ -30,6 +30,7 @@ return {
 			sources = cmp.config.sources({
 				{ name = "nvim_lsp" }, -- LSP suggestions
 				{ name = "luasnip" }, -- Snippet suggestions
+				{ name = "quasar" }, -- Quasar CSS classes
 				{ name = "buffer" }, -- Buffer words
 				{ name = "path" }, -- File paths
 			}),
@@ -40,6 +41,7 @@ return {
 						luasnip = "[Snippet]",
 						buffer = "[Buffer]",
 						path = "[Path]",
+						quasar = "[Quasar]",
 					})[entry.source.name]
 					return vim_item
 				end,
