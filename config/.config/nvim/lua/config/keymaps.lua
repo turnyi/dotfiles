@@ -33,13 +33,13 @@ M.saveMappings = function()
 end
 
 M.telescope = function()
-	nvim_set_keymap("n", "<leader>ff", ":Telescope find_files<CR>", opts)
+	nvim_set_keymap("n", "<leader>ff", ":Telescope find_files hidden=true<CR>", opts)
 	nvim_set_keymap("n", "<leader>fd", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", opts)
 	nvim_set_keymap("n", "<leader>fb", ":Telescope buffers<CR>", opts)
 	vim.api.nvim_set_keymap(
 		"n",
 		"<leader>fs",
-		"<cmd>lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>",
+		"<cmd>lua require('telescope').extensions.live_grep_args.live_grep_args({additional_args={'--hidden'}})<CR>",
 		{ noremap = true, silent = true }
 	)
 	nvim_set_keymap("n", "<leader>mf", ":Telescope marks<CR>", opts)

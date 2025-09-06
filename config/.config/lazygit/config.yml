@@ -1,0 +1,11 @@
+customCommands:
+  - key: "C"
+    description: "Commit with czg"
+    context: "files" # Only shows when on the Files view
+    command: "czg commit"
+    output: terminal
+  - key: "A"
+    description: "AI Commit with czg"
+    context: "files"
+    command: "czg ai"
+    output: terminal

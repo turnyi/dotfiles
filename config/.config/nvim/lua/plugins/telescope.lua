@@ -21,11 +21,24 @@ return {
 					prompt_position = "top",
 				},
 				sorting_strategy = "ascending",
+				file_ignore_patterns = {
+					"%.git/",
+					"node_modules/",
+				},
+				hidden = true,
 			},
 			extensions = {
 				fzf = {},
-				file_browser = {},
-				live_grep_args = {},
+				file_browser = {
+					hidden = { file_browser = true, folder_browser = true },
+					respect_gitignore = false,
+				},
+			live_grep_args = {
+				auto_quoting = true,
+				default_opts = {
+					additional_args = { "--hidden" },
+				},
+			},
 				zk = {},
 			},
 		})
