@@ -10,3 +10,4 @@ config/home/zsh/antigen.sh.zwc
 .DS_Store
 config/.config/nvim/db.config.vim
 .aider*
+config/home/scripts/setup-quasar-docs.sh

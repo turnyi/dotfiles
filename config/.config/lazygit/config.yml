@@ -2,7 +2,7 @@ customCommands:
   - key: "C"
     description: "Commit with czg"
     context: "files" # Only shows when on the Files view
-    command: "czg commit"
+    command: "czg"
     output: terminal
   - key: "A"
     description: "AI Commit with czg"
