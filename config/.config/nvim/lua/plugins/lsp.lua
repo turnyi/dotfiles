@@ -20,7 +20,6 @@ return {
 				"pyright",
 				"clangd",
 				"omnisharp",
-				-- "emmet_ls",
 			}
 			local default_config_servers = {
 				"lua_ls",
@@ -32,7 +31,6 @@ return {
 				"pyright",
 				"clangd",
 				"omnisharp",
-				"volar",
 				-- "emmet_ls",
 			}
 
@@ -45,30 +43,34 @@ return {
 				lspconfig[server].setup({})
 			end
 
-			lspconfig.ts_ls.setup({
-				init_options = {
-					plugins = {
-						{
-							name = "@vue/typescript-plugin",
-							location = "/home/turny/.npm-global/lib",
-							languages = { "vue" },
+			local vue_language_server_path = vim.fn.stdpath("data")
+				.. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
+			local vue_plugin = {
+				name = "@vue/typescript-plugin",
+				location = vue_language_server_path,
+				languages = { "vue" },
+				configNamespace = "typescript",
+			}
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			vim.lsp.config("vtsls", {
+				capabilities = capabilities,
+				settings = {
+					vtsls = {
+						tsserver = {
+							globalPlugins = {
+								vue_plugin,
+							},
 						},
 					},
 				},
-				filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
+				filetypes = { "vue" },
 			})
 
-			lspconfig.volar.setup({
-				filetypes = {
-					"vue",
-				},
-				init_options = {
-					typescript = {
-						tsdk = vim.fn.stdpath("data")
-							.. "/mason/packages/typescript-language-server/node_modules/typescript/lib",
-					},
-				},
+			lspconfig.ts_ls.setup({
+				capabilities = capabilities,
+				filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact" },
 			})
+
 			local venv_path = vim.fn.getcwd() .. "/.venv/bin/python"
 			lspconfig.pyright.setup({
 				settings = {
@@ -95,6 +97,12 @@ return {
 				organize_imports_on_format = true,
 				enable_import_completion = true,
 			})
+
+			local border_opts = { border = "rounded" }
+
+			vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, border_opts)
+
+			vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, border_opts)
 		end,
 	},
 	{ "neovim/nvim-lspconfig" },

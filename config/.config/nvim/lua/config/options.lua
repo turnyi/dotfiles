@@ -64,3 +64,12 @@ vim.diagnostic.config({
 		border = "rounded", -- You can use "single", "double", "shadow", or "rounded"
 	},
 })
+
+do
+	local orig = vim.lsp.util.open_floating_preview
+	function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+		opts = opts or {}
+		opts.border = opts.border or "rounded"
+		return orig(contents, syntax, opts, ...)
+	end
+end

@@ -2,71 +2,146 @@ return {
 	{
 		"catppuccin/nvim",
 		name = "catppuccin",
-		priority = 1000,
-
-		config = function()
-			require("catppuccin").setup({
-				transparent_background = true,
-				flavor = "machiato",
-			})
-			vim.cmd("colorscheme catppuccin")
+		priority = 1000, -- load before other UI plugins
+		lazy = false, -- colorscheme should load at startup
+		init = function()
+			-- latte, frappe, macchiato, mocha
+			vim.g.catppuccin_flavour = "frappe"
 		end,
-	},
-	{
-		"rebelot/kanagawa.nvim",
-		name = "kanagawa",
-		priority = 1000,
-		config = function()
-			require("kanagawa").setup({
-				compile = false, -- enable compiling the colorscheme
-				undercurl = true, -- enable undercurls
-				commentStyle = { italic = true },
-				functionStyle = {},
-				keywordStyle = { italic = true },
-				statementStyle = { bold = true },
-				typeStyle = {},
-				transparent = true, -- do not set background color
-				dimInactive = false, -- dim inactive window `:h hl-NormalNC`
-				terminalColors = true, -- define vim.g.terminal_color_{0,17}
-				colors = { -- add/modify theme and palette colors
-					palette = {},
-					theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
+		opts = {
+			-- See big comment in integrations.virtual_text below
+			no_italic = true,
+			transparent_background = true,
+			float = {
+				transparent = false, -- enable transparent floating windows
+				solid = true, -- use solid styling for floating windows, see |winborder|
+			},
+
+			styles = {
+				comments = {},
+				conditionals = {},
+				loops = {},
+				functions = {},
+				keywords = {},
+				strings = {},
+				variables = {},
+				numbers = {},
+				booleans = {},
+				properties = {},
+				types = {},
+				operators = {},
+			},
+			integrations = {
+				treesitter = true,
+				native_lsp = {
+					enabled = true,
+					-- TL;DR: these italic specs don't apply because no_italic=true.
+					-- You re-apply italics manually below with :hi commands.
+					virtual_text = {
+						errors = { "italic" },
+						hints = { "italic" },
+						warnings = { "italic" },
+						information = { "italic" },
+					},
+					underlines = {
+						errors = { "underline" },
+						hints = { "underline" },
+						warnings = { "underline" },
+						information = { "underline" },
+					},
 				},
-				overrides = function(colors) -- add/modify highlights
-					return {
-						Normal = { bg = "none" },
-						NormalNC = { bg = "none" },
-						SignColumn = { bg = "none" },
-						FoldColumn = { bg = "none" },
-						LineNr = { bg = "none" },
-						CursorLine = { bg = "none" },
-						CursorLineNr = { bg = "none" },
-						EndOfBuffer = { bg = "none" },
+				cmp = true,
+				telescope = true,
+				nvimtree = false,
+			},
+			custom_highlights = function(colors)
+				local t = {
+					CursorLine = { bg = "#3a3b3c" },
+					ColorColumn = { bg = "#4e4e4e" },
+					TabLineFill = { bg = "#bbc2cf", fg = "black" },
+					WinSeparator = { bg = "#bbc2cf" },
+					Visual = { bg = "#61677d", style = { "bold" } },
+					HighlightOnYank = { bg = "#71778d" },
 
-						-- splits & borders
-						WinSeparator = { bg = "none" },
+					CursorLineNr = { fg = "#e2e209" },
+					SignColumn = { fg = "#a8a8a8" },
+					LineNr = { fg = "#8a8a8a" },
+					Comment = { fg = "#aaaaaa" },
+					Todo = { fg = "#aaaaaa", bg = "none", style = { "bold" } },
+					NonText = { fg = "#729ecb", style = { "bold" } },
+					VertSplit = { fg = "NONE", style = { "reverse" } },
+					StatusLine = { fg = "NONE", style = { "bold", "reverse" } },
+					StatusLineNC = { fg = "NONE", style = { "reverse" } },
+					MoreMsg = { fg = "SeaGreen", style = { "bold" } },
+					MatchParen = { fg = "#87ff00", style = { "bold" } },
+					CmpBorder = { fg = colors.surface2 },
+					FloatBorder = { fg = "#89b4fa", bg = "none" }, -- light blue border
+					NormalFloat = { bg = "none", fg = "#cdd6f4" }, -- transparent background
+					-- Search       = { fg="#c6d0f5", bg="#506373" },
+					-- CurSearch    = { fg="#506373", bg="#c6d0f5" },
+					diffChanged = { fg = "#e5c890" },
+				}
+				return t
+			end,
+		},
+		config = function(_, opts)
+			require("catppuccin").setup(opts)
+			vim.cmd.colorscheme("catppuccin")
 
-						-- tabs / status / cmdline
-						TabLine = { bg = "none" },
-						TabLineFill = { bg = "none" },
-						TabLineSel = { bg = "none" },
-						StatusLine = { bg = "none" },
-						StatusLineNC = { bg = "none" },
+			-- Your manual highlight tweaks
+			vim.cmd([[
+hi clear EndOfBuffer
+hi link EndOfBuffer NonText
+hi clear MsgSeparator
+hi link MsgSeparator StatusLine
+match CustomTabs /\t/
+hi CustomTabs guifg=#999999 gui=NONE
+match CustomTrailingWhiteSpaces /\s\+$/
+hi link CustomTrailingWhiteSpaces NonText
+" Setting ['@parameter'] = { style = {} } would clear
+" everything else and leave it without colors
+hi @parameter gui=NONE cterm=NONE
+hi @namespace gui=NONE cterm=NONE
 
-						-- floats / popups / menus
-						NormalFloat = { bg = "none" },
-						FloatBorder = { bg = "none" },
-						Pmenu = { bg = "none" },
-						PmenuSel = { bg = "none" },
-					}
-				end,
-				theme = "dragon", -- Load "wave" theme
-				background = { -- map the value of 'background' option to a theme
-					dark = "dragon", -- try "dragon" !
-					light = "lotus",
-				},
-			})
-			-- vim.cmd("colorscheme kanagawa")
+hi clear @text.uri
+hi link @text.uri @comment
+hi @text.uri gui=ITALIC cterm=ITALIC
+hi clear @string.special.url
+hi link @string.special.url @text.uri
+
+hi clear @module
+hi link @module Type
+
+hi clear @comment.todo
+hi clear @comment.error
+hi clear @comment.warning
+hi clear @comment.hint
+hi clear @comment.note
+hi @comment.todo    gui=BOLD
+hi @comment.error   gui=BOLD
+hi @comment.warning gui=BOLD
+hi @comment.hint    gui=BOLD
+hi @comment.note    gui=BOLD
+
+" One day I woke up and go files looked like shit.
+" Function call likes "fmt.Println" and builtins like "make"
+" all had the same color as numbers, orange, and types are yellow.
+" Everything looked like shit. They used to be blue, just like
+" function declarations. So that's why I linked them to @function.
+hi clear @method.call
+hi link @method.call @function
+
+hi clear @module
+hi link @module Type
+
+hi Folded guibg=#101010
+
+hi DiagnosticVirtualTextError gui=ITALIC cterm=ITALIC
+hi DiagnosticVirtualTextHint  gui=ITALIC cterm=ITALIC
+hi DiagnosticVirtualTextInfo  gui=ITALIC cterm=ITALIC
+hi DiagnosticVirtualTextOk    gui=ITALIC cterm=ITALIC
+hi DiagnosticVirtualTextWarn  gui=ITALIC cterm=ITALIC
+]])
 		end,
 	},
 }

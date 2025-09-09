@@ -11,6 +11,7 @@ return {
       trigger_characters = { "q-", "text-", "bg-", "border-", "shadow-", "row", "col", "flex" },
       auto_trigger = true, -- Enable automatic suggestions
       debounce_ms = 50, -- Faster response time
+      enable_component_completion = true, -- Enable Quasar component suggestions
     })
   end,
 }

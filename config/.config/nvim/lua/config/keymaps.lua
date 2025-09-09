@@ -24,6 +24,11 @@ M.generalMappings = function()
 		vim.wo.wrap = not vim.wo.wrap
 	end, { desc = "Toggle line wrap" })
 	nvim_set_keymap("n", "<S-T>", ":lua OpenFloatingDiagnostics()<CR>", { noremap = true, silent = true })
+	vim_set("n", "<leader>fp", function()
+		local filepath = vim.fn.expand("%")
+		vim.fn.setreg("+", filepath)
+		print("Copied relative path: " .. filepath)
+	end, { desc = "Copy relative file path" })
 end
 
 M.saveMappings = function()
