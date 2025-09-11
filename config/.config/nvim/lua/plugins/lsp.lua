@@ -20,6 +20,7 @@ return {
 				"pyright",
 				"clangd",
 				"omnisharp",
+				"vtsls",
 			}
 			local default_config_servers = {
 				"lua_ls",
@@ -68,7 +69,7 @@ return {
 
 			lspconfig.ts_ls.setup({
 				capabilities = capabilities,
-				filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact" },
+				filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
 			})
 
 			local venv_path = vim.fn.getcwd() .. "/.venv/bin/python"
@@ -87,7 +88,7 @@ return {
 
 			lspconfig.omnisharp.setup({
 				cmd = {
-					vim.fn.stdpath("data") .. "/mason/packages/omnisharp/OmniSharp", -- ✅ el binario correcto
+					vim.fn.stdpath("data") .. "/mason/packages/omnisharp/OmniSharp",
 					"--languageserver",
 					"--hostPID",
 					tostring(vim.fn.getpid()),

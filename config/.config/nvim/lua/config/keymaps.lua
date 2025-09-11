@@ -41,6 +41,7 @@ M.telescope = function()
 	nvim_set_keymap("n", "<leader>ff", ":Telescope find_files hidden=true<CR>", opts)
 	nvim_set_keymap("n", "<leader>fd", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", opts)
 	nvim_set_keymap("n", "<leader>fb", ":Telescope buffers<CR>", opts)
+	nvim_set_keymap("n", "<leader>fr", ":Telescope lsp_references<CR>", opts)
 	vim.api.nvim_set_keymap(
 		"n",
 		"<leader>fs",

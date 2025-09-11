@@ -59,7 +59,7 @@ return {
 					CursorLine = { bg = "#3a3b3c" },
 					ColorColumn = { bg = "#4e4e4e" },
 					TabLineFill = { bg = "#bbc2cf", fg = "black" },
-					WinSeparator = { bg = "#bbc2cf" },
+					WinSeparator = { fg = colors.surface1, bg = "NONE" },
 					Visual = { bg = "#61677d", style = { "bold" } },
 					HighlightOnYank = { bg = "#71778d" },
 
