@@ -1,0 +1,8 @@
+# Sway Window Manager Packages
+sway
+swaybg
+swayidle 
+sway-systemd
+xdg-desktop-portal-wlr
+wofi
+waybar

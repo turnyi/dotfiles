@@ -18,17 +18,17 @@ M.generalMappings = function()
 	global.maplocalleader = "\\"
 	nvim_set_keymap("n", "<C-s>", ":w<CR>", opts)
 
-	vim_set("n", "X", '"_d', { noremap = true })
-	vim_set("v", "X", '"_d', { noremap = true })
+	vim_set("n", "X", '"_d', { noremap = true, silent = true })
+	vim_set("v", "X", '"_d', { noremap = true, silent = true })
 	vim_set("n", "<leader>w", function()
 		vim.wo.wrap = not vim.wo.wrap
-	end, { desc = "Toggle line wrap" })
+	end, { desc = "Toggle line wrap", silent = true })
 	nvim_set_keymap("n", "<S-T>", ":lua OpenFloatingDiagnostics()<CR>", { noremap = true, silent = true })
 	vim_set("n", "<leader>fp", function()
 		local filepath = vim.fn.expand("%")
 		vim.fn.setreg("+", filepath)
 		print("Copied relative path: " .. filepath)
-	end, { desc = "Copy relative file path" })
+	end, { desc = "Copy relative file path", silent = true })
 end
 
 M.saveMappings = function()
@@ -51,7 +51,7 @@ M.telescope = function()
 	nvim_set_keymap("n", "<leader>mf", ":Telescope marks<CR>", opts)
 	nvim_set_keymap("n", "<leader>md", "<Cmd>delmarks A-Z0-9<CR>", opts)
 	nvim_set_keymap("n", "gd", "<cmd>Telescope lsp_definitions<CR>", { noremap = true, silent = true })
-	vim_set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "LSP Hover" })
+	vim_set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "LSP Hover", silent = true })
 	nvim_set_keymap("n", "ga", "<cmd>Telescope lsp_code_actions<CR>", { noremap = true, silent = true })
 	vim_set("n", "gld", function()
 		vim_cmd("vsplit")
@@ -116,7 +116,7 @@ M.spell = function()
 		vim.opt.spelllang = new_lang
 		print("Spell language set to: " .. new_lang)
 	end
-	vim_set("n", "<leader>sl", ToggleSpellLang, { desc = "Toggle Spell Language (EN/ES)" })
+	vim_set("n", "<leader>sl", ToggleSpellLang, { desc = "Toggle Spell Language (EN/ES)", silent = true })
 	local filename = vim.fn.expand("%:t")
 	if filename:match("^es%..*") then
 		vim.opt.spelllang = "es"

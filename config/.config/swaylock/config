@@ -1,0 +1,42 @@
+image=~/Projects/dotfiles/config/images/desktopBackground.png
+scaling=fill
+color=00000000
+
+fade-in=false
+
+# Bigger indicator for text display
+indicator-radius=200
+indicator-thickness=3
+indicator-caps-lock
+show-keyboard-layout
+
+# Keep only visible ring and highlights
+ring-color=cdd6f4
+key-hl-color=a6e3a1
+separator-color=cdd6f4
+
+# Text colors (Catppuccin theme)
+text-color=cdd6f4
+text-clear-color=f5e0dc
+text-caps-lock-color=fab387
+text-ver-color=89b4fa
+text-wrong-color=eba0ac
+
+# Ring states
+ring-clear-color=f5e0dc
+ring-caps-lock-color=fab387
+ring-ver-color=89b4fa
+ring-wrong-color=eba0ac
+
+# Caps lock highlight
+caps-lock-key-hl-color=a6e3a1
+
+# Font settings - clean display
+font=Adwaita Sans
+font-size=25
+
+
+# Clock
+clock
+timestr=%H:%M
+

@@ -251,7 +251,7 @@ hyprland
 hyprland-qt-support
 hyprland-qtutils
 hyprlang
-hyprlock
+swaylock
 hyprpaper
 hyprpicker
 hyprutils
