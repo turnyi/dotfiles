@@ -1,0 +1,41 @@
+{
+  "$schema": "https://raw.githubusercontent.com/vicinaehq/vicinae/refs/heads/main/extra/schemas/extension.json",
+  "name": "network-manager",
+  "title": "Network Manager",
+  "description": "Manage WiFi and Bluetooth connections",
+  "categories": [],
+  "license": "MIT",
+  "author": "turnyi",
+  "contributors": [],
+  "pastContributors": [],
+  "icon": "extension_icon.png",
+  "commands": [
+    {
+      "name": "wifi",
+      "title": "Connect to WiFi",
+      "subtitle": "WiFi networks",
+      "description": "Manage WiFi connections",
+      "mode": "view",
+      "icon": "📶"
+    },
+    {
+      "name": "bluetooth",
+      "title": "Connect to Bluetooth",
+      "subtitle": "Bluetooth devices",
+      "description": "Manage Bluetooth connections",
+      "mode": "view",
+      "icon": "🔵"
+    }
+  ],
+  "preferences": [],
+  "scripts": {
+    "build": "vici build",
+    "dev": "vici develop"
+  },
+  "dependencies": {
+    "@vicinae/api": "^0.9.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

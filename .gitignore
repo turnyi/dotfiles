@@ -12,3 +12,4 @@ config/.config/nvim/db.config.vim
 .aider*
 config/home/scripts/setup-quasar-docs.sh
 config/tmux-client-49213.log
+config/home/code/vicinae-extensions/wifi-manager/node_modules
