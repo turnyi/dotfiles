@@ -39,6 +39,7 @@ export const useBluetooth = () => {
   };
 
   const disconnect = async (address: string) => {
+    showToast({ title: "Disconnecting from device..." });
     const result = await BluetoothHelper.disconnectFromDevice(address);
     showToast({
       style: result.success ? "success" : "failure",
@@ -51,6 +52,7 @@ export const useBluetooth = () => {
   };
 
   const pair = async (address: string) => {
+    showToast({ title: "Pairing with device..." });
     const result = await BluetoothHelper.pairDevice(address);
     showToast({
       style: result.success ? "success" : "failure",
@@ -63,6 +65,7 @@ export const useBluetooth = () => {
   };
 
   const unpair = async (address: string) => {
+    showToast({ title: "Unpairing device..." });
     const result = await BluetoothHelper.unpairDevice(address);
     showToast({
       style: result.success ? "success" : "failure",

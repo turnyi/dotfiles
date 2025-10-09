@@ -4,6 +4,13 @@ import { useBluetooth } from "../hooks/useBluetooth";
 import { BluetoothDevice } from "../types/bluetooth";
 import { BluetoothHelper } from "../helpers/bluetoothHelper";
 import { NetworkList } from "../components/NetworkList";
+import {
+  BluetoothIcons,
+  BatteryIcons,
+  ActionIcons,
+  getBatteryIcon,
+  getBluetoothDeviceIcon,
+} from "../helpers/icons";
 
 interface BluetoothManagerProps {
   onBack: () => void;
@@ -49,17 +56,17 @@ export function BluetoothManager({ onBack }: BluetoothManagerProps) {
   };
 
   const getDeviceIcon = (device: BluetoothDevice) => {
-    if (device.id === "empty") return "📡";
-    if (device.connected) return Icon.CheckCircle;
-    return BluetoothHelper.getDeviceIcon(device);
+    if (device.id === "empty") return BluetoothIcons.Bluetooth;
+    if (device.connected) return BluetoothIcons.Connected;
+    return getBluetoothDeviceIcon(device.deviceType);
   };
 
   const getSubtitle = (device: BluetoothDevice) => {
     if (device.id === "empty") return "Press Ctrl+R to scan for devices";
 
     const parts = [device.address];
-    if (device.battery) {
-      parts.push(`${device.battery}% battery`);
+    if (device.battery !== undefined) {
+      parts.push(`${getBatteryIcon(device.battery)} ${device.battery}%`);
     }
     parts.push(device.deviceType);
     return parts.join(" • ");

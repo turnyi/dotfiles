@@ -5,6 +5,7 @@ import { WiFiNetwork } from "../types/wifi";
 import { WiFiHelper } from "../helpers/wifiHelper";
 import { NetworkList } from "../components/NetworkList";
 import { ConnectionForm } from "../components/ConnectionForm";
+import { NetworkIcons, ActionIcons } from "../helpers/icons";
 
 interface WiFiManagerProps {
   onBack: () => void;
@@ -51,11 +52,11 @@ export function WiFiManager({ onBack }: WiFiManagerProps) {
   };
 
   const getNetworkIcon = (network: WiFiNetwork) => {
-    if (network.id === "empty") return Icon.Wifi;
-    if (network.connected) return Icon.CheckCircle;
-    if (network.known) return Icon.Star;
-    if (network.security === "Open") return Icon.Globe;
-    return Icon.Lock;
+    if (network.id === "empty") return NetworkIcons.Wifi;
+    if (network.connected) return NetworkIcons.Connected;
+    if (network.known) return NetworkIcons.Known;
+    if (network.security === "Open") return NetworkIcons.Globe;
+    return NetworkIcons.Lock;
   };
 
   const getSubtitle = (network: WiFiNetwork) => {

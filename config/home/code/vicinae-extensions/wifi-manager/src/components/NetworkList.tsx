@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { List, ActionPanel, Action, Keyboard } from "@vicinae/api";
 import { BaseDevice } from "../types/common";
 
@@ -39,18 +39,32 @@ export function NetworkList<T extends BaseDevice>({
   error,
   emptyMessage = "No items found",
 }: NetworkListProps<T>) {
-  const globalActionsComponent = (actions: NetworkAction[]) => actions.map((action, index) => (
-    <Action
-      key={index}
-      title={action.title}
-      icon={action.icon}
-      onAction={action.onAction}
-      style={action.style}
-      shortcut={action.shortcut}
-    />
-  ));
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const hasAnyItems = sections.some(section => section.items.length > 0);
+  const getEnhancedAccessories = (item: T) => {
+    const baseAccessories = getAccessories(item);
+    const isSelected = selectedId === item.id;
+
+    if (isSelected) {
+      return [{ icon: "●", tooltip: "Selected" }, ...baseAccessories];
+    }
+
+    return baseAccessories;
+  };
+
+  const globalActionsComponent = (actions: NetworkAction[]) =>
+    actions.map((action, index) => (
+      <Action
+        key={index}
+        title={action.title}
+        icon={action.icon}
+        onAction={action.onAction}
+        style={action.style}
+        shortcut={action.shortcut}
+      />
+    ));
+
+  const hasAnyItems = sections.some((section) => section.items.length > 0);
 
   return (
     <List
@@ -58,9 +72,7 @@ export function NetworkList<T extends BaseDevice>({
       searchBarPlaceholder={searchPlaceholder}
       actions={
         globalActions.length > 0 ? (
-          <ActionPanel>
-            {globalActionsComponent(globalActions)}
-          </ActionPanel>
+          <ActionPanel>{globalActionsComponent(globalActions)}</ActionPanel>
         ) : undefined
       }
     >
@@ -70,9 +82,7 @@ export function NetworkList<T extends BaseDevice>({
           title="Error"
           description={error}
           actions={
-            <ActionPanel>
-              {globalActionsComponent(globalActions)}
-            </ActionPanel>
+            <ActionPanel>{globalActionsComponent(globalActions)}</ActionPanel>
           }
         />
       ) : !loading && !hasAnyItems ? (
@@ -81,9 +91,7 @@ export function NetworkList<T extends BaseDevice>({
           title="No Networks Found"
           description={emptyMessage}
           actions={
-            <ActionPanel>
-              {globalActionsComponent(globalActions)}
-            </ActionPanel>
+            <ActionPanel>{globalActionsComponent(globalActions)}</ActionPanel>
           }
         />
       ) : (
@@ -96,10 +104,13 @@ export function NetworkList<T extends BaseDevice>({
                   title={item.name}
                   subtitle={getSubtitle(item)}
                   icon={getIcon(item)}
-                  accessories={getAccessories(item)}
+                  accessories={getEnhancedAccessories(item)}
                   actions={
                     <ActionPanel>
-                      {globalActionsComponent([...getActions(item), ...globalActions])}
+                      {globalActionsComponent([
+                        ...getActions(item),
+                        ...globalActions,
+                      ])}
                     </ActionPanel>
                   }
                 />
