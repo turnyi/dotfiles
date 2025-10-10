@@ -2,22 +2,34 @@ import { BluetoothDevice, BluetoothConnectionResult } from "../types/bluetooth";
 import { execAsync } from "./commandHelper";
 
 export class BluetoothHelper {
-  static async scanDevices(): Promise<BluetoothDevice[]> {
+  static async scanDevices(
+    performActiveScan = false,
+  ): Promise<BluetoothDevice[]> {
     try {
       await execAsync("bluetoothctl power on", { timeout: 3000 });
+
+      if (performActiveScan) {
+        console.log("Starting active Bluetooth discovery...");
+        return this.performDiscoveryScan();
+      }
 
       const { stdout: devicesOutput } = await execAsync(
         "bluetoothctl devices",
         { timeout: 5000 },
       );
+      console.log("Raw devices output:", devicesOutput);
+
       const { stdout: pairedOutput } = await execAsync(
         "bluetoothctl devices Paired",
         { timeout: 3000 },
       ).catch(() => ({ stdout: "" }));
+      console.log("Paired devices:", pairedOutput);
+
       const { stdout: connectedOutput } = await execAsync(
         "bluetoothctl devices Connected",
         { timeout: 3000 },
       ).catch(() => ({ stdout: "" }));
+      console.log("Connected devices:", connectedOutput);
 
       const pairedAddresses = new Set(
         pairedOutput
@@ -39,6 +51,7 @@ export class BluetoothHelper {
       const seenAddresses = new Set<string>();
 
       const deviceLines = devicesOutput.split("\n").filter(Boolean);
+      console.log("Processing device lines:", deviceLines);
 
       for (const line of deviceLines) {
         const parts = line.split(" ");
@@ -46,12 +59,16 @@ export class BluetoothHelper {
 
         const address = parts[1];
         const name = parts.slice(2).join(" ");
+        console.log(`Found device: ${name} (${address})`);
 
         if (!address || seenAddresses.has(address)) continue;
         seenAddresses.add(address);
 
         const isPaired = pairedAddresses.has(address);
         const isConnected = connectedAddresses.has(address);
+        console.log(
+          `Device ${name}: paired=${isPaired}, connected=${isConnected}`,
+        );
 
         const battery = isConnected
           ? await this.getBatteryLevel(address)
@@ -70,7 +87,13 @@ export class BluetoothHelper {
         });
       }
 
-      return this.sortDevices(devices);
+      console.log(`Total devices found: ${devices.length}`);
+      const sortedDevices = this.sortDevices(devices);
+      console.log(
+        "Returning sorted devices:",
+        sortedDevices.map((d) => `${d.name} (${d.address})`),
+      );
+      return sortedDevices;
     } catch (error) {
       console.error("Failed to scan Bluetooth devices:", error);
       return [];
@@ -244,6 +267,167 @@ export class BluetoothHelper {
     } catch (error) {
       console.error("Failed to start scan:", error);
     }
+  }
+
+  static async performDiscoveryScan(): Promise<BluetoothDevice[]> {
+    try {
+      await execAsync("bluetoothctl power on", { timeout: 3000 });
+
+      console.log("Starting interactive discovery scan...");
+      const { stdout } = await execAsync(
+        `timeout 12s bash -c '(echo "scan on"; sleep 8; echo "devices"; echo "scan off"; echo "quit") | bluetoothctl'`,
+        { timeout: 15000 },
+      );
+
+      console.log("Full scan session output:", stdout);
+
+      const deviceLines = stdout
+        .split("\n")
+        .filter(
+          (line) =>
+            line.includes("Device ") &&
+            !line.includes("[NEW]") &&
+            !line.includes("[CHG]"),
+        )
+        .map((line) => line.replace(/^\[.*?\]\s*/, "").trim());
+
+      console.log("Extracted device lines:", deviceLines);
+
+      if (deviceLines.length === 0) {
+        console.log(
+          "No devices found in scan output, falling back to bluetoothctl devices",
+        );
+        return this.getKnownDevices();
+      }
+
+      return this.parseAndProcessDevices(deviceLines.join("\n"));
+    } catch (error) {
+      console.error("Discovery scan failed:", error);
+      return this.getKnownDevices();
+    }
+  }
+
+  static async parseAndProcessDevices(
+    devicesOutput: string,
+  ): Promise<BluetoothDevice[]> {
+    try {
+      const { stdout: pairedOutput } = await execAsync(
+        "bluetoothctl devices Paired",
+        { timeout: 3000 },
+      ).catch(() => ({ stdout: "" }));
+
+      const { stdout: connectedOutput } = await execAsync(
+        "bluetoothctl devices Connected",
+        { timeout: 3000 },
+      ).catch(() => ({ stdout: "" }));
+
+      const pairedAddresses = new Set(
+        pairedOutput
+          .split("\n")
+          .filter(Boolean)
+          .map((line) => line.split(" ")[1])
+          .filter(Boolean),
+      );
+      const connectedAddresses = new Set(
+        connectedOutput
+          .split("\n")
+          .filter(Boolean)
+          .map((line) => line.split(" ")[1])
+          .filter(Boolean),
+      );
+
+      const devices: BluetoothDevice[] = [];
+      const seenAddresses = new Set<string>();
+      const deviceLines = devicesOutput.split("\n").filter(Boolean);
+
+      for (const line of deviceLines) {
+        const parts = line.split(" ");
+        if (parts.length < 3 || parts[0] !== "Device") continue;
+
+        const address = parts[1];
+        const name = parts.slice(2).join(" ");
+        console.log(`Processing discovered device: ${name} (${address})`);
+
+        if (!address || seenAddresses.has(address)) continue;
+        seenAddresses.add(address);
+
+        const isPaired = pairedAddresses.has(address);
+        const isConnected = connectedAddresses.has(address);
+
+        devices.push({
+          name: name || address,
+          id: address,
+          address,
+          connected: isConnected,
+          known: isPaired,
+          paired: isPaired,
+          trusted: false,
+          deviceType: this.guessDeviceType(name),
+          battery: isConnected
+            ? await this.getBatteryLevel(address)
+            : undefined,
+        });
+      }
+
+      return this.sortDevices(devices);
+    } catch (error) {
+      console.error("Failed to parse devices:", error);
+      return [];
+    }
+  }
+
+  static async scanForNewDevices(): Promise<BluetoothDevice[]> {
+    try {
+      await execAsync("bluetoothctl power on", { timeout: 3000 });
+
+      const { stdout } = await execAsync(
+        `echo -e "scan on\nsleep 12\ndevices\nscan off\nquit" | bluetoothctl`,
+        { timeout: 20000 },
+      );
+
+      const deviceLines = stdout
+        .split("\n")
+        .filter(
+          (line) =>
+            line.includes("Device ") && !line.includes("[NEW]") === false,
+        )
+        .map((line) => line.replace(/^\[.*?\]\s*/, ""));
+
+      return this.parseDeviceLines(deviceLines);
+    } catch (error) {
+      console.error("Failed to scan for new devices:", error);
+      return [];
+    }
+  }
+
+  private static parseDeviceLines(lines: string[]): BluetoothDevice[] {
+    const devices: BluetoothDevice[] = [];
+    const seenAddresses = new Set<string>();
+
+    for (const line of lines) {
+      const parts = line.split(" ");
+      if (parts.length < 3 || parts[0] !== "Device") continue;
+
+      const address = parts[1];
+      const name = parts.slice(2).join(" ");
+
+      if (!address || seenAddresses.has(address)) continue;
+      seenAddresses.add(address);
+
+      devices.push({
+        name: name || address,
+        id: address,
+        address,
+        connected: false,
+        known: false,
+        paired: false,
+        trusted: false,
+        deviceType: this.guessDeviceType(name),
+        battery: undefined,
+      });
+    }
+
+    return devices;
   }
 
   static async stopScan(): Promise<void> {

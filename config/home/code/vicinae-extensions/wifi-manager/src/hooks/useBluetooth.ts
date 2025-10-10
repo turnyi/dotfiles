@@ -9,9 +9,9 @@ export const useBluetooth = () => {
   const [scanning, setScanning] = useState(false);
   const [connecting, setConnecting] = useState<Set<string>>(new Set());
 
-  const loadDevices = async () => {
+  const loadDevices = async (performActiveScan = false) => {
     setLoading(true);
-    const scannedDevices = await BluetoothHelper.scanDevices();
+    const scannedDevices = await BluetoothHelper.scanDevices(performActiveScan);
     setDevices(scannedDevices);
     setLoading(false);
   };
@@ -80,11 +80,14 @@ export const useBluetooth = () => {
   const startScan = async () => {
     setScanning(true);
     showToast({ title: "Starting Bluetooth scan..." });
-    await BluetoothHelper.startScan();
-    setTimeout(() => {
-      loadDevices();
+    try {
+      await loadDevices(true);
+      showToast({ style: "success", title: "Scan completed" });
+    } catch (error) {
+      showToast({ style: "failure", title: "Scan failed" });
+    } finally {
       setScanning(false);
-    }, 3000);
+    }
   };
 
   const stopScan = async () => {
@@ -94,7 +97,7 @@ export const useBluetooth = () => {
 
   useEffect(() => {
     loadDevices();
-    const interval = setInterval(loadDevices, 15000); // Less frequent than WiFi
+    const interval = setInterval(() => loadDevices(false), 15000);
     return () => {
       clearInterval(interval);
       stopScan();
@@ -116,6 +119,6 @@ export const useBluetooth = () => {
     unpair,
     startScan,
     stopScan,
-    refresh: loadDevices,
+    refresh: () => loadDevices(false),
   };
 };

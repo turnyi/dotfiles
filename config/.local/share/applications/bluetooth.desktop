@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Bluetooth Menu 
-Comment=Launch rofi bluetooth for Bluetooth device control via Walker
-Exec=rofi-bluetooth
-Icon=blueman
-Terminal=false
-Type=Application
-Categories=Settings;Utility;
