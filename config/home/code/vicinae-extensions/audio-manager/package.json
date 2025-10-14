@@ -16,6 +16,20 @@
       "subtitle": "volume mixer and audio devices",
       "description": "change volume, audio devices and more",
       "mode": "view"
+    },
+    {
+      "name": "speakers",
+      "title": "Speakers",
+      "subtitle": "speakers and headphones",
+      "description": "manage output devices (speakers, headphones)",
+      "mode": "view"
+    },
+    {
+      "name": "mics",
+      "title": "Microphones",
+      "subtitle": "microphones and recording devices",
+      "description": "manage input devices (microphones, line-in)",
+      "mode": "view"
     }
   ],
   "preferences": [],
