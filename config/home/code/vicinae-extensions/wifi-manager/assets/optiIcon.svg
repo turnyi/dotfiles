@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="181" height="96" viewBox="0 0 181 96">
+  <defs>
+    <!-- Logo -->
+    <path id="icon-shape" fill-rule="evenodd" clip-rule="evenodd" d="M10.9502 84.9408L0.382702 74.0183C-0.127567 73.4909 -0.127567 72.6358 0.382701 72.1084L67.4689 2.76889C71.0408 -0.92296 76.8319 -0.922968 80.4038 2.76889L97.647 20.5912C98.0585 21.0166 98.7622 20.7153 98.7622 20.1137V13.6409C98.7622 12.895 99.3472 12.2903 100.069 12.2903H108.562C109.284 12.2903 109.869 12.895 109.869 13.6409V32.4421C109.869 33.1585 110.144 33.8455 110.634 34.352L118.418 42.3972C118.928 42.9246 118.928 43.7797 118.418 44.3071L108.179 54.8894C107.669 55.4168 106.842 55.4168 106.331 54.8894L76.106 23.6488C75.0874 22.596 73.4365 22.5937 72.4152 23.6438L12.7956 84.9433C12.285 85.4684 11.4595 85.4672 10.9502 84.9408ZM169.149 10.406L179.717 21.3285C180.227 21.8559 180.227 22.711 179.717 23.2384L112.631 92.5779C109.059 96.2698 103.268 96.2698 99.6958 92.578L81.3374 73.6029L70.2311 61.7859L61.682 52.9497C61.1717 52.4223 61.1717 51.5672 61.682 51.0398L71.9204 40.4574C72.4307 39.93 73.258 39.93 73.7682 40.4574L103.994 71.698C105.012 72.7509 106.663 72.7531 107.684 71.703L167.304 10.4035C167.815 9.87849 168.64 9.87961 169.149 10.406Z"></path>
+
+    <!-- Gradient fill -->
+    <linearGradient id="pretty-gradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6C5CFF"></stop>
+      <stop offset="60%" stop-color="#453BDA"></stop>
+      <stop offset="100%" stop-color="#2B238F"></stop>
+    </linearGradient>
+
+    <!-- Wider feather band -->
+    <linearGradient id="feather-band" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="white" stop-opacity="0"></stop>
+      <stop offset="10%" stop-color="white" stop-opacity="1"></stop>
+      <stop offset="90%" stop-color="white" stop-opacity="1"></stop>
+      <stop offset="110%" stop-color="white" stop-opacity="0"></stop>
+    </linearGradient>
+
+    <!-- Mask: band = 420px -->
+    <mask id="wipe" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="96">
+      <rect x="-420" y="0" width="420" height="96" fill="url(#feather-band)">
+        <animate attributeName="x" values="-420;0;181;0;-420" keyTimes="0;0.25;0.5;0.75;1" dur="2.4s" repeatCount="indefinite" calcMode="spline" keySplines="
+                   0.4 0 0.2 1;
+                   0.4 0 0.2 1;
+                   0.4 0 0.2 1;
+                   0.4 0 0.2 1">
+                   </animate>
+      </rect>
+    </mask>
+  </defs>
+
+  <!-- Base -->
+  <use href="#icon-shape" fill="#e6e6ef"></use>
+  <!-- Animated fill -->
+  <use href="#icon-shape" fill="url(#pretty-gradient)" mask="url(#wipe)"></use>
+</svg>

@@ -179,3 +179,66 @@ fbh() {
     awk -F $sep '{printf "%-'$cols's  \x1b[36m%s\n", $1, $2}' |
     fzf --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs open
 }
+
+# Copy filename only to clipboard
+fn() {
+  local filename=$(basename "$(pwd)")
+  if [[ -n "$1" ]]; then
+    filename=$(basename "$1")
+  fi
+  
+  if command -v pbcopy >/dev/null 2>&1; then
+    echo -n "$filename" | pbcopy
+  elif command -v xclip >/dev/null 2>&1; then
+    echo -n "$filename" | xclip -selection clipboard
+  elif command -v wl-copy >/dev/null 2>&1; then
+    echo -n "$filename" | wl-copy
+  else
+    echo "No clipboard utility found (pbcopy, xclip, or wl-copy)"
+    return 1
+  fi
+  
+  echo "Copied filename: $filename"
+}
+
+# Store first path for relative path calculation
+fm() {
+  local current_path=$(pwd)
+  
+  if [[ -n "$1" ]]; then
+    current_path="$1"
+  fi
+  
+  if [[ -z "$FM_FIRST_PATH" ]]; then
+    # First call - store the path
+    export FM_FIRST_PATH="$current_path"
+    echo "Stored first path: $FM_FIRST_PATH"
+  else
+    # Second call - calculate relative path and copy
+    local relative_path=$(python3 -c "
+import os
+first = os.path.abspath('$FM_FIRST_PATH')
+second = os.path.abspath('$current_path')
+print(os.path.relpath(first, os.path.dirname(second)))
+")
+    
+    if command -v pbcopy >/dev/null 2>&1; then
+      echo -n "$relative_path" | pbcopy
+    elif command -v xclip >/dev/null 2>&1; then
+      echo -n "$relative_path" | xclip -selection clipboard
+    elif command -v wl-copy >/dev/null 2>&1; then
+      echo -n "$relative_path" | wl-copy
+    else
+      echo "No clipboard utility found (pbcopy, xclip, or wl-copy)"
+      unset FM_FIRST_PATH
+      return 1
+    fi
+    
+    echo "Copied relative path: $relative_path"
+    echo "From: $FM_FIRST_PATH"
+    echo "To: $current_path"
+    
+    # Reset for next use
+    unset FM_FIRST_PATH
+  fi
+}

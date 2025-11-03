@@ -16,3 +16,7 @@ bindkey -s '^h' 'history.sh^M'
 bindkey -s '^g' '. get-process.sh^M'
 bindkey -s '^z' 'squash-pr-commits.sh^M'
 bindkey -s '^d' 'commit-branch-name.sh^M'
+
+# File path operations
+bindkey -s 'fn' 'fn^M'
+bindkey -s 'fm' 'fm^M'

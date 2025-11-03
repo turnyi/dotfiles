@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/vicinaehq/vicinae/refs/heads/main/extra/schemas/extension.json",
+  "name": "screen-recorder-and-image",
+  "title": "Screen recorder and image",
+  "description": "~/Projects/dotfiles/config/home/code/vicinae-extensions",
+  "categories": [],
+  "license": "MIT",
+  "author": "Turnyi",
+  "contributors": [],
+  "pastContributors": [],
+  "icon": "extension_icon.png",
+  "commands": [
+    {
+      "name": "screenshot",
+      "title": "Take Screenshot",
+      "subtitle": "Screenshot",
+      "description": "Capture screenshots with region selection and clipboard options",
+      "mode": "view"
+    },
+    {
+      "name": "screen-record",
+      "title": "Screen Record",
+      "subtitle": "Record Screen",
+      "description": "Record screen with audio options and path selection",
+      "mode": "view"
+    }
+  ],
+  "preferences": [],
+  "scripts": {
+    "build": "vici build",
+    "dev": "vici develop"
+  },
+  "dependencies": {
+    "@vicinae/api": "^0.9.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
