@@ -1,0 +1,289 @@
+;; Variables
+(defpoll calendar_events 
+  :interval "5m"
+  :initial "[]"
+  "~/.config/eww/scripts/google-calendar.sh")
+
+(defpoll current_time
+  :interval "1m"
+  :initial ""
+  "date '+%H:%M'")
+
+(defpoll current_date
+  :interval "1h"
+  :initial ""
+  "date '+%B %d, %Y'")
+
+(defpoll weather_data
+  :interval "10m"
+  :initial "{}"
+  "~/.config/eww/scripts/weather.sh")
+
+(defpoll health_data
+  :interval "30s"
+  :initial "[]"
+  "~/.config/eww/scripts/health-check.sh")
+
+(defpoll gmail_data
+  :interval "2m"
+  :initial "[]"
+  "bash ~/.config/eww/scripts/gmail-check.sh")
+
+;; Widgets
+(defwidget gmail_widget []
+  (box
+    :class "gmail-widget"
+    :orientation "v"
+    :space-evenly false
+    :spacing 8
+    (box
+      :class "gmail-header"
+      :orientation "h"
+      :space-evenly false
+      :spacing 8
+      (image
+        :path "~/.config/eww/gmail-icon.svg"
+        :image-width 24
+        :image-height 24)
+      (label
+        :class "gmail-title"
+        :text "Gmail"))
+    (box
+      :class "gmail-emails"
+      :orientation "v"
+      :space-evenly false
+      :spacing 5
+      (for email in gmail_data
+        (box
+          :class "gmail-email"
+          :orientation "v"
+          :space-evenly false
+          :spacing 2
+          (box
+            :orientation "h"
+            :space-evenly false
+            :spacing 8
+            (label
+              :class "email-from"
+              :text "${email.from}"
+              :limit-width 20)
+            (label
+              :class "email-time"
+              :text "${email.time}"
+              :halign "end"
+              :hexpand true))
+          (label
+            :class "email-subject"
+            :text "${email.subject}"
+            :limit-width 40))))))
+
+;; Widgets
+(defwidget health_widget []
+  (box
+    :class "health-widget"
+    :orientation "v"
+    :space-evenly false
+    :spacing 6
+    (label
+      :class "health-title"
+      :text "System Health")
+    (box
+      :class "health-services"
+      :orientation "v"
+      :space-evenly false
+      :spacing 5
+      (for service in health_data
+        (box
+          :class "health-service"
+          :orientation "h"
+          :space-evenly false
+          :spacing 10
+          (label
+            :class "service-icon"
+            :text "${service.icon}"
+            :style "color: ${service.color};")
+          (label
+            :class "service-type-icon"
+            :text "${service.service_icon}")
+          (label
+            :class "service-name"
+            :text "${service.name}")
+          (label
+            :class "service-status"
+            :text "${service.status}"
+            :halign "end"
+            :hexpand true
+            :style "color: ${service.color};"))))))
+
+;; Widgets
+(defwidget weather_widget []
+  (box
+    :class "weather-widget"
+    :orientation "v"
+    :space-evenly false
+    :spacing 12
+    (box
+      :class "weather-top"
+      :orientation "h"
+      :space-evenly false
+      (label
+        :class "weather-icon"
+        :text "${weather_data.icon}")
+      (box
+        :orientation "h"
+        :space-evenly false
+        :spacing 10
+        :valign "center"
+        :halign "end"
+        :hexpand true
+        (label
+          :class "weather-temp"
+          :text "${weather_data.temp}°C")
+        (label
+          :class "weather-thermometer"
+          :text "🌡")))
+    (box
+      :class "weather-info"
+      :orientation "v"
+      :space-evenly false
+      :spacing 3
+      (label
+        :class "weather-condition"
+        :text "${weather_data.condition}")
+      (label
+        :class "weather-description"
+        :text "${weather_data.description}")
+      (label
+        :class "weather-location"
+        :text "${weather_data.location}"))
+    (box
+      :class "weather-hourly"
+      :orientation "h"
+      :space-evenly true
+      :spacing 10
+      (for hour in "${weather_data.hourly}"
+        (box
+          :class "hourly-item"
+          :orientation "v"
+          :space-evenly false
+          :spacing 3
+          (label
+            :class "hourly-time"
+            :text "${hour.time}")
+          (label
+            :class "hourly-icon"
+            :text "${hour.icon}")
+          (label
+            :class "hourly-temp"
+            :text "${hour.temp}"))))))
+
+;; Widgets
+(defwidget gcal_widget []
+  (box
+    :class "calendar-widget"
+    :orientation "v"
+    :space-evenly false
+    :spacing 10
+    (box
+      :class "calendar-header"
+      :orientation "v"
+      :space-evenly false
+      (label
+        :class "calendar-time"
+        :text current_time)
+      (label
+        :class "calendar-date"
+        :text current_date))
+    (box
+      :class "calendar-events"
+      :orientation "v"
+      :space-evenly false
+      :spacing 5
+      (for event in calendar_events
+          (box
+            :orientation "v"
+            :space-evenly false
+            :spacing 5
+            (label
+              :class "day-header"
+              :text "${event.date}"
+              :visible {event.new_day})
+            (box
+              :class "calendar-event"
+              :orientation "h"
+              :space-evenly false
+              :spacing 8
+              (box
+                :class "event-color-bar"
+                :style "background-color: ${event.color};")
+              (box
+                :orientation "v"
+                :space-evenly false
+                :spacing 2
+                (box
+                  :class "event-time"
+                  :orientation "h"
+                  :space-evenly false
+                  :spacing 5
+                  (label
+                    :class "event-time-label"
+                    :text "${event.time}")
+                  (label
+                    :class "event-duration"
+                    :text "${event.duration}"))
+                (label
+                  :class "event-title"
+                  :text "${event.title}"))))))))
+
+;; Windows
+(defwindow calendar-window
+  :monitor 0
+  :geometry (geometry
+    :x "20px"
+    :y "20px"
+    :width "300px"
+    :height "720px"
+    :anchor "top right")
+  :stacking "bg"
+  :focusable false
+  :namespace "eww-calendar"
+  (gcal_widget))
+
+(defwindow weather-window
+  :monitor 0
+  :geometry (geometry
+    :x "340px"
+    :y "20px"
+    :width "450px"
+    :height "220px"
+    :anchor "top right")
+  :stacking "bg"
+  :focusable false
+  :namespace "eww-weather"
+  (weather_widget))
+
+(defwindow health-window
+  :monitor 0
+  :geometry (geometry
+    :x "340px"
+    :y "390px"
+    :width "225px"
+    :height "120px"
+    :anchor "top right")
+  :stacking "bg"
+  :focusable false
+  :namespace "eww-health"
+  (health_widget))
+
+(defwindow gmail-window
+  :monitor 0
+  :geometry (geometry
+    :x "340px"
+    :y "580px"
+    :width "450px"
+    :height "300px"
+    :anchor "top right")
+  :stacking "bg"
+  :focusable false
+  :namespace "eww-gmail"
+  (gmail_widget))

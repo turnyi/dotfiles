@@ -7,8 +7,13 @@ return {
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",
-		dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
+		dependencies = {
+			"williamboman/mason.nvim",
+			"neovim/nvim-lspconfig",
+			"hrsh7th/cmp-nvim-lsp", -- for capabilities
+		},
 		config = function()
+			-- All servers you want installed
 			local servers = {
 				"lua_ls",
 				"ts_ls",
@@ -22,6 +27,8 @@ return {
 				"omnisharp",
 				"vtsls",
 			}
+
+			-- Servers you want with "default" simple config
 			local default_config_servers = {
 				"lua_ls",
 				"html",
@@ -32,27 +39,37 @@ return {
 				"pyright",
 				"clangd",
 				"omnisharp",
-				-- "emmet_ls",
 			}
 
 			require("mason-lspconfig").setup({
 				ensure_installed = servers,
+				-- you control enabling with vim.lsp.enable()
+				automatic_installation = false,
 			})
 
-			local lspconfig = require("lspconfig")
+			------------------------------------------------------------------
+			-- LSP configs (new API)
+			------------------------------------------------------------------
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+			-- 1) default servers with plain config
 			for _, server in ipairs(default_config_servers) do
-				lspconfig[server].setup({})
+				vim.lsp.config(server, {
+					capabilities = capabilities,
+				})
 			end
 
+			-- 2) Vue + vtsls integration
 			local vue_language_server_path = vim.fn.stdpath("data")
 				.. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
+
 			local vue_plugin = {
 				name = "@vue/typescript-plugin",
 				location = vue_language_server_path,
 				languages = { "vue" },
 				configNamespace = "typescript",
 			}
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
 			vim.lsp.config("vtsls", {
 				capabilities = capabilities,
 				settings = {
@@ -67,38 +84,23 @@ return {
 				filetypes = { "vue" },
 			})
 
-			lspconfig.ts_ls.setup({
+			vim.lsp.config("ts_ls", {
 				capabilities = capabilities,
-				filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
-			})
-
-			local venv_path = vim.fn.getcwd() .. "/.venv/bin/python"
-			lspconfig.pyright.setup({
-				settings = {
-					python = {
-						pythonPath = venv_path,
-						analysis = {
-							autoSearchPaths = true,
-							useLibraryCodeForTypes = true,
-							diagnosticMode = "workspace",
-						},
-					},
+				filetypes = {
+					"typescript",
+					"javascript",
+					"javascriptreact",
+					"typescriptreact",
+					"vue",
 				},
 			})
 
-			lspconfig.omnisharp.setup({
-				cmd = {
-					vim.fn.stdpath("data") .. "/mason/packages/omnisharp/OmniSharp",
-					"--languageserver",
-					"--hostPID",
-					tostring(vim.fn.getpid()),
-				},
-				enable_editorconfig_support = true,
-				enable_roslyn_analyzers = true,
-				organize_imports_on_format = true,
-				enable_import_completion = true,
-			})
+			-- Enable everything
+			vim.lsp.enable(vim.list_extend(vim.list_extend({}, default_config_servers), { "vtsls", "ts_ls" }))
 
+			------------------------------------------------------------------
+			-- UI tweaks
+			------------------------------------------------------------------
 			local border_opts = { border = "rounded" }
 
 			vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, border_opts)
