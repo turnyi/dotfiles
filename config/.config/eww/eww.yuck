@@ -29,6 +29,44 @@
   :initial "[]"
   "bash ~/.config/eww/scripts/gmail-check.sh")
 
+(defpoll github_pr_data
+  :interval "1m"
+  :initial "[]"
+  "~/.config/eww/scripts/github-pr-check.sh")
+
+;; Widgets
+(defwidget github_pr_widget []
+  (box
+    :class "github-widget"
+    :orientation "v"
+    :space-evenly false
+    :spacing 6
+    (label
+      :class "github-title"
+      :text "Pull Requests")
+    (box
+      :class "github-repos"
+      :orientation "v"
+      :space-evenly false
+      :spacing 5
+      (for pr in github_pr_data
+        (box
+          :class "github-repo"
+          :orientation "h"
+          :space-evenly false
+          :spacing 10
+          (label
+            :class "repo-icon"
+            :text "${pr.icon}")
+          (label
+            :class "repo-name"
+            :text "${pr.repo}")
+          (label
+            :class "repo-count"
+            :text "${pr.count}"
+            :halign "end"
+            :hexpand true))))))
+
 ;; Widgets
 (defwidget gmail_widget []
   (box
@@ -266,7 +304,7 @@
   :monitor 0
   :geometry (geometry
     :x "340px"
-    :y "390px"
+    :y "370px"
     :width "225px"
     :height "120px"
     :anchor "top right")
@@ -279,7 +317,7 @@
   :monitor 0
   :geometry (geometry
     :x "340px"
-    :y "580px"
+    :y "560px"
     :width "450px"
     :height "300px"
     :anchor "top right")
@@ -287,3 +325,16 @@
   :focusable false
   :namespace "eww-gmail"
   (gmail_widget))
+
+(defwindow github-pr-window
+  :monitor 0
+  :geometry (geometry
+    :x "585px"
+    :y "370px"
+    :width "205px"
+    :height "120px"
+    :anchor "top right")
+  :stacking "bg"
+  :focusable false
+  :namespace "eww-github"
+  (github_pr_widget))
