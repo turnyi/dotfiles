@@ -14,3 +14,14 @@ config/home/scripts/setup-quasar-docs.sh
 config/tmux-client-49213.log
 config/home/code/vicinae-extensions/wifi-manager/node_modules
 config/home/code/vicinae-extensions/audio-manager/node_modules
+config/home/code/vicinae-extensions/node_modules
+config/home/code/vicinae-extensions/audio-manager/package-lock.json
+config/home/code/vicinae-extensions/audio-manager/package-lock.json
+config/home/code/vicinae-extensions/audio-manager/yarn.lock
+config/home/code/vicinae-extensions/audio-manager/yarn.lock
+config/home/code/vicinae-extensions/node_modules
+config/home/code/vicinae-extensions/wifi-manager/package-lock.json
+config/home/code/vicinae-extensions/yarn.lock
+config/home/code/vicinae-extensions/package-lock.json
+config/home/code/vicinae-extensions/audio-manager/yarn.lock
+config/home/code/vicinae-extensions/audio-manager/yarn.lock
