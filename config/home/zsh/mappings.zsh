@@ -1,8 +1,16 @@
+# Enable edit-command-line widget
+autoload -Uz edit-command-line
+zle -N edit-command-line
+
 # # [C-x] - Edit the current command line in $EDITOR
 bindkey '^x' edit-command-line
 
 # # [C-space] - Accept current suggestion
 bindkey '^ ' autosuggest-accept
+
+# Vi mode mappings
+bindkey -M vicmd 'k' up-line-or-beginning-search
+bindkey -M vicmd 'j' down-line-or-beginning-search
 
 # # =============
 # # Key-bindings

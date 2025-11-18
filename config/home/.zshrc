@@ -47,6 +47,9 @@ zle -N backward-delete-charbindkey
 zle -N menuselect
 zle -N up-lne-or-history
 
+# Enable vi mode for zsh command line
+bindkey -v
+
 # Colors
 autoload -Uz colors && colors
 
