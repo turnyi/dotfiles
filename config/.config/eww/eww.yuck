@@ -306,7 +306,6 @@
     :x "340px"
     :y "370px"
     :width "225px"
-    :height "120px"
     :anchor "top right")
   :stacking "bg"
   :focusable false

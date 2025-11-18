@@ -79,6 +79,15 @@ try:
             'unread': True
         })
     
+    # If no emails, show a nice message
+    if not emails:
+        emails = [{
+            'from': '✓ All caught up!',
+            'subject': 'No unread emails',
+            'time': '😊',
+            'unread': False
+        }]
+    
     print(json.dumps(emails))
 except Exception as e:
     print('[{"from":"Error","subject":"' + str(e)[:50] + '","time":"--","unread":true}]')
