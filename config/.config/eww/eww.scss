@@ -5,7 +5,7 @@
 }
 
 .calendar-widget {
-  background-color: rgba(26, 27, 38, 0.4);
+  background-color: rgba(26, 27, 38, 0.95);
   border: 2px solid rgba(122, 162, 247, 0.4);
   border-radius: 10px;
   padding: 15px;
@@ -89,7 +89,7 @@
 }
 
 .weather-widget {
-  background-color: rgba(26, 27, 38, 0.4);
+  background-color: rgba(26, 27, 38, 0.95);
   border: 2px solid rgba(122, 162, 247, 0.4);
   border-radius: 10px;
   padding: 20px;
@@ -165,7 +165,7 @@
 }
 
 .health-widget {
-  background-color: rgba(26, 27, 38, 0.4);
+  background-color: rgba(26, 27, 38, 0.95);
   border: 2px solid rgba(122, 162, 247, 0.4);
   border-radius: 10px;
   padding: 15px;
@@ -208,7 +208,7 @@
 }
 
 .gmail-widget {
-  background-color: rgba(26, 27, 38, 0.4);
+  background-color: rgba(26, 27, 38, 0.95);
   border: 2px solid rgba(122, 162, 247, 0.4);
   border-radius: 10px;
   padding: 15px;
@@ -252,7 +252,7 @@
 }
 
 .github-widget {
-  background-color: rgba(26, 27, 38, 0.4);
+  background-color: rgba(26, 27, 38, 0.95);
   border: 2px solid rgba(122, 162, 247, 0.4);
   border-radius: 10px;
   padding: 15px;
@@ -269,10 +269,20 @@
 .github-repos {
 }
 
+.github-repo-container {
+}
+
 .github-repo {
   background-color: rgba(41, 42, 58, 0.3);
   border-radius: 5px;
   padding: 6px 10px;
+  transition: all 0.2s ease;
+}
+
+eventbox:hover .github-repo {
+  background-color: rgba(122, 162, 247, 0.2);
+  border-left: 3px solid #7aa2f7;
+  padding-left: 7px;
 }
 
 .repo-icon {
@@ -289,4 +299,39 @@
   font-size: 14px;
   font-weight: bold;
   color: #7aa2f7;
+}
+
+.github-pr-list {
+  padding-left: 10px;
+  padding-top: 5px;
+  margin-left: 5px;
+  border-left: 2px solid rgba(122, 162, 247, 0.2);
+}
+
+.github-pr-item {
+  background-color: rgba(41, 42, 58, 0.2);
+  border-radius: 3px;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+}
+
+eventbox:hover .github-pr-item {
+  background-color: rgba(122, 162, 247, 0.15);
+  border-left: 2px solid #7aa2f7;
+  padding-left: 6px;
+}
+
+.pr-status {
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 20px;
+}
+
+.pr-title {
+  font-size: 10px;
+  color: #9aa5ce;
+}
+
+eventbox:hover .pr-title {
+  color: #c0caf5;
 }

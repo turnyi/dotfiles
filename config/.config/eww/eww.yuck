@@ -4,6 +4,16 @@
   :initial "[]"
   "~/.config/eww/scripts/google-calendar.sh")
 
+(defpoll joaquin_meerhoff_events
+  :interval "5m"
+  :initial "[]"
+  "~/.config/eww/scripts/joaquin-meerhoff-calendar.sh")
+
+(defpoll joaquin_rodriguez_events
+  :interval "5m"
+  :initial "[]"
+  "~/.config/eww/scripts/joaquin-rodriguez-calendar.sh")
+
 (defpoll current_time
   :interval "1m"
   :initial ""
@@ -51,21 +61,56 @@
       :spacing 5
       (for pr in github_pr_data
         (box
-          :class "github-repo"
-          :orientation "h"
+          :class "github-repo-container"
+          :orientation "v"
           :space-evenly false
-          :spacing 10
-          (label
-            :class "repo-icon"
-            :text "${pr.icon}")
-          (label
-            :class "repo-name"
-            :text "${pr.repo}")
-          (label
-            :class "repo-count"
-            :text "${pr.count}"
-            :halign "end"
-            :hexpand true))))))
+          :spacing 3
+          (eventbox
+            :onclick "xdg-open '${pr.url}' &"
+            :cursor "pointer"
+            (box
+              :class "github-repo"
+              :orientation "h"
+              :space-evenly false
+              :spacing 10
+              (label
+                :class "repo-icon"
+                :text "${pr.icon}")
+              (label
+                :class "repo-name"
+                :text "${pr.repo}")
+              (label
+                :class "repo-count"
+                :text "${pr.count}"
+                :halign "end"
+                :hexpand true)))
+          (revealer
+            :transition "slidedown"
+            :reveal {pr.count != "0" && pr.count != "--"}
+            :duration "300ms"
+            (box
+              :class "github-pr-list"
+              :orientation "v"
+              :space-evenly false
+              :spacing 2
+              (for item in "${pr.prs}"
+                (eventbox
+                  :onclick "xdg-open '${item.url}' &"
+                  :cursor "pointer"
+                  (box
+                    :class "github-pr-item"
+                    :orientation "h"
+                    :space-evenly false
+                    :spacing 8
+                    (label
+                      :class "pr-status"
+                      :style "color: ${item.status == 'SUCCESS' ? '#9ece6a' : item.status == 'FAILURE' ? '#f7768e' : item.status == 'PENDING' ? '#e0af68' : '#565f89'}"
+                      :text {item.status == "SUCCESS" ? "✓" : item.status == "FAILURE" ? "✗" : item.status == "PENDING" ? "●" : "○"})
+                    (label
+                      :class "pr-title"
+                      :text "#${item.number}: ${item.title}"
+                      :limit-width 70
+                      :xalign 0)))))))))))
 
 ;; Widgets
 (defwidget gmail_widget []
@@ -273,6 +318,123 @@
                   :class "event-title"
                   :text "${event.title}"))))))))
 
+
+;; Joaquin Meerhoff Calendar Widget
+(defwidget joaquin_meerhoff_widget []
+  (box
+    :class "calendar-widget"
+    :orientation "v"
+    :space-evenly false
+    :spacing 10
+    (box
+      :class "calendar-header"
+      :orientation "v"
+      :space-evenly false
+      (label
+        :class "calendar-time"
+        :text "J. Meerhoff")
+      (label
+        :class "calendar-date"
+        :text current_date))
+    (box
+      :class "calendar-events"
+      :orientation "v"
+      :space-evenly false
+      :spacing 5
+      (for event in joaquin_meerhoff_events
+          (box
+            :orientation "v"
+            :space-evenly false
+            :spacing 5
+            (label
+              :class "day-header"
+              :text "${event.date}"
+              :visible {event.new_day})
+            (box
+              :class "calendar-event"
+              :orientation "h"
+              :space-evenly false
+              :spacing 8
+              (box
+                :class "event-color-bar"
+                :style "background-color: ${event.color};")
+              (box
+                :orientation "v"
+                :space-evenly false
+                :spacing 2
+                (box
+                  :class "event-time"
+                  :orientation "h"
+                  :space-evenly false
+                  :spacing 5
+                  (label
+                    :class "event-time-label"
+                    :text "${event.time}")
+                  (label
+                    :class "event-duration"
+                    :text "${event.duration}"))
+                (label
+                  :class "event-title"
+                  :text "${event.title}"))))))))
+
+;; Joaquin Rodriguez Calendar Widget
+(defwidget joaquin_rodriguez_widget []
+  (box
+    :class "calendar-widget"
+    :orientation "v"
+    :space-evenly false
+    :spacing 10
+    (box
+      :class "calendar-header"
+      :orientation "v"
+      :space-evenly false
+      (label
+        :class "calendar-time"
+        :text "J. Rodriguez")
+      (label
+        :class "calendar-date"
+        :text current_date))
+    (box
+      :class "calendar-events"
+      :orientation "v"
+      :space-evenly false
+      :spacing 5
+      (for event in joaquin_rodriguez_events
+          (box
+            :orientation "v"
+            :space-evenly false
+            :spacing 5
+            (label
+              :class "day-header"
+              :text "${event.date}"
+              :visible {event.new_day})
+            (box
+              :class "calendar-event"
+              :orientation "h"
+              :space-evenly false
+              :spacing 8
+              (box
+                :class "event-color-bar"
+                :style "background-color: ${event.color};")
+              (box
+                :orientation "v"
+                :space-evenly false
+                :spacing 2
+                (box
+                  :class "event-time"
+                  :orientation "h"
+                  :space-evenly false
+                  :spacing 5
+                  (label
+                    :class "event-time-label"
+                    :text "${event.time}")
+                  (label
+                    :class "event-duration"
+                    :text "${event.duration}"))
+                (label
+                  :class "event-title"
+                  :text "${event.title}"))))))))
+
 ;; Windows
 (defwindow calendar-window
   :monitor 0
@@ -290,10 +452,9 @@
 (defwindow weather-window
   :monitor 0
   :geometry (geometry
-    :x "340px"
+    :x "980px"
     :y "20px"
     :width "450px"
-    :height "220px"
     :anchor "top right")
   :stacking "bg"
   :focusable false
@@ -303,9 +464,9 @@
 (defwindow health-window
   :monitor 0
   :geometry (geometry
-    :x "340px"
-    :y "370px"
-    :width "225px"
+    :x "660px"
+    :y "910px"
+    :width "300px"
     :anchor "top right")
   :stacking "bg"
   :focusable false
@@ -315,8 +476,8 @@
 (defwindow gmail-window
   :monitor 0
   :geometry (geometry
-    :x "340px"
-    :y "560px"
+    :x "980px"
+    :y "410px"
     :width "450px"
     :height "300px"
     :anchor "top right")
@@ -328,12 +489,37 @@
 (defwindow github-pr-window
   :monitor 0
   :geometry (geometry
-    :x "585px"
-    :y "370px"
-    :width "205px"
-    :height "120px"
+    :x "20px"
+    :y "910px"
+    :width "620px"
     :anchor "top right")
   :stacking "bg"
   :focusable false
   :namespace "eww-github"
   (github_pr_widget))
+
+(defwindow joaquin-meerhoff-window
+  :monitor 0
+  :geometry (geometry
+    :x "340px"
+    :y "20px"
+    :width "300px"
+    :height "870px"
+    :anchor "top right")
+  :stacking "bg"
+  :focusable false
+  :namespace "eww-joaquin-meerhoff"
+  (joaquin_meerhoff_widget))
+
+(defwindow joaquin-rodriguez-window
+  :monitor 0
+  :geometry (geometry
+    :x "660px"
+    :y "20px"
+    :width "300px"
+    :height "870px"
+    :anchor "top right")
+  :stacking "bg"
+  :focusable false
+  :namespace "eww-joaquin-rodriguez"
+  (joaquin_rodriguez_widget))
