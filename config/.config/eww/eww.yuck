@@ -455,6 +455,7 @@
     :x "980px"
     :y "20px"
     :width "450px"
+    :height "370px"
     :anchor "top right")
   :stacking "bg"
   :focusable false
@@ -467,6 +468,7 @@
     :x "660px"
     :y "910px"
     :width "300px"
+    :height "250px"
     :anchor "top right")
   :stacking "bg"
   :focusable false
@@ -492,6 +494,7 @@
     :x "20px"
     :y "910px"
     :width "620px"
+    :height "250px"
     :anchor "top right")
   :stacking "bg"
   :focusable false
