@@ -1,0 +1,12 @@
+name: OptiTask
+root: ~/Projects/repoTracker/
+
+windows:
+  - git:
+      panes:
+        - lazygit
+  - back:
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
