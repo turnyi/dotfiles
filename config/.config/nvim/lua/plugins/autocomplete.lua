@@ -7,6 +7,19 @@ return {
 		"hrsh7th/cmp-cmdline", -- Command-line suggestions
 		"L3MON4D3/LuaSnip", -- Snippet engine
 		"saadparwaiz1/cmp_luasnip", -- Snippet completion
+		{
+			"MattiasMTS/cmp-dbee",
+			dependencies = {
+				{ "kndndrj/nvim-dbee" },
+			},
+			ft = "sql", -- optional but good to have
+			opts = {}, -- needed
+		},
+	},
+	opts = {
+		sources = {
+			{ "cmp-dbee" },
+		},
 	},
 	config = function()
 		local cmp = require("cmp")
@@ -31,6 +44,7 @@ return {
 				{ name = "nvim_lsp" }, -- LSP suggestions
 				{ name = "luasnip" }, -- Snippet suggestions
 				{ name = "quasar" }, -- Quasar CSS classes
+				{ name = "cmp-dbee" }, -- Database completion
 				{ name = "buffer" }, -- Buffer words
 				{ name = "path" }, -- File paths
 			}),
@@ -42,6 +56,7 @@ return {
 						buffer = "[Buffer]",
 						path = "[Path]",
 						quasar = "[Quasar]",
+						["cmp-dbee"] = "[DB]",
 					})[entry.source.name]
 					return vim_item
 				end,
