@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1",
+    "name": "Email",
+    "keyword": ":email",
+    "content": "your@email.com",
+    "category": "personal"
+  },
+  {
+    "id": "2",
+    "name": "Shrug",
+    "keyword": ":shrug",
+    "content": "¯\\_(ツ)_/¯",
+    "category": "emoji"
+  }
+]

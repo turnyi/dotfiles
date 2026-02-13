@@ -10,7 +10,7 @@
     "clock",
     "custom/lms_status",
     "cpu",
-    "memory"
+    "custom/memory"
   ],
   "modules-right": [
     "pulseaudio",
@@ -123,5 +123,12 @@
     "tooltip": true,
     "format": "{}",
     "on-click": "gtk-launch lm-studio || lm-studio"
+  },
+  "custom/memory": {
+    "exec": "~/.config/waybar/scripts/memory_status.sh",
+    "interval": 5,
+    "return-type": "json",
+    "tooltip": true,
+    "format": "{}"
   }
 }

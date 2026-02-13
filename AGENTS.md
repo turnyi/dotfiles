@@ -1,4 +1,8 @@
 # AGENTS
+## Architecture
+- System files are symlinked (via `ln -s`) to files in this dotfiles project
+- Changes to files in this project will reflect in the system locations
+- Bootstrap script (`./install.sh`) creates the necessary symlinks
 ## Commands
 - Bootstrap: `./install.sh`
 - Arch setup: `./setup-arch.sh`
