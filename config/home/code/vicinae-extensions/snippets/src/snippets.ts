@@ -1,8 +1,11 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
+import { exec } from "child_process";
 import path from "path";
 
-const SNIPPETS_DIR = path.join(process.env.HOME || "", ".config", "snippets");
+const HOME = process.env.HOME || "";
+const SNIPPETS_DIR = path.join(HOME, ".config", "snippets");
 const SNIPPETS_FILE = path.join(SNIPPETS_DIR, "snippets.json");
+const SYNC_SCRIPT = path.join(SNIPPETS_DIR, "sync-snippets.sh");
 
 export type Snippet = {
   id: string;
@@ -27,9 +30,16 @@ export function loadSnippets(): Snippet[] {
   return JSON.parse(raw) as Snippet[];
 }
 
+function syncEspanso(): void {
+  if (existsSync(SYNC_SCRIPT)) {
+    exec(`bash "${SYNC_SCRIPT}"`);
+  }
+}
+
 export function saveSnippets(snippets: Snippet[]): void {
   ensureFile();
   writeFileSync(SNIPPETS_FILE, JSON.stringify(snippets, null, 2), "utf-8");
+  syncEspanso();
 }
 
 export function addSnippet(snippet: Omit<Snippet, "id">): Snippet {

@@ -1,16 +1,72 @@
 [
   {
-    "id": "1",
-    "name": "Email",
-    "keyword": ":email",
-    "content": "your@email.com",
-    "category": "personal"
+    "id": "mll4hgqy",
+    "name": "Martin OptiTask Mail",
+    "keyword": ":mopti",
+    "content": "martin.radovitzky@opti-task.com",
+    "category": "OptiTask"
   },
   {
-    "id": "2",
-    "name": "Shrug",
-    "keyword": ":shrug",
-    "content": "¯\\_(ツ)_/¯",
-    "category": "emoji"
+    "id": "jopti001",
+    "name": "Joaquin M. OptiTask Mail",
+    "keyword": ":jopti",
+    "content": "joaquin.meerhoff@opti-task.com",
+    "category": "OptiTask"
+  },
+  {
+    "id": "topti001",
+    "name": "Joaquin R. OptiTask Mail",
+    "keyword": ":topti",
+    "content": "joaquin.rodriguez@optitask.com",
+    "category": "OptiTask"
+  },
+  {
+    "id": "infopti1",
+    "name": "Info OptiTask Mail",
+    "keyword": ":infoopti",
+    "content": "info@opti-task.com",
+    "category": "OptiTask"
+  },
+  {
+    "id": "optblock",
+    "name": "OptiTask Company Info",
+    "keyword": ":optinfo",
+    "content": "Empresa: OptiTask S.A.S.\nTipo: Sociedad por Acciones Simplificada (SAS)\nRUT: 220014430018\nDirección: Mantua 6929, Montevideo, Uruguay\nCorreo: info@opti-task.com",
+    "category": "OptiTask"
+  },
+  {
+    "id": "optempre",
+    "name": "OptiTask Empresa",
+    "keyword": ":optempresa",
+    "content": "OptiTask S.A.S.",
+    "category": "OptiTask"
+  },
+  {
+    "id": "opttipo1",
+    "name": "OptiTask Tipo",
+    "keyword": ":opttipo",
+    "content": "Sociedad por Acciones Simplificada (SAS)",
+    "category": "OptiTask"
+  },
+  {
+    "id": "optrut01",
+    "name": "OptiTask RUT",
+    "keyword": ":optrut",
+    "content": "220014430018",
+    "category": "OptiTask"
+  },
+  {
+    "id": "optdir01",
+    "name": "OptiTask Dirección",
+    "keyword": ":optdir",
+    "content": "Mantua 6929, Montevideo, Uruguay",
+    "category": "OptiTask"
+  },
+  {
+    "id": "mlqqudjb",
+    "name": "Optitask Dolares",
+    "keyword": ":optidol",
+    "content": "Banco Itaú\ncaja de ahorro nº 2052943\nMoneda: USD",
+    "category": "optitask"
   }
 ]
