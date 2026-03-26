@@ -8,7 +8,7 @@
   ],
   "modules-center": [
     "clock",
-    "custom/lms_status",
+    "custom/ollama_status",
     "cpu",
     "custom/memory"
   ],
@@ -123,6 +123,13 @@
     "tooltip": true,
     "format": "{}",
     "on-click": "gtk-launch lm-studio || lm-studio"
+  },
+  "custom/ollama_status": {
+    "exec": "~/.config/waybar/scripts/ollama_status.sh",
+    "interval": 5,
+    "return-type": "json",
+    "tooltip": true,
+    "format": "{}"
   },
   "custom/memory": {
     "exec": "~/.config/waybar/scripts/memory_status.sh",

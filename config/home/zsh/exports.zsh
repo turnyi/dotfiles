@@ -106,8 +106,12 @@ export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 export PATH="/opt/homebrew/bin:$PATH"
-export PATH=$PATH:$(yarn global bin)
 export FZF_BASE=$HOME/.fzf
+
+# set node paths 
+export PATH=$PATH:$(npm config get prefix)/bin
+export PATH=$PATH:$(yarn global bin)
+
 if type brew &>/dev/null
 then
   HOMEBREW_PREFIX="$(brew --prefix)"

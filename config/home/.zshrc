@@ -96,6 +96,9 @@ export BAT_PAGER="less -R"
 # Add scripts to path
 export PATH="~/.dotfiles/scripts:$PATH"
 
+# Bun
+export PATH="$HOME/.bun/bin:$PATH"
+
 # Configure aws autocomplete
 export PATH=/Users/ignaciobarreto/.pyenv/shims/aws_completer:$PATH
 autoload bashcompinit && bashcompinit
