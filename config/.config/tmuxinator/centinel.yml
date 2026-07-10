@@ -1,0 +1,19 @@
+name: centinel
+root: ~/Projects/Centinel/centinel-app
+windows:
+  - agents:
+      root: ~
+      panes:
+        - ~/scripts/claude-dashboard.sh --here
+  - git:
+      root: ~/Projects/Centinel/centinel-app
+      layout: even-horizontal
+      panes:
+        - lazygit
+  - app:
+      root: ~/Projects/Centinel/centinel-app
+      layout: main-vertical
+      panes:
+        - nvim .
+        - claude --dangerously-skip-permissions
+        - .

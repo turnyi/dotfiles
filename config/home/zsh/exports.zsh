@@ -110,7 +110,7 @@ export FZF_BASE=$HOME/.fzf
 
 # set node paths 
 export PATH=$PATH:$(npm config get prefix)/bin
-export PATH=$PATH:$(yarn global bin)
+command -v yarn &>/dev/null && export PATH=$PATH:$(yarn global bin)
 
 if type brew &>/dev/null
 then

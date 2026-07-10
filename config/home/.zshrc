@@ -3,7 +3,7 @@
 #install plugins
 source "$HOME/zsh/antigen_install.zsh"
 source "$HOME/zsh/antigen.sh"
-source "$HOME/.env"
+[[ -f "$HOME/.env" ]] && source "$HOME/.env"
 export ZSH_DOTENV_ALLOWED_LIST=~/dotenv/allowed.list
 export ZSH_DOTENV_DISALLOWED_LIST=~/dotenv/disallowed.list
 
@@ -80,10 +80,6 @@ export PATH="$HOME/scripts:$PATH"
 FD_OPTIONS="--follow --exclude .git --exclude node_modules"
 export FZF_DEFAULT_OPTS='--no-height'
 
-# nvm (Node Version Manager)
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
-
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
@@ -140,3 +136,9 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# nvm (Node Version Manager)
+# Must load LAST: exports.zsh and other blocks above re-prepend /opt/homebrew/bin,
+# which would shadow nvm's node with Homebrew's.
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm

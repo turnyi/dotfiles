@@ -24,7 +24,7 @@ require("lazy").setup({
 	install = { colorscheme = { "habamax" } },
 	checker = { enabled = false },
 	rocks = {
-		enabled = true,
-		hererocks = true,
+		enabled = false,
+		hererocks = false,
 	},
 })

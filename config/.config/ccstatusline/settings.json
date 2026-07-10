@@ -1,0 +1,100 @@
+{
+  "version": 3,
+  "lines": [
+    [
+      {
+        "id": "5",
+        "type": "git-worktree",
+        "color": "blue"
+      },
+      {
+        "id": "6",
+        "type": "separator"
+      },
+      {
+        "id": "7",
+        "type": "git-branch",
+        "color": "magenta"
+      },
+      {
+        "id": "12",
+        "type": "separator"
+      },
+      {
+        "id": "13",
+        "type": "custom-command",
+        "commandPath": "~/scripts/linear-ticket.sh",
+        "timeout": 500,
+        "color": "red"
+      },
+      {
+        "id": "8",
+        "type": "separator"
+      },
+      {
+        "id": "9",
+        "type": "git-changes",
+        "color": "yellow"
+      },
+      {
+        "id": "10",
+        "type": "separator"
+      },
+      {
+        "id": "11",
+        "type": "custom-command",
+        "commandPath": "~/scripts/centinel-slot.sh",
+        "timeout": 500,
+        "color": "green"
+      }
+    ],
+    [
+      {
+        "id": "1",
+        "type": "model",
+        "color": "cyan"
+      },
+      {
+        "id": "2",
+        "type": "separator"
+      },
+      {
+        "id": "3",
+        "type": "context-length",
+        "color": "brightBlack"
+      },
+      {
+        "id": "14",
+        "type": "separator"
+      },
+      {
+        "id": "15",
+        "type": "custom-command",
+        "commandPath": "~/scripts/session-title.sh",
+        "timeout": 1200,
+        "color": "white"
+      }
+    ],
+    []
+  ],
+  "flexMode": "full",
+  "compactThreshold": 60,
+  "colorLevel": 2,
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "gitCacheTtlSeconds": 5,
+  "minimalistMode": false,
+  "powerline": {
+    "enabled": false,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [],
+    "autoAlign": false,
+    "continueThemeAcrossLines": false
+  }
+}
