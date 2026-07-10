@@ -25,6 +25,9 @@ return {
 		local cmp = require("cmp")
 
 		cmp.setup({
+			enabled = function()
+				return true
+			end,
 			snippet = {
 				expand = function(args)
 					require("luasnip").lsp_expand(args.body)

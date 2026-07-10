@@ -1,0 +1,17 @@
+name: Foil 
+root: ~/Projects/graphCli/foil/
+
+windows:
+  - git:
+      panes:
+        - lazygit
+  - foil:
+      layout: even-horizontal
+      panes:
+        - nvim .
+        - .
+  - ollama:
+      layout: even-horizontal
+      panes:
+        - ollama serve 
+        - ollama run qwen3.5:35b-a3b-q4_K_M

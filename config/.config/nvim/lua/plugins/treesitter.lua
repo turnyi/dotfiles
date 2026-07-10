@@ -1,29 +1,25 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
+	branch = "main",
 	build = ":TSUpdate",
+	lazy = false,
 	config = function()
-		local configs = require("nvim-treesitter.configs")
-
-		configs.setup({
-			ensure_installed = {
-				"c",
-				"lua",
-				"vim",
-				"vimdoc",
-				"query",
-				"elixir",
-				"heex",
-				"javascript",
-				"html",
-				"typescript",
-				"yaml",
-				"python",
-				"vue",
-				"sql",
-			},
-			sync_install = false,
-			highlight = { enable = true },
-			indent = { enable = true },
-		})
+		-- highlight and indent are now Neovim built-ins; this plugin is just a parser manager
+		require("nvim-treesitter.install").install(
+			"c",
+			"lua",
+			"vim",
+			"vimdoc",
+			"query",
+			"elixir",
+			"heex",
+			"javascript",
+			"html",
+			"typescript",
+			"yaml",
+			"python",
+			"vue",
+			"sql"
+		)
 	end,
 }

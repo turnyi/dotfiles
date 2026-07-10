@@ -79,6 +79,8 @@ function usePairedDevices() {
 
 	useEffect(() => {
 		refreshDevices();
+		const interval = setInterval(refreshDevices, 15000);
+		return () => clearInterval(interval);
 	}, [refreshDevices]);
 
 	return { devices, loading, refreshDevices };
@@ -117,9 +119,9 @@ async function performBluetoothAction(device: Device, action: string): Promise<v
 }
 
 function batteryIconColor(batteryLevel: number): Color {
-  if (batteryLevel > 20) return Color.Green;
-  else if (batteryLevel > 5) return Color.Orange;
-  else return Color.Red
+  if (batteryLevel > 50) return Color.Green;
+  else if (batteryLevel > 20) return Color.Orange;
+  else return Color.Red;
 }
 
 // Device detail component
@@ -143,7 +145,7 @@ function DeviceDetail({ device }: { device: Device }) {
 						title="Connection Status"
 						text={device.connected ? "Connected" : "Disconnected"}
 						icon={{
-							source: device.connected ? Icon.CircleProgress : Icon.XMarkCircle,
+							source: device.connected ? Icon.CheckCircle : Icon.XMarkCircle,
 							tintColor: device.connected ? Color.Green : Color.Red,
 						}}
 					/>
@@ -225,21 +227,15 @@ function DeviceListItem({
 		<List.Item
 			key={device.mac}
 			title={device.name}
-			subtitle={device.mac}
+			subtitle={showingDetail ? undefined : device.mac}
 			icon={device.icon}
 			accessories={!showingDetail ? [
-				{
-					text: device.trusted ?
-						{ value: "Trusted", color: Color.Green } :
-						{ value: "Not Trusted", color: Color.Orange },
-					icon: Icon.Lock,
-				},
-				{
-					text: device.connected ?
-						{ value: "Connected", color: Color.Green } :
-						{ value: "Disconnected", color: Color.Red },
-					icon: device.connected ? Icon.CircleProgress : Icon.XMarkCircle,
-				},
+				device.connected
+					? { tag: { value: "Connected", color: Color.Green } }
+					: { tag: { value: "Disconnected", color: Color.SecondaryText } },
+				...(typeof device.batteryLevel === "number"
+					? [{ text: `${device.batteryLevel}%`, icon: { source: Icon.Battery, tintColor: batteryIconColor(device.batteryLevel) } }]
+					: []),
 			] : undefined}
 			detail={showingDetail ? <DeviceDetail device={device} /> : undefined}
 			actions={

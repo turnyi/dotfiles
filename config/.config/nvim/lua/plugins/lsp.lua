@@ -101,15 +101,16 @@ return {
 			------------------------------------------------------------------
 			-- UI tweaks
 			------------------------------------------------------------------
-			local border_opts = { border = "rounded" }
-
-			vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
-				return vim.lsp.handlers.hover(err, result, ctx, vim.tbl_extend("force", config or {}, border_opts))
-			end
-
-			vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
-				return vim.lsp.handlers.signature_help(err, result, ctx, vim.tbl_extend("force", config or {}, border_opts))
-			end
+			vim.lsp.config("*", {
+				handlers = {
+					["textDocument/hover"] = function(err, result, ctx, config)
+						vim.lsp.handlers.hover(err, result, ctx, vim.tbl_extend("force", config or {}, { border = "rounded" }))
+					end,
+					["textDocument/signatureHelp"] = function(err, result, ctx, config)
+						vim.lsp.handlers.signature_help(err, result, ctx, vim.tbl_extend("force", config or {}, { border = "rounded" }))
+					end,
+				},
+			})
 		end,
 	},
 	{ "neovim/nvim-lspconfig" },

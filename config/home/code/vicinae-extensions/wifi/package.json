@@ -1,0 +1,54 @@
+{
+  "$schema": "https://raw.githubusercontent.com/vicinaehq/vicinae/refs/heads/main/extra/schemas/extension.json",
+  "name": "wifi",
+  "title": "WiFi Manager",
+  "description": "Scan, connect, and share WiFi networks",
+  "categories": ["System"],
+  "license": "MIT",
+  "author": "turnyi",
+  "icon": "assets/icon.png",
+  "commands": [
+    {
+      "name": "scan",
+      "title": "Scan WiFi Networks",
+      "subtitle": "Browse and connect to nearby networks",
+      "description": "Scan for available WiFi networks with signal strength, security, and quick connect",
+      "mode": "view",
+      "icon": "📶"
+    },
+    {
+      "name": "saved",
+      "title": "Saved Networks",
+      "subtitle": "Manage saved connections",
+      "description": "View, connect, share, or forget saved WiFi networks",
+      "mode": "view",
+      "icon": "⭐"
+    },
+    {
+      "name": "wifi-on",
+      "title": "Turn WiFi On",
+      "subtitle": "Enable WiFi radio",
+      "description": "Enable the WiFi radio",
+      "mode": "no-view"
+    },
+    {
+      "name": "wifi-off",
+      "title": "Turn WiFi Off",
+      "subtitle": "Disable WiFi radio",
+      "description": "Disable the WiFi radio",
+      "mode": "no-view"
+    }
+  ],
+  "scripts": {
+    "build": "vici build",
+    "dev": "vici develop"
+  },
+  "dependencies": {
+    "@vicinae/api": "^0.18.3",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5",
+    "typescript": "^5.9.2"
+  }
+}
