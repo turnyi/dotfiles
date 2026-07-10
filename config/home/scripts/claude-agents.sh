@@ -39,7 +39,13 @@ SEL="${TMPDIR:-/tmp}/claude-agents-sel.$STAGE"
 run_once() {
   if [ "$POPUP" = 1 ]; then
     # ---- floating popup (C-g): list + live preview, pin into the workspace ---
-    "$list" | fzf \
+    # enter uses fzf's default accept so the selected row is PRINTED and fzf
+    # exits; we then jump to the pane from here (outside fzf). Doing the jump
+    # after the popup's fzf exits — rather than via execute+abort inside it —
+    # is what makes switch-client actually move the client. Typing :q filters
+    # the list empty, so accept prints nothing and the popup just closes.
+    local sel pane
+    sel="$("$list" | fzf \
       --ansi --no-sort --cycle --layout=reverse --info=inline \
       --delimiter=$'\t' --with-nth=2 \
       --prompt='agents ❯ ' \
@@ -50,10 +56,12 @@ run_once() {
       --bind="focus:refresh-preview" \
       --bind="ctrl-r:reload('$list')+refresh-preview" \
       --bind="ctrl-/:toggle-preview" \
-      --bind="enter:execute-silent('$S/claude-agents-enter.sh' {q} {1})+abort" \
       --bind="tab:execute-silent('$S/claude-agents-pin.sh' {1})+reload('$list')+refresh-preview" \
       --bind="ctrl-x:execute(printf 'close agent %s? [y/N] ' {2}; read -r a; [ \"\$a\" = y ] && '$S/claude-agents-kill.sh' {1})+reload('$list')+refresh-preview" \
-      --bind="alt-b:execute('$S/claude-agents-broadcast.sh')+refresh-preview"
+      --bind="alt-b:execute('$S/claude-agents-broadcast.sh')+refresh-preview")"
+    pane="${sel%%$'\t'*}"
+    [ -n "$pane" ] && "$S/claude-agents-goto.sh" "$pane"
+    return 0
   elif [ -n "$STAGE" ]; then
     # ---- mission-control mode: the stage pane is the view ------------------
     "$list" | fzf \
