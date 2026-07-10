@@ -135,6 +135,13 @@ if [[ "$OSTYPE" == darwin* ]]; then
 else
   export PNPM_HOME="$HOME/.local/share/pnpm"
 fi
+# Self-heal a stale PNPM_HOME inherited from the environment (e.g. a macOS
+# /Users/... path leaking into a Linux session via synced dotfiles). If the
+# resolved home isn't a real directory here, fall back to the Linux default.
+if [[ "$OSTYPE" != darwin* ]] && { [[ "$PNPM_HOME" == /Users/* ]] || [[ ! -d "$PNPM_HOME" ]]; }; then
+  export PNPM_HOME="$HOME/.local/share/pnpm"
+  mkdir -p "$PNPM_HOME"
+fi
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;

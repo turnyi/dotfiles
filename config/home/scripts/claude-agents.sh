@@ -43,16 +43,17 @@ run_once() {
       --ansi --no-sort --cycle --layout=reverse --info=inline \
       --delimiter=$'\t' --with-nth=2 \
       --prompt='agents ❯ ' \
-      --header='enter: go to pane   tab: dock onto stage (type in the REAL pane)   ctrl-x: close pane   ctrl-u: send it home   ctrl-b: broadcast' \
+      --header='enter: go to pane · tab: pin/unpin tile · ctrl-u: unpin · ctrl-x: close · alt-b: broadcast · esc esc: quit · C-b: hide list' \
       --bind="start:execute-silent(printf %s {1} > '$SEL')" \
       --bind="focus:execute-silent(printf %s {1} > '$SEL')" \
       --bind="load:reload-sync(sleep 1; '$list')" \
       --bind="ctrl-r:reload('$list')" \
       --bind="enter:execute-silent('$S/claude-agents-goto.sh' {1})+abort" \
       --bind="tab:execute-silent('$S/claude-agents-dock.sh' {1} '$STAGE')" \
+      --bind="ctrl-u:execute-silent('$S/claude-agents-dock.sh' --untile {1} '$STAGE')" \
       --bind="ctrl-x:execute(printf 'close agent %s? [y/N] ' {2}; read -r a; [ \"\$a\" = y ] && '$S/claude-agents-kill.sh' {1} '$STAGE')+reload('$list')" \
-      --bind="ctrl-u:execute-silent('$S/claude-agents-dock.sh' --release '$STAGE')" \
-      --bind="ctrl-b:execute('$S/claude-agents-broadcast.sh')" \
+      --bind="alt-b:execute('$S/claude-agents-broadcast.sh')" \
+      --bind="esc:execute-silent('$S/claude-agents-quit.sh' --tap '$STAGE')+abort" \
       --bind="ctrl-g:execute-silent('$S/claude-agents-goto.sh' {1})"
   else
     # ---- popup / plain mode: read-only preview on the right ----------------
