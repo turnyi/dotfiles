@@ -43,12 +43,12 @@ run_once() {
       --ansi --no-sort --cycle --layout=reverse --info=inline \
       --delimiter=$'\t' --with-nth=2 \
       --prompt='agents ❯ ' \
-      --header='enter/tab: interact — you type in the REAL pane   ctrl-u: send it home   ctrl-b: broadcast' \
+      --header='enter: go to pane   tab: dock onto stage (type in the REAL pane)   ctrl-u: send it home   ctrl-b: broadcast' \
       --bind="start:execute-silent(printf %s {1} > '$SEL')" \
       --bind="focus:execute-silent(printf %s {1} > '$SEL')" \
       --bind="load:reload-sync(sleep 1; '$list')" \
       --bind="ctrl-r:reload('$list')" \
-      --bind="enter:execute-silent('$S/claude-agents-dock.sh' {1} '$STAGE')" \
+      --bind="enter:execute-silent('$S/claude-agents-goto.sh' {1})+abort" \
       --bind="tab:execute-silent('$S/claude-agents-dock.sh' {1} '$STAGE')" \
       --bind="ctrl-u:execute-silent('$S/claude-agents-dock.sh' --release '$STAGE')" \
       --bind="ctrl-b:execute('$S/claude-agents-broadcast.sh')" \
