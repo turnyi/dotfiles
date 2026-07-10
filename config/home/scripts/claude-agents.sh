@@ -43,13 +43,14 @@ run_once() {
       --ansi --no-sort --cycle --layout=reverse --info=inline \
       --delimiter=$'\t' --with-nth=2 \
       --prompt='agents ❯ ' \
-      --header='enter: go to pane   tab: dock onto stage (type in the REAL pane)   ctrl-u: send it home   ctrl-b: broadcast' \
+      --header='enter: go to pane   tab: dock onto stage (type in the REAL pane)   ctrl-x: close pane   ctrl-u: send it home   ctrl-b: broadcast' \
       --bind="start:execute-silent(printf %s {1} > '$SEL')" \
       --bind="focus:execute-silent(printf %s {1} > '$SEL')" \
       --bind="load:reload-sync(sleep 1; '$list')" \
       --bind="ctrl-r:reload('$list')" \
       --bind="enter:execute-silent('$S/claude-agents-goto.sh' {1})+abort" \
       --bind="tab:execute-silent('$S/claude-agents-dock.sh' {1} '$STAGE')" \
+      --bind="ctrl-x:execute(printf 'close agent %s? [y/N] ' {2}; read -r a; [ \"\$a\" = y ] && '$S/claude-agents-kill.sh' {1} '$STAGE')+reload('$list')" \
       --bind="ctrl-u:execute-silent('$S/claude-agents-dock.sh' --release '$STAGE')" \
       --bind="ctrl-b:execute('$S/claude-agents-broadcast.sh')" \
       --bind="ctrl-g:execute-silent('$S/claude-agents-goto.sh' {1})"
@@ -59,12 +60,13 @@ run_once() {
       --ansi --no-sort --cycle --layout=reverse --info=inline \
       --delimiter=$'\t' --with-nth=2 \
       --prompt='agents ❯ ' \
-      --header='enter/tab: go to pane   ctrl-o: open beside list   ctrl-b: broadcast   ctrl-r: refresh' \
+      --header='enter/tab: go to pane   ctrl-x: close pane   ctrl-o: open beside list   ctrl-b: broadcast   ctrl-r: refresh' \
       --preview="tmux capture-pane -ep -t {1} 2>/dev/null" \
       --preview-window='right,62%,follow,border-left' \
       --bind="load:reload-sync(sleep 1; '$list')+refresh-preview" \
       --bind="ctrl-r:reload('$list')+refresh-preview" \
       --bind="ctrl-/:toggle-preview" \
+      --bind="ctrl-x:execute(printf 'close agent %s? [y/N] ' {2}; read -r a; [ \"\$a\" = y ] && '$S/claude-agents-kill.sh' {1})+reload('$list')+refresh-preview" \
       --bind="ctrl-b:execute('$S/claude-agents-broadcast.sh')+refresh-preview" \
       --bind="enter:execute-silent('$S/claude-agents-goto.sh' {1})+abort" \
       --bind="tab:execute-silent('$S/claude-agents-goto.sh' {1})+abort" \
