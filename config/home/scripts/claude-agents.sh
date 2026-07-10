@@ -1,18 +1,16 @@
 #!/usr/bin/env bash
 # Claude Code agents dashboard — a live fzf list of every running `claude` pane.
 #
-# Two flavours, chosen by environment:
-#   * popup / plain (CLAUDE_AGENTS_STAGE unset): list + read-only preview on the
-#     right. enter = go to pane, tab = chat, ctrl-o = open beside the list.
-#   * mission control (CLAUDE_AGENTS_STAGE=<stage pane id>): list on the left, a
-#     "stage" pane on the right. enter = swap the real agent onto the stage and
-#     interact with it live; ctrl-u = send it home.
-#
-# Common keys: tab = chat with highlighted agent, ctrl-b = broadcast to all,
-#              ctrl-r = refresh.
+# Modes:
+#   --popup            floating command-palette: list + live preview. enter = go
+#                      to pane, tab = pin into the workspace, ctrl-x = close,
+#                      alt-b = broadcast, :q/esc = quit.
+#   --stage %N --loop  the tiled WORKSPACE list (left column). enter = go to pane,
+#                      tab = pin/unpin a tile on stage %N, ctrl-u = unpin,
+#                      ctrl-x = close, :q / esc esc = quit.
 #
 # Env:
-#   CLAUDE_AGENTS_LOOP=1     keep reopening on esc (dedicated dashboard window)
+#   CLAUDE_AGENTS_LOOP=1     keep reopening on esc (workspace list)
 #   CLAUDE_AGENTS_STAGE=%N   enable mission-control docking against stage pane %N
 #   CLAUDE_AGENTS_NOTIFY=1   macOS notification when an agent finishes
 set -u
@@ -25,10 +23,12 @@ DASH="$(tmux display -p '#{session_name}:#{window_id}' 2>/dev/null)"
 # or environment variables.
 STAGE=""
 LOOP=0
+POPUP=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --stage) STAGE="${2:-}"; shift 2 ;;
     --loop)  LOOP=1; shift ;;
+    --popup) POPUP=1; shift ;;
     *)       shift ;;
   esac
 done
@@ -37,18 +37,35 @@ STAGE="${STAGE:-${CLAUDE_AGENTS_STAGE:-}}"
 SEL="${TMPDIR:-/tmp}/claude-agents-sel.$STAGE"
 
 run_once() {
-  if [ -n "$STAGE" ]; then
+  if [ "$POPUP" = 1 ]; then
+    # ---- floating popup (C-g): list + live preview, pin into the workspace ---
+    "$list" | fzf \
+      --ansi --no-sort --cycle --layout=reverse --info=inline \
+      --delimiter=$'\t' --with-nth=2 \
+      --prompt='agents ❯ ' \
+      --header='enter: go to pane · tab: pin to workspace · ctrl-x: close · alt-b: broadcast · :q/esc: quit' \
+      --preview="tmux capture-pane -ep -t {1} 2>/dev/null" \
+      --preview-window='right,60%,follow,border-left' \
+      --bind="load:reload-sync(sleep 1; '$list')+refresh-preview" \
+      --bind="focus:refresh-preview" \
+      --bind="ctrl-r:reload('$list')+refresh-preview" \
+      --bind="ctrl-/:toggle-preview" \
+      --bind="enter:execute-silent('$S/claude-agents-enter.sh' {q} {1})+abort" \
+      --bind="tab:execute-silent('$S/claude-agents-pin.sh' {1})+reload('$list')+refresh-preview" \
+      --bind="ctrl-x:execute(printf 'close agent %s? [y/N] ' {2}; read -r a; [ \"\$a\" = y ] && '$S/claude-agents-kill.sh' {1})+reload('$list')+refresh-preview" \
+      --bind="alt-b:execute('$S/claude-agents-broadcast.sh')+refresh-preview"
+  elif [ -n "$STAGE" ]; then
     # ---- mission-control mode: the stage pane is the view ------------------
     "$list" | fzf \
       --ansi --no-sort --cycle --layout=reverse --info=inline \
       --delimiter=$'\t' --with-nth=2 \
       --prompt='agents ❯ ' \
-      --header='enter: go to pane · tab: pin/unpin tile · ctrl-u: unpin · ctrl-x: close · alt-b: broadcast · esc esc: quit · C-b: hide list' \
+      --header='enter: go to pane · tab: pin/unpin tile · ctrl-u: unpin · ctrl-x: close · alt-b: broadcast · :q or esc esc: quit · C-b: hide list' \
       --bind="start:execute-silent(printf %s {1} > '$SEL')" \
       --bind="focus:execute-silent(printf %s {1} > '$SEL')" \
       --bind="load:reload-sync(sleep 1; '$list')" \
       --bind="ctrl-r:reload('$list')" \
-      --bind="enter:execute-silent('$S/claude-agents-goto.sh' {1})+abort" \
+      --bind="enter:execute-silent('$S/claude-agents-enter.sh' {q} {1} '$STAGE')+abort" \
       --bind="tab:execute-silent('$S/claude-agents-dock.sh' {1} '$STAGE')" \
       --bind="ctrl-u:execute-silent('$S/claude-agents-dock.sh' --untile {1} '$STAGE')" \
       --bind="ctrl-x:execute(printf 'close agent %s? [y/N] ' {2}; read -r a; [ \"\$a\" = y ] && '$S/claude-agents-kill.sh' {1} '$STAGE')+reload('$list')" \
