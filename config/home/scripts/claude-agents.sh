@@ -4,7 +4,8 @@
 # Modes:
 #   --popup            floating command-palette: list + live preview. enter = go
 #                      to pane, tab = pin into the workspace, ctrl-x = close,
-#                      alt-b = broadcast, :q/esc = quit.
+#                      alt-b = broadcast, ctrl-o = flip to the resume picker
+#                      (claude-resume.sh, whose ctrl-g flips back), :q/esc = quit.
 #   --stage %N --loop  the tiled WORKSPACE list (left column). enter = go to pane,
 #                      tab = pin/unpin a tile on stage %N, ctrl-u = unpin,
 #                      ctrl-x = close, :q / esc esc = quit.
@@ -44,12 +45,13 @@ run_once() {
     # after the popup's fzf exits — rather than via execute+abort inside it —
     # is what makes switch-client actually move the client. Typing :q filters
     # the list empty, so accept prints nothing and the popup just closes.
-    local sel pane
-    sel="$("$list" | fzf \
+    local out key sel pane
+    out="$("$list" | fzf \
       --ansi --no-sort --cycle --layout=reverse --info=inline \
       --delimiter=$'\t' --with-nth=2 \
       --prompt='agents ❯ ' \
-      --header='enter: go to pane · tab: pin to workspace · ctrl-x: close · alt-b: broadcast · :q/esc: quit' \
+      --header='enter: go to pane · tab: pin to workspace · ctrl-x: close · alt-b: broadcast · ctrl-o: resume picker · :q/esc: quit' \
+      --expect=ctrl-o \
       --preview="tmux capture-pane -ep -t {1} 2>/dev/null" \
       --preview-window='right,60%,follow,border-left' \
       --bind="load:reload-sync(sleep 1; '$list')+refresh-preview" \
@@ -59,6 +61,11 @@ run_once() {
       --bind="tab:execute-silent('$S/claude-agents-pin.sh' {1})+reload('$list')+refresh-preview" \
       --bind="ctrl-x:execute(printf 'close agent %s? [y/N] ' {2}; read -r a; [ \"\$a\" = y ] && '$S/claude-agents-kill.sh' {1})+reload('$list')+refresh-preview" \
       --bind="alt-b:execute('$S/claude-agents-broadcast.sh')+refresh-preview")"
+    # --expect prefixes the output with the key that accepted (empty for enter)
+    key="${out%%$'\n'*}"
+    sel="${out#*$'\n'}"; [ "$sel" = "$out" ] && sel=""
+    # flip to the resume-picker view of the same palette
+    [ "$key" = ctrl-o ] && exec "$S/claude-resume.sh" --pick
     pane="${sel%%$'\t'*}"
     [ -n "$pane" ] && "$S/claude-agents-goto.sh" "$pane"
     return 0

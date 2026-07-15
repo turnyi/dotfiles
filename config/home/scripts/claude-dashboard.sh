@@ -61,7 +61,10 @@ case "${1:-}" in
     ensure_window
     ;;
   --popup)
+    # same popup styling as claude-resume.sh (C-o): rounded border, bg=default
+    # so kitty's opacity + Hyprland's blur show through
     tmux display-popup -E -w 88% -h 82% -T ' claude mission control ' \
+      -b rounded -S 'fg=#bb9af7' -s 'bg=default' \
       "$S/claude-agents.sh --popup"
     ;;
   *)
