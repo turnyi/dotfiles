@@ -14,14 +14,16 @@ echo "🔧 Starting dotfiles setup..."
 # process_path "$CONFIG_PATH" "$CONFIG_DIR" ".config"
 process_path "$HOME_SOURCE" "$HOME" "HOME"
 
-# Install ccstatusline globally for Claude Code status line
-echo -e "\n📊 Installing ccstatusline..."
-if ! command -v ccstatusline &>/dev/null; then
-  npm install -g ccstatusline@latest
-  echo "  ✅ ccstatusline installed"
-else
-  echo "  ✅ ccstatusline already installed ($(ccstatusline --version 2>/dev/null || echo 'version unknown'))"
-fi
+# Register the custom Claude Code status line (★ bookmark marker + dir ·
+# branch · model — see scripts/claude-statusline.sh, linked by the stow above)
+echo -e "\n📊 Registering Claude Code status line..."
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+mkdir -p "$HOME/.claude"
+[ -s "$CLAUDE_SETTINGS" ] || echo '{}' >"$CLAUDE_SETTINGS"
+tmp="$(mktemp)"
+jq '.statusLine = {type: "command", command: "~/scripts/claude-statusline.sh"}' \
+  "$CLAUDE_SETTINGS" >"$tmp" && mv "$tmp" "$CLAUDE_SETTINGS"
+echo "  ✅ statusLine → ~/scripts/claude-statusline.sh"
 
 # if grep -qi "arch" /etc/os-release; then
 #   echo "🟢 Running on Arch Linux"
