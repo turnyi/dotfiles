@@ -18,8 +18,10 @@ return {
 		bg = 0xc02c2e34,
 		border = 0xff7f8490,
 	},
-	bg1 = 0xff363944,
-	bg2 = 0xff414550,
+	-- chip (item pill) fill + border: dark violet over the transparent bar,
+	-- matching the #bb9af7 accent used in the tmux popups
+	bg1 = 0xe03a2f55,
+	bg2 = 0xff7361a6,
 
 	with_alpha = function(color, alpha)
 		if alpha > 1.0 or alpha < 0.0 then
