@@ -15,9 +15,9 @@ PF="$HOME/scripts/pf-ctl.sh"
 
 # Glyphs by codepoint so the raw PUA bytes never live in this file — same reason
 # the sketchybar item uses utf8.char().
-TUNNEL=$''  # exchange / tunnel
-DOT_ON=$''  # filled circle
-DOT_OFF=$'' # hollow circle
+TUNNEL=$'\uf0ec'  # exchange / tunnel
+DOT_ON=$'\uf111'  # filled circle
+DOT_OFF=$'\uf10c' # hollow circle
 
 if [ ! -x "$PF" ]; then
   jq -cn --arg t "$TUNNEL" \

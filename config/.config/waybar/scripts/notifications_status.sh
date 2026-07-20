@@ -19,8 +19,11 @@
 # Emits waybar JSON: {"text","tooltip","class"}.
 set -uo pipefail
 
-BELL=$''      # nerdfont bell
-BELL_OFF=$''  # bell-slash, shown while DND is on
+# By codepoint, never as raw bytes: the PUA characters do not survive every
+# editor/tool round-trip (they were silently stripped here once already), which
+# leaves the module rendering a blank gap instead of an icon.
+BELL=$'\U000f009a'      # nf-md-bell
+BELL_OFF=$'\U000f009c'  # nf-md-bell-off, shown while DND is on
 
 if ! command -v swaync-client >/dev/null 2>&1; then
   jq -cn --arg t "$BELL" \
