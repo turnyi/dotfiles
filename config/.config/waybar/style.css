@@ -49,6 +49,8 @@
 #custom-lock,
 #custom-bluetooth,
 #custom-power,
+#custom-port_forwards,
+#custom-notifications,
 #custom-lms_status {
   padding: 0.5rem 1rem;
   margin: 5px 0;
@@ -180,4 +182,27 @@
 
 #memory:not(.high):not(.medium) {
   color: #a6d189;
+}
+
+/* ⇄ port forwards — green while any tunnel is up, dim otherwise (mirrors the
+   sketchybar item's grey/green icon states). */
+#custom-port_forwards.active {
+  color: #a6d189;
+}
+
+#custom-port_forwards.idle {
+  color: #6c7086;
+}
+
+/* 🔔 notifications — red with a pending count, dim when clear, amber on DND. */
+#custom-notifications.active {
+  color: #e78284;
+}
+
+#custom-notifications.idle {
+  color: #6c7086;
+}
+
+#custom-notifications.dnd {
+  color: #ef9f76;
 }

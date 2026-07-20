@@ -13,6 +13,8 @@
     "custom/memory"
   ],
   "modules-right": [
+    "custom/port_forwards",
+    "custom/notifications",
     "pulseaudio",
     "custom/battery",
     "network",
@@ -137,5 +139,24 @@
     "return-type": "json",
     "tooltip": true,
     "format": "{}"
+  },
+  "custom/port_forwards": {
+    "exec": "~/.config/waybar/scripts/port_forwards.sh",
+    "interval": 15,
+    "return-type": "json",
+    "tooltip": true,
+    "format": "{}",
+    "on-click": "~/scripts/pf-menu.sh --float",
+    "on-click-right": "~/scripts/pf-ctl.sh stop-all"
+  },
+  // No "interval": the script holds swaync's event stream open and pushes a
+  // line per notification, so polling would only add lag.
+  "custom/notifications": {
+    "exec": "~/.config/waybar/scripts/notifications_status.sh",
+    "return-type": "json",
+    "tooltip": true,
+    "format": "{}",
+    "on-click": "swaync-client -t",
+    "on-click-right": "swaync-client -d"
   }
 }

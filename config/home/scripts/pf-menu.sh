@@ -9,6 +9,7 @@
 #
 #   pf-menu            picker in the current terminal
 #   pf-menu --popup    open it in a centered tmux popup (bind a key to this)
+#   pf-menu --float    open it in a floating terminal window (waybar click, WM bind)
 #   pf-menu --list     emit the picker feed (used internally by fzf reload)
 #   pf-menu --add      prompt for ports and open them (used internally by `+`)
 #   pf-menu --bye      farewell line printed on esc (used internally)
@@ -83,6 +84,13 @@ case "${1:-menu}" in
                h=$((n + 6)); [ "$h" -lt 8 ] && h=8; [ "$h" -gt 24 ] && h=24
                exec tmux display-popup -E -w 37 -h "$h" -T ' ⇄ ports ' \
                  -b rounded -S 'fg=#9ed072' -s 'bg=default' "$SELF --menu" ;;
+  --float)     # Same menu, but standalone — for a waybar click or a WM keybind,
+               # where there's no tmux client to hang a popup off. The app-id is
+               # what the hyprland windowrule floats/centers (see hyprland.conf).
+               n=$("$PF" list | grep -c .) || n=0
+               h=$((n + 6)); [ "$h" -lt 8 ] && h=8; [ "$h" -gt 24 ] && h=24
+               exec kitty --class pf-menu -o "initial_window_width=37c" \
+                 -o "initial_window_height=${h}c" -e "$SELF --menu" ;;
   -h|--help)   sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//' ;;
   *)           echo "usage: pf-menu [--popup|--menu|--list|--add]" >&2; exit 2 ;;
 esac
