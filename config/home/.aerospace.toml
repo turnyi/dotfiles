@@ -35,9 +35,10 @@ automatically-unhide-macos-hidden-apps = true
     outer.top        = [{ monitor.'built-in' = 5 }, 37]
     outer.right      = 5
 
-# Workspace layout:
-#  Primary monitor:   1=terminal  2=browser  3=notes  4=misc
-#  Secondary monitor: 5=slack     6=discord  7=music  8=whatsapp  9=misc
+# Which monitor each workspace lives on. Apps are no longer auto-assigned to
+# workspaces — they open wherever you launch them — but keeping workspaces
+# pinned to a monitor makes alt-1..9 land on a predictable screen.
+#  Primary monitor:   1 2 3 4      Secondary monitor: 5 6 7 8 9
 [workspace-to-monitor-force-assignment]
     1 = 'primary'
     2 = 'primary'
@@ -166,50 +167,9 @@ automatically-unhide-macos-hidden-apps = true
 check-further-callbacks = true
 run = 'exec-and-forget bash ~/scripts/aerospace-center-master.sh --auto'
 
-# ── App → workspace assignments ───────────────────────────────────────
-[[on-window-detected]]
-if.app-id = 'net.kovidgoyal.kitty'
-run = 'move-node-to-workspace 1'
-
-[[on-window-detected]]
-if.app-id = 'app.zen-browser.zen'
-run = 'move-node-to-workspace 2'
-
-[[on-window-detected]]
-if.app-id = 'com.google.Chrome'
-if.window-title-regex-substring = 'Centinel'
-run = 'move-node-to-workspace 2'
-
-[[on-window-detected]]
-if.app-id = 'com.google.Chrome'
-if.window-title-regex-substring = 'Personal'
-run = 'move-node-to-workspace 4'
-
-[[on-window-detected]]
-if.app-id = 'md.obsidian'
-run = 'move-node-to-workspace 3'
-
-[[on-window-detected]]
-if.app-id = 'com.tinyspeck.slackmacgap'
-run = 'move-node-to-workspace 5'
-
-[[on-window-detected]]
-if.app-id = 'com.hnc.Discord'
-run = 'move-node-to-workspace 6'
-
-[[on-window-detected]]
-if.app-id = 'com.spotify.client'
-run = 'move-node-to-workspace 7'
-
-# WhatsApp Web (Chrome PWA)
-[[on-window-detected]]
-if.app-id = 'com.google.Chrome.app.hnpfjngllnobngcgfapefoaidbinmjnm'
-run = 'move-node-to-workspace 8'
-
-[[on-window-detected]]
-if.app-id = 'io.zsa.keymapp'
-run = 'move-node-to-workspace 4'
-
+# ── App-specific window rules ──────────────────────────────────────────
+# Apps now open on whatever workspace they're launched into — no automatic
+# move-to-workspace assignments. Only non-placement rules remain below.
 [[on-window-detected]]
 if.app-id = 'com.webcatalog.switchbar'
 run = 'layout floating'
