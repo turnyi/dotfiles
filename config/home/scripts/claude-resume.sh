@@ -141,8 +141,8 @@ quick() {
   out=$(quick_list | fzf --ansi --reverse --no-input \
     --delimiter '\t' --with-nth 4 \
     --info=hidden --no-separator \
-    --header 'C-c: window · \ -: split · r: label · d: remove' \
-    --expect='f,ctrl-c,\,-' \
+    --header 'c: window · \ -: split · r: label · d: remove' \
+    --expect='f,c,\,-' \
     --bind 'j:down,k:up,l:accept,h:abort' \
     "${digitbinds[@]}" \
     --bind "s:execute-silent($SELF --mark-here $target)+reload($SELF --quick-list)" \
@@ -163,7 +163,7 @@ open_sel() {
   local key="$1" sel="$2" target="$3" id cwd f
   id=$(cut -f1 <<<"$sel"); cwd=$(cut -f2 <<<"$sel"); f=$(cut -f3 <<<"$sel")
   case "$key" in
-    ctrl-c)          resume "$id" "$cwd" "$f" "$target" window ;;
+    c|ctrl-c)        resume "$id" "$cwd" "$f" "$target" window ;;
     '\'|"ctrl-\\")   resume "$id" "$cwd" "$f" "$target" vsplit ;;
     -|ctrl-_)        resume "$id" "$cwd" "$f" "$target" hsplit ;;
     *)               open_smart "$id" "$cwd" "$f" "$target" ;;
