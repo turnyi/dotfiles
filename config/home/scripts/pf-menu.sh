@@ -135,6 +135,12 @@ menu() {
     --bind="+:execute($SELF --add)+reload($SELF --list)" \
     --bind='esc:abort' \
     --bind='q:abort' >/dev/null
+  # Closing the menu is not a failure. fzf reports 130 on esc/q (and 1 on an
+  # empty list), which would propagate out through `display-popup -E` and make
+  # tmux announce «'…pf-menu.sh --popup' returned 130» over the terminal — the
+  # thing that makes esc look noisy. A real fzf fault (2) still propagates.
+  local rc=$?
+  case "$rc" in 0|1|130) return 0 ;; *) return "$rc" ;; esac
 }
 
 case "${1:-menu}" in
