@@ -138,17 +138,16 @@ quick() {
   for i in 1 2 3 4 5 6 7 8 9; do
     digitbinds+=(--bind "$i:pos($i)+accept" --bind "alt-$i:pos($i)+accept")
   done
-  out=$(quick_list | fzf --ansi --reverse --disabled \
+  out=$(quick_list | fzf --ansi --reverse --no-input \
     --delimiter '\t' --with-nth 4 \
-    --prompt '★ ' --info=hidden --no-separator \
-    --header '1-9/enter: open · C-c: window · C-\: vsplit · C--: hsplit · s: ★ pane · r: label · d/C-d: remove · f: full' \
-    --expect=f,ctrl-c --expect='ctrl-\' --expect=ctrl-_ \
+    --info=hidden --no-separator \
+    --header 'C-c: window · \ -: split · r: label · d: remove' \
+    --expect='f,ctrl-c,\,-' \
     --bind 'j:down,k:up,l:accept,h:abort' \
     "${digitbinds[@]}" \
     --bind "s:execute-silent($SELF --mark-here $target)+reload($SELF --quick-list)" \
     --bind "r:execute($SELF --relabel {1})+reload($SELF --quick-list)" \
-    --bind "d:execute-silent($SELF --unmark {1})+reload($SELF --quick-list)" \
-    --bind "ctrl-d:execute-silent($SELF --unmark {1})+reload($SELF --quick-list)") || return 0
+    --bind "d:execute-silent($SELF --unmark {1})+reload($SELF --quick-list)") || return 0
   key="${out%%$'\n'*}"
   sel="${out#*$'\n'}"; [ "$sel" = "$out" ] && sel=""
   [ "$key" = f ] && exec "$SELF" --marks "$target"
@@ -164,10 +163,10 @@ open_sel() {
   local key="$1" sel="$2" target="$3" id cwd f
   id=$(cut -f1 <<<"$sel"); cwd=$(cut -f2 <<<"$sel"); f=$(cut -f3 <<<"$sel")
   case "$key" in
-    ctrl-c)    resume "$id" "$cwd" "$f" "$target" window ;;
-    "ctrl-\\") resume "$id" "$cwd" "$f" "$target" vsplit ;;
-    ctrl-_)    resume "$id" "$cwd" "$f" "$target" hsplit ;;
-    *)         open_smart "$id" "$cwd" "$f" "$target" ;;
+    ctrl-c)          resume "$id" "$cwd" "$f" "$target" window ;;
+    '\'|"ctrl-\\")   resume "$id" "$cwd" "$f" "$target" vsplit ;;
+    -|ctrl-_)        resume "$id" "$cwd" "$f" "$target" hsplit ;;
+    *)               open_smart "$id" "$cwd" "$f" "$target" ;;
   esac
 }
 
@@ -290,7 +289,7 @@ toggle_bookmark() {
 # Last chunk of a jsonl file with the (possibly truncated) first line dropped,
 # so jq never chokes on a line cut in half.
 tail_chunk() {
-  if [ "$(stat -c%s "$1")" -gt 262144 ]; then
+  if [ "$(wc -c <"$1")" -gt 262144 ]; then
     tail -c 262144 "$1" | sed '1d'
   else
     cat "$1"
