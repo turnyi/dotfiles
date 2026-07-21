@@ -107,6 +107,7 @@ source "$HOME/zsh/aliases.zsh"
 source "$HOME/zsh/prompt.zsh"
 source "$HOME/zsh/history.zsh"
 source "$HOME/zsh/mappings.zsh"
+source "$HOME/zsh/linear.zsh"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/martinradovitzky/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/martinradovitzky/google-cloud-sdk/path.zsh.inc'; fi
