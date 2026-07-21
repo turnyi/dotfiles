@@ -28,3 +28,6 @@ config/home/code/vicinae-extensions/audio-manager/yarn.lock
 config/home/code/vicinae-extensions/screen-recorder-and-image/node_modules
 config/.config/eww/gmail-credentials.json
 config/.config/eww/gmail-token.json
+
+.claude/worktrees/
+.claude/settings.local.json
