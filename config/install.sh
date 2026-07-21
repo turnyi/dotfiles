@@ -14,6 +14,14 @@ echo "🔧 Starting dotfiles setup..."
 # process_path "$CONFIG_PATH" "$CONFIG_DIR" ".config"
 process_path "$HOME_SOURCE" "$HOME" "HOME"
 
+# Link the global Claude Code instructions. Deliberately NOT under config/home:
+# process_directories rm -rf's each target dir before stowing, which would wipe
+# ~/.claude (settings.json, projects/, bookmarks.tsv) on every run.
+echo -e "\n🧠 Linking Claude Code instructions..."
+mkdir -p "$HOME/.claude"
+ln -sfn "$SCRIPT_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+echo "  ✅ ~/.claude/CLAUDE.md → config/claude/CLAUDE.md"
+
 # Register the custom Claude Code status line (★ bookmark marker + dir ·
 # branch · model — see scripts/claude-statusline.sh, linked by the stow above)
 echo -e "\n📊 Registering Claude Code status line..."

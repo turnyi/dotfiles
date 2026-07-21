@@ -11,6 +11,11 @@
 #               with nothing behind it; a local dev server needs no tunnel)
 #               1-9 / enter  open http://localhost:PORT in the browser
 #
+# A launch starts in the machine's default view: 🌐 open on Arch (this box is
+# where the tunnels land, so reachability is the question), ⇄ tunnels elsewhere.
+# tab flips it for that session only; the next launch resets. The popup border
+# title tracks the view, repainting on every flip.
+#
 #   tab  switch view      s  stop that slot      ^a  stop everything
 #   j/k  move             d  drop an ad-hoc entry
 #   +    open ad-hoc ports (prompt)              esc / q  close (silent)
@@ -28,18 +33,41 @@ set -uo pipefail
 PF="$HOME/scripts/pf-ctl.sh"
 SELF="$HOME/scripts/pf-menu.sh"
 RUN_DIR="${XDG_RUNTIME_DIR:-$HOME/.cache}/pf"
-VIEW_FILE="$RUN_DIR/menu-view"   # survives the fzf reloads, so tab can persist
+VIEW_FILE="$RUN_DIR/menu-view"
 mkdir -p "$RUN_DIR"
 
 GREEN=$'\033[32m'; DIM=$'\033[90m'; BOLD=$'\033[1m'; NUM=$'\033[33m'
 BLUE=$'\033[34m'; RST=$'\033[0m'
 
-view() { case "$(cat "$VIEW_FILE" 2>/dev/null)" in open) echo open ;; *) echo tunnels ;; esac; }
-flip() { if [ "$(view)" = tunnels ]; then echo open >"$VIEW_FILE"; else echo tunnels >"$VIEW_FILE"; fi; }
+default_view() {
+  if [ -r /etc/os-release ] && grep -qx 'ID=arch' /etc/os-release; then
+    echo open
+  else
+    echo tunnels
+  fi
+}
 
-# Every local TCP port with a listener, one per line. This is the "open" test:
-# it sees a forwarded port and a plain local dev server alike, which is the whole
-# point of this view — what can I actually reach right now.
+view() { case "$(cat "$VIEW_FILE" 2>/dev/null)" in open) echo open ;; tunnels) echo tunnels ;; *) default_view ;; esac; }
+flip() { if [ "$(view)" = tunnels ]; then echo open >"$VIEW_FILE"; else echo tunnels >"$VIEW_FILE"; fi; retitle; }
+
+# VIEW_FILE is on disk only so a flip survives fzf's reloads; without this reset
+# it also outlives the session, and one stray tab silently changes what every
+# later launch opens on.
+reset_view() { default_view >"$VIEW_FILE"; }
+
+view_title() { if [ "$(view)" = open ]; then printf ' 🌐 open '; else printf ' ⇄ tunnels '; fi; }
+
+# display-popup run from inside a popup modifies that popup rather than stacking
+# a new one (tmux 3.6+, issue 4678) — the only way to retitle a live one, as the
+# border title is never re-read from the pane and so ignores OSC titles. Outside
+# a popup the same command would open one, hence the env guard. Omitting -T
+# blanks the title, so it is always passed; border styles survive omission.
+retitle() {
+  [ -n "${PF_MENU_POPUP:-}" ] || return 0
+  tmux display-popup -T "$(view_title)" 2>/dev/null
+  return 0
+}
+
 listening() {
   if command -v ss >/dev/null 2>&1; then
     ss -ltnH 2>/dev/null | awk '{print $4}' | sed 's/.*://'
@@ -48,8 +76,6 @@ listening() {
   fi | grep -E '^[0-9]+$' | sort -u
 }
 
-# Rows are: name \t display \t url. fzf shows only field 2 (--with-nth=2); the
-# binds read field 1 to act on the slot and field 3 to open it.
 feed() {
   local mode; mode=$(view)
   local -A live=()
@@ -65,7 +91,6 @@ feed() {
     url=""; [ -n "$port" ] && url="http://localhost:$port"
 
     if [ "$mode" = open ]; then
-      # "on" here means the port answers, NOT that we started something.
       [ -n "$port" ] && [ -n "${live[$port]:-}" ] && on=1 || on=0
     else
       [ "$status" = "on" ] && on=1 || on=0
@@ -82,9 +107,8 @@ feed() {
   done < <("$PF" list)
 }
 
-# What enter / 1-9 do depends on the view, so the binds delegate here rather than
-# hard-coding an action fzf can't switch at runtime.
-go() { # go <name> <url>
+# The binds delegate here because fzf cannot swap an action at runtime.
+go() {
   local name="${1:-}" url="${2:-}"
   [ -n "$name" ] || return 0
   if [ "$(view)" = open ]; then
@@ -106,7 +130,6 @@ header() {
   fi
 }
 
-# Prompt for a port spec and open it. ESC cancels.
 add() {
   local spec
   spec=$(: | fzf --print-query --reverse --info=hidden --no-separator \
@@ -118,6 +141,7 @@ add() {
 }
 
 menu() {
+  reset_view
   local digitbinds=() i
   for i in 1 2 3 4 5 6 7 8 9; do
     digitbinds+=(--bind "$i:pos($i)+execute-silent($SELF --go {1} {3})+reload($SELF --list)")
@@ -135,10 +159,9 @@ menu() {
     --bind="+:execute($SELF --add)+reload($SELF --list)" \
     --bind='esc:abort' \
     --bind='q:abort' >/dev/null
-  # Closing the menu is not a failure. fzf reports 130 on esc/q (and 1 on an
-  # empty list), which would propagate out through `display-popup -E` and make
-  # tmux announce «'…pf-menu.sh --popup' returned 130» over the terminal — the
-  # thing that makes esc look noisy. A real fzf fault (2) still propagates.
+  # fzf reports 130 on esc/q and 1 on an empty list. Both would propagate through
+  # `display-popup -E` and make tmux announce «…returned 130» over the terminal.
+  # A real fzf fault (2) still propagates.
   local rc=$?
   case "$rc" in 0|1|130) return 0 ;; *) return "$rc" ;; esac
 }
@@ -151,18 +174,19 @@ case "${1:-menu}" in
   --flip)         flip ;;
   --go)           go "${2:-}" "${3:-}" ;;
   --menu|menu)    menu ;;
-  --popup)        # fixed width, height sized to the slot count (like the ★ C-b popup)
+  --popup)        reset_view
                   n=$("$PF" list | grep -c .) || n=0
                   h=$((n + 6)); [ "$h" -lt 8 ] && h=8; [ "$h" -gt 24 ] && h=24
-                  exec tmux display-popup -E -w 48 -h "$h" -T ' ⇄ ports ' \
+                  exec tmux display-popup -E -w 48 -h "$h" -T "$(view_title)" \
+                    -e PF_MENU_POPUP=1 \
                     -b rounded -S 'fg=#9ed072' -s 'bg=default' "$SELF --menu" ;;
-  --float)        # Same menu, but standalone — for a waybar click or a WM keybind,
-                  # where there's no tmux client to hang a popup off. The app-id is
-                  # what the hyprland windowrule floats/centers (see hyprland.conf).
+  --float)        # --class is what the hyprland windowrule floats/centers.
+                  reset_view
                   n=$("$PF" list | grep -c .) || n=0
                   h=$((n + 6)); [ "$h" -lt 8 ] && h=8; [ "$h" -gt 24 ] && h=24
-                  exec kitty --class pf-menu -o "initial_window_width=48c" \
+                  exec kitty --class pf-menu --title "$(view_title)" \
+                    -o "initial_window_width=48c" \
                     -o "initial_window_height=${h}c" -e "$SELF --menu" ;;
-  -h|--help)      sed -n '2,24p' "$0" | sed 's/^# \{0,1\}//' ;;
+  -h|--help)      sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//' ;;
   *)              echo "usage: pf-menu [--popup|--float|--menu|--list|--add]" >&2; exit 2 ;;
 esac
