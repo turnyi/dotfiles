@@ -15,15 +15,17 @@
 #   secret-tool store --label="Linear Centinel" linear centinel
 #   secret-tool store --label="Linear OptiTask" linear optitask
 #
-# Matching is on path prefix rather than a registered list of directories, so
-# new git worktrees are picked up with no extra setup.
+# Matching is a case-insensitive substring test on the whole path rather than a
+# registered list of directories, so new git worktrees are picked up with no
+# extra setup wherever they live.
 
-# Map a directory to the keyring slot holding its Linear key. Prints nothing
-# when the directory belongs to neither project.
+# Map a directory to the keyring slot holding its Linear key. optitask is the
+# default, so it also wins when a path matches both projects.
 _linear_slot_for_dir() {
-  case "$1" in
-    "$HOME"/Projects/Centinel/centinel-app*|"$HOME"/centinel-worktrees/*) print centinel ;;
-    "$HOME"/Projects/OptiTask/Web*|"$HOME"/optitask-worktrees/*)         print optitask ;;
+  case "${1:l}" in
+    *opti*)     print optitask ;;
+    *centinel*) print centinel ;;
+    *)          print optitask ;;
   esac
 }
 
