@@ -157,3 +157,6 @@ export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/centinel/dev-cli.json"
 # which would shadow nvm's node with Homebrew's.
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
+# Activate the default version (24) up front so its bin dir is prepended ahead of
+# Homebrew's node. Without this, `node` stays on brew until you manually `nvm use`.
+nvm use default --silent 2>/dev/null

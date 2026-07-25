@@ -17,7 +17,8 @@ antigen bundle z
 antigen bundle jq
 antigen bundle gcloud
 # antigen bundle yarn-autocompletions
-antigen bundle lukechilds/zsh-nvm
+# nvm is loaded once, last, from ~/.zshrc (this bundle loaded it early, behind Homebrew's node)
+# antigen bundle lukechilds/zsh-nvm
 antigen bundle Aloxaf/fzf-tab
 antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-completions
