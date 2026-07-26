@@ -37,48 +37,108 @@ encode_dir() { printf '%s' "$1" | sed 's/[^a-zA-Z0-9]/-/g'; }
 
 # One line per session, newest first, tab-separated:
 #   1 session-id  2 cwd  3 jsonl path  4 date  5 dir (display)  6 branch  7 title
-# One session row (fields 1-7) built from a transcript file; prints nothing
-# for files that aren't conversation transcripts.
-session_row() {
-  local f="$1" id cwd branch title ts when
-  id="${f##*/}"; id="${id%.jsonl}"
-  # most recent cwd from the tail; fall back to the launch cwd in the head
-  cwd=$(tail_chunk "$f" | grep -ao '"cwd":"[^"]*"' | tail -1 | cut -d'"' -f4)
-  [ -n "$cwd" ] || cwd=$(head -c 65536 "$f" | grep -ao '"cwd":"[^"]*"' | head -1 | cut -d'"' -f4)
-  [ -n "$cwd" ] || return 0 # not a conversation transcript
-  # git branch the session was last on (same recency logic as cwd)
-  branch=$(tail_chunk "$f" | grep -ao '"gitBranch":"[^"]*"' | tail -1 | cut -d'"' -f4)
-  [ -n "$branch" ] || branch=$(head -c 65536 "$f" | grep -ao '"gitBranch":"[^"]*"' | head -1 | cut -d'"' -f4)
-  # Prefer Claude's generated "ai-title" — that's the title shown at the bottom
-  # of the terminal, so searching by what you see on screen actually matches.
-  # Fall back to the first real user message for sessions with no title yet.
-  title=$(tail_chunk "$f" | grep -ao '"aiTitle":"[^"]*"' | tail -1 | cut -d'"' -f4)
-  [ -n "$title" ] || title=$(head -c 262144 "$f" | grep -ao '"aiTitle":"[^"]*"' | head -1 | cut -d'"' -f4)
-  [ -n "$title" ] || title=$(head -c 262144 "$f" | jq -r '
-    select(.type=="user" and ((.isSidechain? // false) | not))
-    | .message.content
-    | if type=="string" then . else ([.[] | select(.type=="text") | .text] | join(" ")) end
-  ' 2>/dev/null | sed 's/^[[:space:]]*//' \
-    | grep -av -e '^$' -e '^<' -e '^Caveat:' | head -1 | cut -c1-120)
-  # Left column = time of the LAST message (received or sent): the final
-  # "timestamp" in the transcript, shown in local time. Fall back to the file
-  # mtime only if no timestamp parses.
-  ts=$(tail_chunk "$f" | grep -ao '"timestamp":"[^"]*"' | tail -1 | cut -d'"' -f4)
-  when=$(date -d "$ts" '+%m-%d %H:%M' 2>/dev/null) || when=$(date -r "$f" '+%m-%d %H:%M')
-  printf '%s\t%s\t%s\t%s\t%-34.34s\t%-20.20s\t%s\n' \
-    "$id" "$cwd" "$f" "$when" \
-    "${cwd/#$HOME/\~}" "${branch:-–}" "${title:-(no title)}"
+#
+# Every field lives in the last 256K of the transcript, so this seeks straight
+# there and pulls all four out of one buffer. Doing it per-field in shell meant
+# four tail|grep|cut pipelines per file (~20 processes × 250 transcripts = a
+# 6-second popup); one perl pass over the same 700MB is ~0.1s.
+ROWS_PL='
+use strict; use warnings;
+use POSIX qw(strftime); use Time::Local qw(timegm); use Encode qw(encode_utf8);
+my $HOME = $ENV{HOME} // "";
+my $TAIL = 262144;
+# Everything here is byte-oriented (transcripts are read :raw, and the column
+# widths below are the byte widths bash printf produced), so decoded \u escapes
+# have to go back to UTF-8 bytes rather than staying wide chars.
+sub unesc {
+  my $s = shift;
+  $s =~ s/\\u([0-9a-fA-F]{4})/encode_utf8(chr(hex $1))/ge;
+  $s =~ s/\\n/\n/g; $s =~ s/\\r/\r/g; $s =~ s/\\t/\t/g;
+  $s =~ s/\\(["\\\/])/$1/g;
+  $s;
 }
+# First real user message — the title for sessions Claude has not named yet.
+# Skips sidechains, tool results (<...>) and the harness Caveat preamble, and
+# takes the first surviving LINE: these messages routinely open with a skill
+# preamble whose remainder would bury the actual prompt past the 120-char cut.
+sub first_user_text {
+  my $head = shift;
+  for my $rec (split /\n/, $head) {
+    next unless $rec =~ /"type":"user"/;
+    next if $rec =~ /"isSidechain":true/;
+    my $t;
+    if ($rec =~ /"content":"((?:[^"\\]|\\.)*)"/) { $t = unesc($1) }
+    else {
+      my @p;
+      while ($rec =~ /"type":"text","text":"((?:[^"\\]|\\.)*)"/g) { push @p, unesc($1) }
+      $t = join " ", @p;
+    }
+    next unless defined $t;
+    for my $line (split /\n/, $t) {
+      $line =~ s/^\s+//;
+      next if $line eq "" || $line =~ /^</ || $line =~ /^Caveat:/;
+      return substr($line, 0, 120);
+    }
+  }
+  "";
+}
+# Local-time "MM-DD HH:MM" from the transcript timestamp (always UTC/Z).
+sub when_of {
+  my ($ts, $mtime) = @_;
+  if (defined $ts && $ts =~ /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)/) {
+    return strftime("%m-%d %H:%M", localtime(timegm($6, $5, $4, $3, $2 - 1, $1)));
+  }
+  strftime("%m-%d %H:%M", localtime($mtime));
+}
+my @files = @ARGV;
+unless (@files) { while (my $l = <STDIN>) { chomp $l; push @files, $l if length $l } }
+my %seen;
+for my $f (@files) {
+  open my $fh, "<:raw", $f or next;
+  my @st = stat $fh;
+  my $off = $st[7] > $TAIL ? $st[7] - $TAIL : 0;
+  seek $fh, $off, 0;
+  my $tail = "";
+  read $fh, $tail, $TAIL;
+  my ($cwd)   = $tail =~ /.*"cwd":"([^"]*)"/s;
+  my ($br)    = $tail =~ /.*"gitBranch":"([^"]*)"/s;
+  my ($title) = $tail =~ /.*"aiTitle":"([^"]*)"/s;
+  my ($ts)    = $tail =~ /.*"timestamp":"([^"]*)"/s;
+  # Short sessions never reach the tail window; re-read from the top for the
+  # launch values the tail did not cover.
+  my $blank = sub { !defined $_[0] || $_[0] eq "" };
+  if ($blank->($cwd) || $blank->($br) || $blank->($title)) {
+    seek $fh, 0, 0;
+    my $head = "";
+    read $fh, $head, $TAIL;
+    ($cwd)   = $head =~ /"cwd":"([^"]*)"/       if $blank->($cwd);
+    ($br)    = $head =~ /"gitBranch":"([^"]*)"/ if $blank->($br);
+    ($title) = $head =~ /"aiTitle":"([^"]*)"/   if $blank->($title);
+    $title = first_user_text($head) if $blank->($title);
+  }
+  close $fh;
+  next unless defined $cwd && $cwd ne ""; # not a conversation transcript
+  my $id = $f; $id =~ s{.*/}{}; $id =~ s/\.jsonl$//;
+  next if $seen{$id}++; # resume() copies transcripts across project dirs
+  my $disp = $cwd;
+  $disp =~ s/^\Q$HOME\E/~/ if $HOME ne "";
+  printf "%s\t%s\t%s\t%s\t%-34.34s\t%-20.20s\t%s\n",
+    $id, $cwd, $f, when_of($ts, $st[9]), $disp,
+    (defined $br && $br ne "" ? $br : "\xe2\x80\x93"),
+    (defined $title && $title ne "" ? $title : "(no title)");
+}
+'
+
+# Rows for the transcripts named on argv, or read from stdin when given none.
+rows() { perl -e "$ROWS_PL" -- "$@"; }
+
+session_row() { rows "$1"; }
 
 list() {
-  local f
   # ls -t orders by file mtime, which the OS bumps on every append to the
-  # transcript — so this IS "latest message first", and it streams into fzf
-  # instantly (no sort barrier that would blank the popup while it loads).
+  # transcript — so this IS "latest message first".
   # resume() uses `cp -p` so relocated sessions keep their real last-message time.
-  ls -t "$PROJECTS"/*/*.jsonl 2>/dev/null | while IFS= read -r f; do
-    session_row "$f"
-  done | awk -F'\t' '!seen[$1]++' | decorate # resume() copies transcripts across project dirs; show each session once
+  ls -t "$PROJECTS"/*/*.jsonl 2>/dev/null | rows | decorate
 }
 
 # Prefix bookmarked sessions' title column with a yellow ★ (and the label, if
