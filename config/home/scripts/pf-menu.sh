@@ -148,11 +148,11 @@ menu() {
   done
   feed | fzf --ansi --reverse --no-sort --no-input \
     --delimiter='\t' --with-nth=2 \
-    --bind="start:transform-header($SELF --view-header)" \
+    --footer="$(header)" \
     --bind='j:down,k:up,g:first,G:last' \
     "${digitbinds[@]}" \
     --bind="enter:execute-silent($SELF --go {1} {3})+reload($SELF --list)" \
-    --bind="tab:execute-silent($SELF --flip)+reload($SELF --list)+transform-header($SELF --view-header)" \
+    --bind="tab:execute-silent($SELF --flip)+reload($SELF --list)+transform-footer($SELF --view-header)" \
     --bind="s:execute-silent($PF stop {1})+reload($SELF --list)" \
     --bind="d:execute-silent($PF forget {1})+reload($SELF --list)" \
     --bind="ctrl-a:execute-silent($PF stop-all)+reload($SELF --list)" \

@@ -141,7 +141,7 @@ quick() {
   out=$(quick_list | fzf --ansi --reverse --no-input \
     --delimiter '\t' --with-nth 4 \
     --info=hidden --no-separator \
-    --header 'c: window · \ -: split · r: label · d: remove' \
+    --footer 'c: window · \ -: split · r: label · d: remove' \
     --expect='f,c,\,-' \
     --bind 'j:down,k:up,l:accept,h:abort' \
     "${digitbinds[@]}" \
@@ -181,7 +181,7 @@ marks() {
   out=$(marks_list | fzf --ansi --reverse --disabled \
     --delimiter '\t' --with-nth 8,7,4,5,6 \
     --prompt '★ ❯ ' \
-    --header '1-9/enter: open · C-c: window · C-\: vsplit · C--: hsplit · s: ★ pane · r: label · d/C-d: remove · h: all convos · ctrl-g: agents' \
+    --footer '1-9/enter: open · C-c: window · C-\: vsplit · C--: hsplit · s: ★ pane · r: label · d/C-d: remove · h: all convos · ctrl-g: agents' \
     --expect=ctrl-g,h,ctrl-c --expect='ctrl-\' --expect=ctrl-_ \
     --bind 'j:down,k:up,l:accept' \
     "${digitbinds[@]}" \
@@ -390,9 +390,9 @@ pick() {
     --delimiter '\t' --with-nth 4,5,6,7 \
     --nth 2,6,7 \
     --prompt 'resume ❯ ' \
-    --header 'search ▸ ALL (dir · branch · title) · tab: scope · enter: resume · ctrl-b: ★ mark · ctrl-f: ★ menu · ctrl-g: agents' \
+    --footer 'search ▸ ALL (dir · branch · title) · tab: scope · enter: resume · ctrl-b: ★ mark · ctrl-f: ★ menu · ctrl-g: agents' \
     --expect=ctrl-g,ctrl-f \
-    --bind "tab:change-nth(2|7|2,6,7)+transform-header($SELF --scope-header)" \
+    --bind "tab:change-nth(2|7|2,6,7)+transform-footer($SELF --scope-header)" \
     --bind "ctrl-b:execute-silent($SELF --toggle-bookmark {1})+reload($SELF --list)+refresh-preview" \
     --preview "$SELF --preview {3}" \
     --preview-window 'right,55%,wrap,<110(down,55%,wrap)') || return 0
