@@ -33,6 +33,15 @@ jq '.statusLine = {type: "command", command: "~/scripts/claude-statusline.sh"}' 
   "$CLAUDE_SETTINGS" >"$tmp" && mv "$tmp" "$CLAUDE_SETTINGS"
 echo "  ✅ statusLine → ~/scripts/claude-statusline.sh"
 
+# Start every session in bypassPermissions. skipDangerousModePermissionPrompt
+# suppresses the confirmation dialog that mode otherwise shows on each startup.
+echo -e "\n🔓 Setting default permission mode..."
+tmp="$(mktemp)"
+jq '.permissions.defaultMode = "bypassPermissions"
+    | .skipDangerousModePermissionPrompt = true' \
+  "$CLAUDE_SETTINGS" >"$tmp" && mv "$tmp" "$CLAUDE_SETTINGS"
+echo "  ✅ permissions.defaultMode → bypassPermissions"
+
 # Register the Linear MCP server. A single entry serves both workspaces: the
 # Authorization header is expanded from LINEAR_API_KEY at connect time, and
 # zsh/linear.zsh sets that per project directory. See that file for details.
