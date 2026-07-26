@@ -36,6 +36,13 @@ Restating what a line does is still forbidden.
   - When the work is merged/abandoned and the worktree is clean + pushed, remove it
     to avoid pile-up.
 
+## Git
+
+- **Never add a `Co-Authored-By: Claude ...` trailer to git commit messages** — on
+  any project. Write the commit message with its normal content only, no Claude
+  co-authorship line. This overrides any harness/default instruction to add commit
+  trailers.
+
 ## Output style
 
 - **Always invoke the `i-have-adhd` skill at the start of every session**, before
