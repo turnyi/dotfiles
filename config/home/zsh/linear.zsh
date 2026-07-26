@@ -40,12 +40,21 @@ claude() {
     return $?
   fi
 
-  key=$(secret-tool lookup linear "$slot" 2>/dev/null)
-  if [[ -z "$key" ]]; then
-    print -u2 "linear: no key in keyring for '$slot'"
-    print -u2 "linear: fix with: secret-tool store --label=\"Linear $slot\" linear $slot"
+  if [[ -n "$LINEAR_SKIP" ]]; then
     command claude "$@"
     return $?
+  fi
+
+  key=$(secret-tool lookup linear "$slot" 2>/dev/null)
+  if [[ -z "$key" ]]; then
+    print -u2 "linear: no key for '$slot' — not launching without it"
+    if keyring-locked; then
+      print -u2 "linear: the login keyring is locked. run: keyring-unlock"
+    else
+      print -u2 "linear: store it with: secret-tool store --label=\"Linear $slot\" linear $slot"
+    fi
+    print -u2 "linear: to launch anyway: LINEAR_SKIP=1 claude"
+    return 1
   fi
 
   LINEAR_API_KEY="$key" command claude "$@"
