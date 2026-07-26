@@ -1,6 +1,7 @@
 #!/bin/bash
 
 BATTERY=$(upower -e | grep 'BAT')
+[[ -z "$BATTERY" ]] && exit 0
 INFO=$(upower -i "$BATTERY")
 
 STATE=$(echo "$INFO" | awk -F': ' '/state/ {print tolower($2)}' | xargs)
