@@ -116,4 +116,4 @@ if ! shopt -oq posix; then
 fi
 
 zsh
-export GOOGLE_APPLICATION_CREDENTIALS=/home/turny/.config/centinel/clone-reader-prod.json
+export GOOGLE_APPLICATION_CREDENTIALS=/home/turny/.config/centinel/dev-cli.json

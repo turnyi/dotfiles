@@ -150,6 +150,8 @@ case ":$PATH:" in
 esac
 # pnpm end
 
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/centinel/dev-cli.json"
+
 # nvm (Node Version Manager)
 # Must load LAST: exports.zsh and other blocks above re-prepend /opt/homebrew/bin,
 # which would shadow nvm's node with Homebrew's.
