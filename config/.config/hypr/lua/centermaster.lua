@@ -34,9 +34,9 @@ local function sliver_for(n)
 end
 
 -- Stacked mode splits like dwindle rather than stacking everything top to
--- bottom: cut across, then down the halves, alternating each level. Halves are
--- sized by window count, not 50/50, so an odd split still gives every window
--- the same area.
+-- bottom: cut across, then down the halves, alternating each level. Each cut is
+-- an even half of the box it divides, so opening a window never leaves the new
+-- split taller than the one it was carved out of.
 local function bsp(list, lo, hi, x, y, w, h, cut_across)
   local n = hi - lo + 1
   if n < 1 then return end
@@ -46,11 +46,11 @@ local function bsp(list, lo, hi, x, y, w, h, cut_across)
   end
   local half = n // 2
   if cut_across then
-    local top = h * half / n
+    local top = h / 2
     bsp(list, lo, lo + half - 1, x, y, w, top, false)
     bsp(list, lo + half, hi, x, y + top, w, h - top, false)
   else
-    local left = w * half / n
+    local left = w / 2
     bsp(list, lo, lo + half - 1, x, y, left, h, true)
     bsp(list, lo + half, hi, x + left, y, w - left, h, true)
   end
@@ -58,6 +58,17 @@ end
 
 local function even_split(list, x, y, w, h)
   bsp(list, 1, #list, x, y, w, h, true)
+end
+
+-- Side windows are split into two contiguous runs rather than alternating, so
+-- consecutive new windows pile onto the same column instead of ping-ponging.
+-- The left run is the smaller half, matching the 2-left/3-right shape.
+local function left_count(n)
+  return (n - 1) // 2
+end
+
+local function side_of(i, n)
+  return (i <= 1 + left_count(n)) and "l" or "r"
 end
 
 local function place_side(list, x, y, w, h, ws, side, active_addr)
@@ -144,10 +155,10 @@ local function recalculate(ctx)
   for i = #right, 1, -1 do right[i] = nil end
 
   for i = 2, n do
-    if i % 2 == 0 then
-      right[#right + 1] = targets[i]
-    else
+    if side_of(i, n) == "l" then
       left[#left + 1] = targets[i]
+    else
+      right[#right + 1] = targets[i]
     end
   end
 
@@ -174,10 +185,11 @@ end
 local function active_side(targets)
   local active = hl.get_active_window()
   if not active then return nil end
-  for i = 2, #targets do
+  local n = #targets
+  for i = 2, n do
     local w = targets[i].window
     if w and w.address == active.address then
-      return (i % 2 == 0) and "r" or "l"
+      return side_of(i, n)
     end
   end
   return nil
