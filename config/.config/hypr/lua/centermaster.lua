@@ -7,9 +7,9 @@ local DEFAULTS = {
   mfact_step = 0.05,
   -- place() subtracts gaps_in on each edge, so a slot renders about 10px
   -- shorter than it is asked for; these are sized for the visible result.
-  sliver_min = 40,
-  sliver_budget = 180,
-  sliver_max = 96,
+  sliver_min = 26,
+  sliver_budget = 80,
+  sliver_max = 36,
 }
 
 local opts = setmetatable({}, { __index = DEFAULTS })
