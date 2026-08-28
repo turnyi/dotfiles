@@ -65,7 +65,6 @@ end
 -- five windows on one side and one on the other is a state you can hold; the
 -- alternative moves a window you were not touching every time you open one.
 local side_memo = {}
-local last_side = "r"
 
 local function active_address()
   local a = hl.get_active_window()
@@ -155,10 +154,24 @@ local function recalculate(ctx)
   for i = #left, 1, -1 do left[i] = nil end
   for i = #right, 1, -1 do right[i] = nil end
 
-  -- New windows follow the column you are focused in, falling back to whichever
-  -- column the last one went to. They never balance and never move afterwards,
-  -- so a run of new windows stacks up on one side and five-against-one is a
-  -- state you can sit in. SUPER+SHIFT+[ / ] moves one across.
+  -- Where a new window goes depends on what you are focused on: inside a column
+  -- it joins that column, so a run of new windows stacks up beside the one you
+  -- are working in. From the master there is no such hint, so it goes to
+  -- whichever column is emptier rather than leaving one side blank.
+  -- Either way the choice is remembered against the window's address and never
+  -- revisited, so opening a window never shuffles one that is already placed.
+  -- SUPER+SHIFT+[ / ] moves one across.
+  local nl, nr = 0, 0
+  for i = 2, n do
+    local w = targets[i].window
+    local s = w and side_memo[w.address]
+    if s == "l" then
+      nl = nl + 1
+    elseif s == "r" then
+      nr = nr + 1
+    end
+  end
+
   local focus_side = active_addr and side_memo[active_addr] or nil
 
   for i = 2, n do
@@ -166,8 +179,8 @@ local function recalculate(ctx)
     local addr = w and w.address
     local s = addr and side_memo[addr]
     if not s then
-      s = focus_side or last_side
-      last_side = s
+      s = focus_side or ((nl <= nr) and "l" or "r")
+      if s == "l" then nl = nl + 1 else nr = nr + 1 end
       if addr then side_memo[addr] = s end
     end
     if s == "l" then
