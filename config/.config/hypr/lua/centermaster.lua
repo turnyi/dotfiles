@@ -33,12 +33,31 @@ local function sliver_for(n)
   return s
 end
 
-local function even_split(list, x, y, w, h)
-  local n = #list
-  local each = h / n
-  for i = 1, n do
-    list[i]:place({ x = x, y = y + (i - 1) * each, w = w, h = each })
+-- Stacked mode splits like dwindle rather than stacking everything top to
+-- bottom: cut across, then down the halves, alternating each level. Halves are
+-- sized by window count, not 50/50, so an odd split still gives every window
+-- the same area.
+local function bsp(list, lo, hi, x, y, w, h, cut_across)
+  local n = hi - lo + 1
+  if n < 1 then return end
+  if n == 1 then
+    list[lo]:place({ x = x, y = y, w = w, h = h })
+    return
   end
+  local half = n // 2
+  if cut_across then
+    local top = h * half / n
+    bsp(list, lo, lo + half - 1, x, y, w, top, false)
+    bsp(list, lo + half, hi, x, y + top, w, h - top, false)
+  else
+    local left = w * half / n
+    bsp(list, lo, lo + half - 1, x, y, left, h, true)
+    bsp(list, lo + half, hi, x + left, y, w - left, h, true)
+  end
+end
+
+local function even_split(list, x, y, w, h)
+  bsp(list, 1, #list, x, y, w, h, true)
 end
 
 local function place_side(list, x, y, w, h, ws, side, active_addr)
@@ -49,12 +68,12 @@ local function place_side(list, x, y, w, h, ws, side, active_addr)
     return
   end
 
-  if not accordion[ws] then
+  local key = ws .. ":" .. side
+  if not accordion[key] then
     even_split(list, x, y, w, h)
     return
   end
 
-  local key = ws .. ":" .. side
   local focus
 
   if active_addr then
@@ -107,8 +126,13 @@ local function recalculate(ctx)
   local n = #targets
   if n == 0 then return end
 
+  local mw = a.w * mfact
+  local side = (a.w - mw) / 2
+
+  -- A lone window keeps the master's width rather than filling the screen, so
+  -- the master column does not resize as windows come and go.
   if n == 1 then
-    targets[1]:place(a)
+    targets[1]:place({ x = a.x + side, y = a.y, w = mw, h = a.h })
     return
   end
 
@@ -126,9 +150,6 @@ local function recalculate(ctx)
       left[#left + 1] = targets[i]
     end
   end
-
-  local mw = a.w * mfact
-  local side = (a.w - mw) / 2
 
   -- One column empty (n == 2): give master that half rather than centring it
   -- against dead space.
@@ -148,10 +169,46 @@ local function recalculate(ctx)
   place_side(right, a.x + side + mw, a.y, side, a.h, ws, "r", active_addr)
 end
 
+-- Which column holds the focused window, so a bare toggle acts on the side you
+-- are looking at. nil when focus is on the master or outside this workspace.
+local function active_side(targets)
+  local active = hl.get_active_window()
+  if not active then return nil end
+  for i = 2, #targets do
+    local w = targets[i].window
+    if w and w.address == active.address then
+      return (i % 2 == 0) and "r" or "l"
+    end
+  end
+  return nil
+end
+
+local function toggle(ws, side)
+  local key = ws .. ":" .. side
+  accordion[key] = not accordion[key]
+end
+
 local function layout_msg(ctx, msg)
   if msg == "toggleaccordion" then
     local ws = workspace_id(ctx.targets)
-    accordion[ws] = not accordion[ws]
+    local side = active_side(ctx.targets)
+    if side then
+      toggle(ws, side)
+    else
+      toggle(ws, "l")
+      toggle(ws, "r")
+    end
+    return true
+  elseif msg == "toggleaccordionleft" then
+    toggle(workspace_id(ctx.targets), "l")
+    return true
+  elseif msg == "toggleaccordionright" then
+    toggle(workspace_id(ctx.targets), "r")
+    return true
+  elseif msg == "toggleaccordionboth" then
+    local ws = workspace_id(ctx.targets)
+    toggle(ws, "l")
+    toggle(ws, "r")
     return true
   elseif msg == "mfact+" then
     mfact = math.min(mfact + opts.mfact_step, opts.mfact_max)

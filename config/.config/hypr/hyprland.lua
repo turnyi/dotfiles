@@ -91,8 +91,10 @@ hl.config({
     enabled = false,
   },
 
+  -- dwindle is unused while the layout is centermaster; kept so switching back
+  -- lands on the old behaviour. pseudotile was dropped in 0.56 — pseudotiling
+  -- is dispatcher-only now (hl.dsp.window.pseudo()).
   dwindle = {
-    pseudotile     = true,
     preserve_split = true,
   },
 
@@ -186,8 +188,12 @@ for key, delta in pairs({ h = { -40, 0 }, l = { 40, 0 }, k = { 0, -40 }, j = { 0
     hl.dsp.window.resize({ x = delta[1], y = delta[2] }), { repeating = true })
 end
 
--- centermaster messages
+-- centermaster messages. A toggles the column holding the focused window (both
+-- columns when the master is focused); the bracket keys target a side directly.
 hl.bind(mainMod .. " + A", hl.dsp.layout("toggleaccordion"))
+hl.bind(mainMod .. " + SHIFT + A", hl.dsp.layout("toggleaccordionboth"))
+hl.bind(mainMod .. " + bracketleft",  hl.dsp.layout("toggleaccordionleft"))
+hl.bind(mainMod .. " + bracketright", hl.dsp.layout("toggleaccordionright"))
 hl.bind(mainMod .. " + CTRL + SHIFT + L", hl.dsp.layout("mfact+"))
 hl.bind(mainMod .. " + CTRL + SHIFT + H", hl.dsp.layout("mfact-"))
 
