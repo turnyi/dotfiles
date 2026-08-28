@@ -30,6 +30,32 @@ win="${1:-}"
 
 while IFS=$'\t' read -r cmd title pid tty paneid; do
   if [ "$cmd" = claude ]; then
+    # The title spinner only runs while the model is streaming; during a tool
+    # call the title shows the idle "✳" even though work is running. The tell
+    # for that: claude keeps one persistent shell child, and a running tool
+    # gives that shell children of its own.
+    # Walk the login-shell chain (bash -> zsh -> claude) down to the claude
+    # process itself, then ask whether claude's persistent tool shell has
+    # children of its own — it only does while a tool command is running.
+    busy=""
+    cur=$pid
+    for _ in 1 2 3 4; do
+      [ "$(cat /proc/$cur/comm 2>/dev/null)" = claude ] && break
+      cur=$(cat "/proc/$cur/task/$cur/children" 2>/dev/null | awk '{print $1}')
+      [ -n "$cur" ] || break
+    done
+    if [ -n "$cur" ] && [ "$(cat /proc/$cur/comm 2>/dev/null)" = claude ]; then
+      for shpid in $(cat "/proc/$cur/task/$cur/children" 2>/dev/null); do
+        if [ -n "$(cat "/proc/$shpid/task/$shpid/children" 2>/dev/null)" ]; then
+          busy=1
+          break
+        fi
+      done
+    fi
+    if [ -n "$busy" ]; then
+      printf ' #[fg=cyan]●#[fg=default]'
+      continue
+    fi
     hex="$(printf '%s' "$title" | head -c3 | xxd -p 2>/dev/null)"
     case "$hex" in
       e2a0* | e2a1* | e2a2* | e2a3*) printf ' #[fg=cyan]●#[fg=default]' ;;
