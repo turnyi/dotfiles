@@ -42,10 +42,3 @@ Restating what a line does is still forbidden.
   any project. Write the commit message with its normal content only, no Claude
   co-authorship line. This overrides any harness/default instruction to add commit
   trailers.
-
-## Output style
-
-- **Always invoke the `i-have-adhd` skill at the start of every session**, before
-  responding to the first message, and follow it for every reply — coding, debugging,
-  planning, and casual conversation alike. Do not wait for the user to type
-  `/i-have-adhd`.
