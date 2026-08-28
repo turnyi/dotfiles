@@ -39,15 +39,33 @@ WINDOW_ID=$(hyprctl clients -j | jq -r --arg q "$LOWER" \
   | head -n 1)
 
 if [ -n "$WINDOW_ID" ]; then
-    hyprctl dispatch focuswindow address:$WINDOW_ID
+    # A lua hyprland.conf makes `dispatch` a lua expression and rejects the
+    # legacy "focuswindow address:..." form outright (exit 7), so try that shape
+    # first and fall back for a session still running the old .conf parser.
+    # Either way focuswindow follows the window to its workspace and monitor.
+    hyprctl dispatch "hl.dsp.focus({ window = \"address:$WINDOW_ID\" })" >/dev/null 2>&1 \
+      || hyprctl dispatch focuswindow "address:$WINDOW_ID" >/dev/null 2>&1
     exit 0
 fi
 
-DESKTOP_PATH=$(grep -ril --include="*.desktop" "Name=$QUERY" \
-    ~/.local/share/applications /usr/share/applications 2>/dev/null)
-if [ -z "$DESKTOP_PATH" ]; then
+# grep returns matches in readdir order, which is not stable: with two entries
+# for one app (e.g. a Chrome PWA and a leftover firefoxpwa one) consecutive runs
+# disagree on which comes first. Sort, then prefer an exact "Name=" hit over a
+# substring one, so the same launcher wins every time.
+mapfile -t MATCHES < <(grep -ril --include="*.desktop" "Name=$QUERY" \
+    ~/.local/share/applications /usr/share/applications 2>/dev/null | sort)
+if [ ${#MATCHES[@]} -eq 0 ]; then
     echo "No .desktop file found for '$QUERY'"
     exit 1
 fi
+DESKTOP_PATH="${MATCHES[0]}"
+for m in "${MATCHES[@]}"; do
+    if grep -qix "Name=$QUERY" "$m"; then
+        DESKTOP_PATH="$m"
+        break
+    fi
+done
 DESKTOP_NAME=$(basename "$DESKTOP_PATH" .desktop)
-gtk-launch "$DESKTOP_NAME"
+# Detach: the hyprland bind runs this via a throwaway `sh -c`, and a launcher
+# left as its child dies with it before the window ever maps.
+setsid -f gtk-launch "$DESKTOP_NAME" >/dev/null 2>&1

@@ -34,7 +34,9 @@ while IFS=$'\t' read -r address title; do
   page="${title% - Google Chrome}"
   [ -n "$page" ] || continue
   if grep -Fxq "$page" <<<"$titles"; then
-    hyprctl dispatch focuswindow "address:$address" >/dev/null
+    # lua configs reject the legacy dispatch form; see focus-or-lunch.sh
+    hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null 2>&1 \
+      || hyprctl dispatch focuswindow "address:$address" >/dev/null 2>&1
     exit 0
   fi
 done <<<"$windows"

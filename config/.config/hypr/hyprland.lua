@@ -12,6 +12,9 @@ local chromeCentinel = "Profile 5"
 local chromeOptitask = "Profile 1"
 local chromePersonal = "Default"
 
+package.path = os.getenv("HOME") .. "/.config/hypr/lua/?.lua;" .. package.path
+require("centermaster").setup({})
+
 local mainMod = "SUPER"
 
 local function focus_or_launch(query)
@@ -64,7 +67,7 @@ hl.config({
     },
     resize_on_border = false,
     allow_tearing    = false,
-    layout           = "master",
+    layout           = "lua:centermaster",
   },
 
   decoration = {
@@ -89,7 +92,7 @@ hl.config({
     enabled = false,
   },
 
-  -- dwindle is unused while the layout is master; kept so switching back
+  -- dwindle is unused while the layout is centermaster; kept so switching back
   -- lands on the old behaviour. pseudotile was dropped in 0.56 — pseudotiling
   -- is dispatcher-only now (hl.dsp.window.pseudo()).
   dwindle = {
@@ -171,9 +174,24 @@ for key, dir in pairs({ left = "left", right = "right", up = "up", down = "down"
   hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ direction = dir }))
 end
 
-for key, dir in pairs({ H = "left", L = "right", K = "up", J = "down" }) do
-  hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ direction = dir }))
-end
+-- movewindow is a no-op under a custom lua layout (the layout API exposes no
+-- hook for it), so moving windows goes through messages centermaster
+-- implements itself.
+hl.bind(mainMod .. " + SHIFT + H", hl.dsp.layout("sendleft"))
+hl.bind(mainMod .. " + SHIFT + L", hl.dsp.layout("sendright"))
+hl.bind(mainMod .. " + SHIFT + K", hl.dsp.layout("moveup"))
+hl.bind(mainMod .. " + SHIFT + J", hl.dsp.layout("movedown"))
+hl.bind(mainMod .. " + SHIFT + Return", hl.dsp.layout("swapmaster"))
+
+-- Accordion: A toggles the column holding the focused window (both columns from
+-- the master); the bracket keys target a side directly.
+hl.bind(mainMod .. " + A", hl.dsp.layout("toggleaccordion"))
+hl.bind(mainMod .. " + SHIFT + A", hl.dsp.layout("toggleaccordionboth"))
+hl.bind(mainMod .. " + bracketleft",  hl.dsp.layout("toggleaccordionleft"))
+hl.bind(mainMod .. " + bracketright", hl.dsp.layout("toggleaccordionright"))
+hl.bind(mainMod .. " + CTRL + A",     hl.dsp.layout("sendotherside"))
+hl.bind(mainMod .. " + CTRL + SHIFT + L", hl.dsp.layout("mfact+"))
+hl.bind(mainMod .. " + CTRL + SHIFT + H", hl.dsp.layout("mfact-"))
 
 for key, delta in pairs({ h = { -40, 0 }, l = { 40, 0 }, k = { 0, -40 }, j = { 0, 40 } }) do
   hl.bind(mainMod .. " + CTRL + " .. key,
