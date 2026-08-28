@@ -167,9 +167,54 @@ automatically-unhide-macos-hidden-apps = true
 check-further-callbacks = true
 run = 'exec-and-forget bash ~/scripts/aerospace-center-master.sh --auto'
 
+# ── App → workspace assignments ───────────────────────────────────────
+# Send each app to its home workspace AND follow it there, so opening the app
+# switches you to that workspace (--focus-follows-window), rather than moving
+# the window silently in the background.
+[[on-window-detected]]
+if.app-id = 'net.kovidgoyal.kitty'
+run = 'move-node-to-workspace --focus-follows-window 1'
+
+[[on-window-detected]]
+if.app-id = 'app.zen-browser.zen'
+run = 'move-node-to-workspace --focus-follows-window 2'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+if.window-title-regex-substring = 'Centinel'
+run = 'move-node-to-workspace --focus-follows-window 2'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+if.window-title-regex-substring = 'Personal'
+run = 'move-node-to-workspace --focus-follows-window 4'
+
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = 'move-node-to-workspace --focus-follows-window 3'
+
+[[on-window-detected]]
+if.app-id = 'com.tinyspeck.slackmacgap'
+run = 'move-node-to-workspace --focus-follows-window 5'
+
+[[on-window-detected]]
+if.app-id = 'com.hnc.Discord'
+run = 'move-node-to-workspace --focus-follows-window 6'
+
+[[on-window-detected]]
+if.app-id = 'com.spotify.client'
+run = 'move-node-to-workspace --focus-follows-window 7'
+
+# WhatsApp Web (Chrome PWA)
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome.app.hnpfjngllnobngcgfapefoaidbinmjnm'
+run = 'move-node-to-workspace --focus-follows-window 8'
+
+[[on-window-detected]]
+if.app-id = 'io.zsa.keymapp'
+run = 'move-node-to-workspace --focus-follows-window 4'
+
 # ── App-specific window rules ──────────────────────────────────────────
-# Apps now open on whatever workspace they're launched into — no automatic
-# move-to-workspace assignments. Only non-placement rules remain below.
 [[on-window-detected]]
 if.app-id = 'com.webcatalog.switchbar'
 run = 'layout floating'

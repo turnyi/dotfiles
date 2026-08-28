@@ -18,7 +18,7 @@
 #
 #   tab  switch view      s  stop that slot      ^a  stop everything
 #   j/k  move             d  drop an ad-hoc entry
-#   +    open ad-hoc ports (prompt)              esc / q  close (silent)
+#   p / +  open ad-hoc ports (prompt)            esc / q  close (silent)
 #
 #   pf-menu            picker in the current terminal
 #   pf-menu --popup    open it in a centered tmux popup (bind a key to this)
@@ -126,7 +126,7 @@ header() {
   if [ "$(view)" = open ]; then
     printf '🌐 open  ·  tab: tunnels  ·  enter url · s stop · ^a all'
   else
-    printf '⇄ tunnels  ·  tab: open  ·  enter toggle · + ports · ^a all'
+    printf '⇄ tunnels  ·  tab: open  ·  enter toggle · p ports · ^a all'
   fi
 }
 
@@ -156,7 +156,7 @@ menu() {
     --bind="s:execute-silent($PF stop {1})+reload($SELF --list)" \
     --bind="d:execute-silent($PF forget {1})+reload($SELF --list)" \
     --bind="ctrl-a:execute-silent($PF stop-all)+reload($SELF --list)" \
-    --bind="+:execute($SELF --add)+reload($SELF --list)" \
+    --bind="+,p:execute($SELF --add)+reload($SELF --list)" \
     --bind='esc:abort' \
     --bind='q:abort' >/dev/null
   # fzf reports 130 on esc/q and 1 on an empty list. Both would propagate through
