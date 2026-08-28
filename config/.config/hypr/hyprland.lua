@@ -194,6 +194,11 @@ hl.bind(mainMod .. " + A", hl.dsp.layout("toggleaccordion"))
 hl.bind(mainMod .. " + SHIFT + A", hl.dsp.layout("toggleaccordionboth"))
 hl.bind(mainMod .. " + bracketleft",  hl.dsp.layout("toggleaccordionleft"))
 hl.bind(mainMod .. " + bracketright", hl.dsp.layout("toggleaccordionright"))
+
+-- Columns never rebalance themselves, so moving a window across is a bind.
+hl.bind(mainMod .. " + SHIFT + bracketleft",  hl.dsp.layout("sendleft"))
+hl.bind(mainMod .. " + SHIFT + bracketright", hl.dsp.layout("sendright"))
+hl.bind(mainMod .. " + CTRL + A",             hl.dsp.layout("sendotherside"))
 hl.bind(mainMod .. " + CTRL + SHIFT + L", hl.dsp.layout("mfact+"))
 hl.bind(mainMod .. " + CTRL + SHIFT + H", hl.dsp.layout("mfact-"))
 

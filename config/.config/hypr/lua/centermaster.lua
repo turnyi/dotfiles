@@ -60,15 +60,16 @@ local function even_split(list, x, y, w, h)
   bsp(list, 1, #list, x, y, w, h, true)
 end
 
--- Side windows are split into two contiguous runs rather than alternating, so
--- consecutive new windows pile onto the same column instead of ping-ponging.
--- The left run is the smaller half, matching the 2-left/3-right shape.
-local function left_count(n)
-  return (n - 1) // 2
-end
+-- A window's column is decided once, when it first appears, and remembered
+-- against its address for as long as it lives. Nothing is ever rebalanced, so
+-- five windows on one side and one on the other is a state you can hold; the
+-- alternative moves a window you were not touching every time you open one.
+local side_memo = {}
+local last_side = "r"
 
-local function side_of(i, n)
-  return (i <= 1 + left_count(n)) and "l" or "r"
+local function active_address()
+  local a = hl.get_active_window()
+  return a and a.address or nil
 end
 
 local function place_side(list, x, y, w, h, ws, side, active_addr)
@@ -154,45 +155,40 @@ local function recalculate(ctx)
   for i = #left, 1, -1 do left[i] = nil end
   for i = #right, 1, -1 do right[i] = nil end
 
+  -- New windows follow the column you are focused in, falling back to whichever
+  -- column the last one went to. They never balance and never move afterwards,
+  -- so a run of new windows stacks up on one side and five-against-one is a
+  -- state you can sit in. SUPER+SHIFT+[ / ] moves one across.
+  local focus_side = active_addr and side_memo[active_addr] or nil
+
   for i = 2, n do
-    if side_of(i, n) == "l" then
+    local w = targets[i].window
+    local addr = w and w.address
+    local s = addr and side_memo[addr]
+    if not s then
+      s = focus_side or last_side
+      last_side = s
+      if addr then side_memo[addr] = s end
+    end
+    if s == "l" then
       left[#left + 1] = targets[i]
     else
       right[#right + 1] = targets[i]
     end
   end
 
-  -- One column empty (n == 2): give master that half rather than centring it
-  -- against dead space.
-  if #left == 0 then
-    targets[1]:place({ x = a.x, y = a.y, w = a.w - side, h = a.h })
-    place_side(right, a.x + a.w - side, a.y, side, a.h, ws, "r", active_addr)
-    return
-  end
-  if #right == 0 then
-    place_side(left, a.x, a.y, side, a.h, ws, "l", active_addr)
-    targets[1]:place({ x = a.x + side, y = a.y, w = a.w - side, h = a.h })
-    return
-  end
-
+  -- An empty column is left as dead space rather than absorbed: the master is
+  -- meant to hold the same width whatever else is open.
   targets[1]:place({ x = a.x + side, y = a.y, w = mw, h = a.h })
   place_side(left, a.x, a.y, side, a.h, ws, "l", active_addr)
   place_side(right, a.x + side + mw, a.y, side, a.h, ws, "r", active_addr)
 end
 
 -- Which column holds the focused window, so a bare toggle acts on the side you
--- are looking at. nil when focus is on the master or outside this workspace.
-local function active_side(targets)
-  local active = hl.get_active_window()
-  if not active then return nil end
-  local n = #targets
-  for i = 2, n do
-    local w = targets[i].window
-    if w and w.address == active.address then
-      return side_of(i, n)
-    end
-  end
-  return nil
+-- are looking at. nil when focus is on the master or on nothing.
+local function active_side()
+  local addr = active_address()
+  return addr and side_memo[addr] or nil
 end
 
 local function toggle(ws, side)
@@ -203,7 +199,7 @@ end
 local function layout_msg(ctx, msg)
   if msg == "toggleaccordion" then
     local ws = workspace_id(ctx.targets)
-    local side = active_side(ctx.targets)
+    local side = active_side()
     if side then
       toggle(ws, side)
     else
@@ -221,6 +217,17 @@ local function layout_msg(ctx, msg)
     local ws = workspace_id(ctx.targets)
     toggle(ws, "l")
     toggle(ws, "r")
+    return true
+  elseif msg == "sendleft" or msg == "sendright" or msg == "sendotherside" then
+    local addr = active_address()
+    if not addr then return true end
+    if msg == "sendleft" then
+      side_memo[addr] = "l"
+    elseif msg == "sendright" then
+      side_memo[addr] = "r"
+    else
+      side_memo[addr] = (side_memo[addr] == "l") and "r" or "l"
+    end
     return true
   elseif msg == "mfact+" then
     mfact = math.min(mfact + opts.mfact_step, opts.mfact_max)
