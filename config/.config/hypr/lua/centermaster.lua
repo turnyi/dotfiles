@@ -6,10 +6,11 @@ local DEFAULTS = {
   mfact_max = 0.8,
   mfact_step = 0.05,
   -- place() subtracts gaps_in on each edge, so a slot renders about 10px
-  -- shorter than it is asked for; these are sized for the visible result.
-  sliver_min = 26,
-  sliver_budget = 80,
-  sliver_max = 36,
+  -- shorter than it is asked for; 22 requested = 12px visible, regardless of
+  -- how many windows the column holds.
+  sliver_min = 22,
+  sliver_budget = 22,
+  sliver_max = 22,
 }
 
 local opts = setmetatable({}, { __index = DEFAULTS })
