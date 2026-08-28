@@ -177,8 +177,8 @@ end
 -- movewindow is a no-op under a custom lua layout (the layout API exposes no
 -- hook for it), so moving windows goes through messages centermaster
 -- implements itself.
-hl.bind(mainMod .. " + SHIFT + H", hl.dsp.layout("sendleft"))
-hl.bind(mainMod .. " + SHIFT + L", hl.dsp.layout("sendright"))
+hl.bind(mainMod .. " + SHIFT + H", hl.dsp.layout("moveleft"))
+hl.bind(mainMod .. " + SHIFT + L", hl.dsp.layout("moveright"))
 hl.bind(mainMod .. " + SHIFT + K", hl.dsp.layout("moveup"))
 hl.bind(mainMod .. " + SHIFT + J", hl.dsp.layout("movedown"))
 hl.bind(mainMod .. " + SHIFT + Return", hl.dsp.layout("swapmaster"))

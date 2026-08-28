@@ -270,6 +270,24 @@ local function toggle(ws, side)
   accordion[key] = not accordion[key]
 end
 
+-- Make addr the master; the window it displaces takes over addr's column slot
+-- so nothing is left without a home.
+local function promote(ctx, ws, addr)
+  local old_master = master_memo[ws]
+  if not old_master then
+    for _, t in ipairs(ctx.targets) do
+      local w = t.window
+      if w and not side_memo[w.address] then old_master = w.address break end
+    end
+  end
+  if old_master == addr then return end
+  if old_master then
+    side_memo[old_master] = side_memo[addr] or "l"
+  end
+  side_memo[addr] = nil
+  master_memo[ws] = addr
+end
+
 local function layout_msg(ctx, msg)
   if msg == "toggleaccordion" then
     local ws = workspace_id(ctx.targets)
@@ -292,25 +310,46 @@ local function layout_msg(ctx, msg)
     toggle(ws, "l")
     toggle(ws, "r")
     return true
-  elseif msg == "swapmaster" then
-    -- Promote the focused window; the window it displaces takes over its column
-    -- slot so nothing is left without a home.
+  elseif msg == "moveleft" or msg == "moveright" then
+    -- One step along left column -> master -> right column. Moving off the
+    -- master hands it to the top of the column being moved away from, so the
+    -- centre is never left empty.
     local addr = active_address()
     if not addr then return true end
     local ws = workspace_id(ctx.targets)
-    local old_master = master_memo[ws]
-    if not old_master then
+    local side = side_memo[addr]
+    local toward = (msg == "moveright") and "r" or "l"
+    local from = (msg == "moveright") and "l" or "r"
+
+    if side == from then
+      promote(ctx, ws, addr)
+    elseif side == nil then
+      side_memo[addr] = toward
+      master_memo[ws] = nil
+      local heir
       for _, t in ipairs(ctx.targets) do
         local w = t.window
-        if w and not side_memo[w.address] then old_master = w.address break end
+        if w and w.address ~= addr and side_memo[w.address] == from then
+          if not heir or rank_of(w.address) < rank_of(heir) then heir = w.address end
+        end
+      end
+      if not heir then
+        for _, t in ipairs(ctx.targets) do
+          local w = t.window
+          if w and w.address ~= addr then
+            if not heir or rank_of(w.address) < rank_of(heir) then heir = w.address end
+          end
+        end
+      end
+      if heir then
+        side_memo[heir] = nil
+        master_memo[ws] = heir
       end
     end
-    if old_master == addr then return true end
-    if old_master then
-      side_memo[old_master] = side_memo[addr] or "l"
-    end
-    side_memo[addr] = nil
-    master_memo[ws] = addr
+    return true
+  elseif msg == "swapmaster" then
+    local addr = active_address()
+    if addr then promote(ctx, workspace_id(ctx.targets), addr) end
     return true
   elseif msg == "moveup" or msg == "movedown" then
     -- Reorder within a column by swapping ranks with the neighbour above or
