@@ -11,7 +11,12 @@
 #                        tmux popup — j/k move, enter opens the meeting link,
 #                        y copies it, r refetches, esc/q closes
 #   cal-menu --refresh   fetch the agenda into the cache (also used internally)
-#   cal-menu --auth NAME log a Google account in under this name; every named
+#
+# Calendar source, simplest first: paste each calendar's "Secret address in
+# iCal format" (Google Calendar settings) into ~/.config/gcal-ics/urls, one
+# per line — no OAuth, multiple accounts just work. Only without that file
+# does refresh fall back to gcalcli, where:
+#   cal-menu --auth NAME logs a Google account in under this name; every named
 #                        account's agenda is fetched and merged. Needs the
 #                        shared OAuth client in ~/.config/gcalcli/oauth-client
 #                        (json: {"client_id": …, "client_secret": …})
@@ -24,6 +29,7 @@ RUN_DIR="${XDG_RUNTIME_DIR:-$HOME/.cache}/gcal"
 AGENDA="$RUN_DIR/agenda.tsv"
 ERR_FLAG="$RUN_DIR/refresh-failed"
 LOCK="$RUN_DIR/refresh.lock"
+ICS_URLS="$HOME/.config/gcal-ics/urls"
 ACCT_DIR="$HOME/.config/gcalcli/accounts"
 OAUTH_CLIENT="$HOME/.config/gcalcli/oauth-client"
 MAX_AGE=300
@@ -42,14 +48,25 @@ ICON_FREE=$'\U000f1055'
 A_GREEN=$'\033[32m'; A_DIM=$'\033[90m'; A_BOLD=$'\033[1m'; A_BLUE=$'\033[34m'
 A_YEL=$'\033[33m'; A_RED=$'\033[31m'; A_RST=$'\033[0m'
 
-# One agenda fetch per account under ~/.config/gcalcli/accounts (or the plain
-# default gcalcli config when none exist), merged and re-sorted by start time —
-# gcalcli itself is single-account. A partial failure still publishes what
-# succeeded, but keeps the error flag so the popup/segment can hint at it.
+# Preferred source: secret-iCal URLs in ~/.config/gcal-ics/urls (no OAuth, any
+# number of accounts) via cal-ics-fetch.py, which emits the same TSV gcalcli
+# would. Fallback when that file is absent: one gcalcli fetch per account under
+# ~/.config/gcalcli/accounts (or the plain default config), merged and
+# re-sorted — gcalcli itself is single-account. A partial failure still
+# publishes what succeeded, but keeps the error flag for the popup/segment.
 refresh() {
   exec 9>"$LOCK"
   flock -n 9 || return 0
   local tmp="$AGENDA.tmp" header="" ok=0 fail=0 f
+  if [ -s "$ICS_URLS" ]; then
+    python3 "$HOME/scripts/cal-ics-fetch.py" >"$tmp" 2>/dev/null
+    case $? in
+      0) mv "$tmp" "$AGENDA"; rm -f "$ERR_FLAG" ;;
+      2) mv "$tmp" "$AGENDA"; touch "$ERR_FLAG" ;;
+      *) rm -f "$tmp"; touch "$ERR_FLAG" ;;
+    esac
+    return 0
+  fi
   : >"$tmp.body"
   fetch_one() {
     if timeout 60 gcalcli "$@" --nocolor agenda --tsv \
@@ -122,6 +139,9 @@ events() {
       url = $col["conference_uri"]
       if (url == "") url = $col["hangout_link"]
       if (url == "") url = $col["html_link"]
+      # "-" = no link: bash read collapses runs of tabs (tab is IFS
+      # whitespace), so an empty field would shift the title into url.
+      if (url == "") url = "-"
       allday = (st == "00:00" && et == "00:00" && ed > sd) ? 1 : 0
       s = sd " " st; e = ed " " et
       gsub(/[-:]/, " ", s); gsub(/[-:]/, " ", e)
@@ -164,7 +184,7 @@ segment() {
 feed() {
   if [ ! -s "$AGENDA" ]; then
     if [ -f "$ERR_FLAG" ]; then
-      printf -- '-\t%s⚠ calendar auth failed — run: cal-menu.sh --auth <name>%s\n' "$A_RED" "$A_RST"
+      printf -- '-\t%s⚠ calendar fetch failed — check ~/.config/gcal-ics/urls%s\n' "$A_RED" "$A_RST"
     else
       printf -- '-\t%sfetching agenda… press r%s\n' "$A_DIM" "$A_RST"
     fi
@@ -174,7 +194,7 @@ feed() {
   now=$(date +%s); today=$(date +%Y-%m-%d)
   while IFS=$'\t' read -r s e allday url title; do
     if [ "$(date -d "@$s" +%Y-%m-%d)" = "$today" ]; then day="today "; else day=$(date -d "@$s" '+%a %d'); fi
-    link=""; [ -n "$url" ] && link=" $A_BLUE$ICON_MEET$A_RST"
+    link=""; [ "$url" != "-" ] && link=" $A_BLUE$ICON_MEET$A_RST"
     if ((allday)); then stamp="all-day    "; else stamp="$(date -d "@$s" +%H:%M)–$(date -d "@$e" +%H:%M)"; fi
     if ((e <= now)) && ((allday == 0)); then
       printf '%s\t%s%-6s %s %s%s\n' "${url:--}" "$A_DIM" "$day" "$stamp" "$title" "$A_RST"
