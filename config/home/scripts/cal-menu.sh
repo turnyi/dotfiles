@@ -11,6 +11,10 @@
 #                        tmux popup — j/k move, enter opens the meeting link,
 #                        y copies it, r refetches, esc/q closes
 #   cal-menu --refresh   fetch the agenda into the cache (also used internally)
+#   cal-menu --auth NAME log a Google account in under this name; every named
+#                        account's agenda is fetched and merged. Needs the
+#                        shared OAuth client in ~/.config/gcalcli/oauth-client
+#                        (json: {"client_id": …, "client_secret": …})
 #   cal-menu --list      emit the fzf feed (used internally by reload)
 #   cal-menu --go URL    open a row's link (used internally)
 set -uo pipefail
@@ -20,6 +24,8 @@ RUN_DIR="${XDG_RUNTIME_DIR:-$HOME/.cache}/gcal"
 AGENDA="$RUN_DIR/agenda.tsv"
 ERR_FLAG="$RUN_DIR/refresh-failed"
 LOCK="$RUN_DIR/refresh.lock"
+ACCT_DIR="$HOME/.config/gcalcli/accounts"
+OAUTH_CLIENT="$HOME/.config/gcalcli/oauth-client"
 MAX_AGE=300
 mkdir -p "$RUN_DIR"
 
@@ -36,20 +42,61 @@ ICON_FREE=$'\U000f1055'
 A_GREEN=$'\033[32m'; A_DIM=$'\033[90m'; A_BOLD=$'\033[1m'; A_BLUE=$'\033[34m'
 A_YEL=$'\033[33m'; A_RED=$'\033[31m'; A_RST=$'\033[0m'
 
+# One agenda fetch per account under ~/.config/gcalcli/accounts (or the plain
+# default gcalcli config when none exist), merged and re-sorted by start time —
+# gcalcli itself is single-account. A partial failure still publishes what
+# succeeded, but keeps the error flag so the popup/segment can hint at it.
 refresh() {
   exec 9>"$LOCK"
   flock -n 9 || return 0
-  local tmp="$AGENDA.tmp"
-  if timeout 60 gcalcli --nocolor agenda --tsv \
-      --details url --details conference \
-      "$(date '+%Y-%m-%dT00:00')" "$(date -d '+7 days' '+%Y-%m-%d')" \
-      >"$tmp" 2>/dev/null; then
-    mv "$tmp" "$AGENDA"
-    rm -f "$ERR_FLAG"
+  local tmp="$AGENDA.tmp" header="" ok=0 fail=0 f
+  : >"$tmp.body"
+  fetch_one() {
+    if timeout 60 gcalcli "$@" --nocolor agenda --tsv \
+        --details url --details conference \
+        "$(date '+%Y-%m-%dT00:00')" "$(date -d '+7 days' '+%Y-%m-%d')" \
+        >"$tmp.one" 2>/dev/null; then
+      [ -n "$header" ] || header=$(head -1 "$tmp.one")
+      tail -n +2 "$tmp.one" >>"$tmp.body"
+      ok=$((ok + 1))
+    else
+      fail=$((fail + 1))
+    fi
+    rm -f "$tmp.one"
+  }
+  if ls -d "$ACCT_DIR"/*/ >/dev/null 2>&1; then
+    for f in "$ACCT_DIR"/*/; do fetch_one --config-folder "$f"; done
   else
-    rm -f "$tmp"
-    touch "$ERR_FLAG"
+    fetch_one
   fi
+  if ((ok > 0)); then
+    { printf '%s\n' "$header"; sort -t$'\t' -k1,1 -k2,2 "$tmp.body"; } >"$AGENDA"
+  fi
+  rm -f "$tmp.body"
+  if ((fail > 0)); then touch "$ERR_FLAG"; else rm -f "$ERR_FLAG"; fi
+}
+
+auth() {
+  local name="${1:-}" cid csec folder
+  if [ -z "$name" ]; then
+    echo "usage: cal-menu --auth <account-name>   (e.g. --auth centinel)" >&2
+    return 2
+  fi
+  cid=$(jq -r '.client_id // empty' "$OAUTH_CLIENT" 2>/dev/null)
+  csec=$(jq -r '.client_secret // empty' "$OAUTH_CLIENT" 2>/dev/null)
+  if [ -z "$cid" ] || [ -z "$csec" ]; then
+    echo "No OAuth client found. Create a Desktop-app OAuth client in the" >&2
+    echo "Google Cloud console and save it as $OAUTH_CLIENT:" >&2
+    echo '  {"client_id": "…", "client_secret": "…"}' >&2
+    return 1
+  fi
+  folder="$ACCT_DIR/$name"
+  mkdir -p "$folder"
+  # `y` feeds the ignore-and-refresh prompt on a re-auth; on a first auth
+  # gcalcli never reads stdin (id/secret come from the flags).
+  printf 'y\n' | gcalcli --config-folder "$folder" \
+    --client-id "$cid" --client-secret "$csec" init || return 1
+  "$SELF" --refresh
 }
 
 refresh_bg_if_stale() {
@@ -117,7 +164,7 @@ segment() {
 feed() {
   if [ ! -s "$AGENDA" ]; then
     if [ -f "$ERR_FLAG" ]; then
-      printf -- '-\t%s⚠ gcalcli auth expired — run: gcalcli init%s\n' "$A_RED" "$A_RST"
+      printf -- '-\t%s⚠ calendar auth failed — run: cal-menu.sh --auth <name>%s\n' "$A_RED" "$A_RST"
     else
       printf -- '-\t%sfetching agenda… press r%s\n' "$A_DIM" "$A_RST"
     fi
@@ -190,6 +237,7 @@ menu() {
 case "${1:-menu}" in
   --segment)   segment ;;
   --refresh)   refresh ;;
+  --auth)      auth "${2:-}" ;;
   --list)      feed ;;
   --next-pos)  next_pos ;;
   --go)        go "${2:-}" ;;
