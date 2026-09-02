@@ -63,6 +63,8 @@ automatically-unhide-macos-hidden-apps = true
     # alt+shift+space → center-master: focused window becomes the wide middle
     # column, the rest tile at the sides (external displays only)
     alt-shift-space = 'exec-and-forget bash ~/scripts/aerospace-center-master.sh'
+    # alt+ctrl+s → clipboard screenshot scp'd to the ssh server, remote path on clipboard
+    alt-ctrl-s = 'exec-and-forget bash ~/scripts/shot2server.sh'
 
     # ── Focus windows (vim keys, like Hyprland Super+hjkl) ──────────
     alt-h = 'focus left'
