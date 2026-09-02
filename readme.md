@@ -2,6 +2,40 @@
 
 hello world
 
+## shot2server — paste screenshots into Claude Code over SSH
+
+Claude Code's `Ctrl+V` reads the clipboard of the machine it runs on, so an
+image copied locally never reaches a remote session. `scripts/shot2server.sh`
+uploads the screenshot to `~/.shots` on the `server` ssh host and puts the
+absolute remote path on the clipboard; paste it as text (`Ctrl+Shift+V` in
+kitty) and Claude reads the image.
+
+Bindings: Hyprland `Super+Alt+S` (region select → server), Aerospace
+`Alt+Ctrl+S` (clipboard image → server). Override the target with
+`SHOT2SERVER_HOST` / `SHOT2SERVER_DEST`.
+
+### Mac setup
+
+```sh
+cd ~/Projects/dotfiles && git pull
+brew bundle --file=packages/Brewfile        # adds pngpaste
+bash config/install.sh scripts              # re-stow ~/scripts (.aerospace.toml is a file symlink, already live)
+aerospace reload-config
+grep -q '^Host server' ~/.ssh/config || cat >> ~/.ssh/config <<'EOF'
+Host server
+    HostName 100.67.199.59
+    User turny
+    IdentityFile ~/.ssh/id_ed25519
+EOF
+ssh server true                             # accept the host key once
+pngpaste - >/dev/null && ~/scripts/shot2server.sh && pbpaste   # smoke test with an image on the clipboard
+```
+
+Take screenshots with `Cmd+Ctrl+Shift+4` so they land on the clipboard, then
+`Alt+Ctrl+S`. Files land outside the project cwd, so Claude Code prompts once
+per read; point `SHOT2SERVER_DEST` at a gitignored dir inside the repo to skip
+the prompt.
+
 ## TODO — node / nvm cleanup (2026-07-24)
 
 Context: `nvm use <ver>` wasn't sticking on the Mac — Homebrew's node (v26) shadowed
