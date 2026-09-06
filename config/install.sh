@@ -22,6 +22,16 @@ mkdir -p "$HOME/.claude"
 ln -sfn "$SCRIPT_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 echo "  ✅ ~/.claude/CLAUDE.md → config/claude/CLAUDE.md"
 
+# Link each skill individually — ~/.claude/skills also holds skills installed
+# by Claude itself (canvas, handoff), so the directory can't be a symlink.
+mkdir -p "$HOME/.claude/skills"
+for skill in "$SCRIPT_DIR"/claude/skills/*/; do
+  [ -d "$skill" ] || continue
+  name="$(basename "$skill")"
+  ln -sfn "${skill%/}" "$HOME/.claude/skills/$name"
+  echo "  ✅ ~/.claude/skills/$name → config/claude/skills/$name"
+done
+
 # Register the custom Claude Code status line (★ bookmark marker + dir ·
 # branch · model — see scripts/claude-statusline.sh, linked by the stow above)
 echo -e "\n📊 Registering Claude Code status line..."
