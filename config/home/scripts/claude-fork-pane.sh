@@ -36,7 +36,9 @@ fi
 
 claude_bin="$(command -v claude || echo claude)"
 cmd="$claude_bin --resume $session --fork-session --dangerously-skip-permissions"
-[ "$#" -gt 0 ] && cmd="$cmd $(printf '%q' "$*")"
+if [ "$#" -gt 0 ]; then
+  cmd="$cmd $(printf '%q' "$*")"
+fi
 
 case "$layout" in
   vertical)   tmux split-window -h -c "$PWD" "$cmd" ;;
