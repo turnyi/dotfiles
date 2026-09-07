@@ -1,33 +1,33 @@
 #!/usr/bin/env bash
 
-# Requires gcalcli (yay -S gcalcli), authenticated per account by gcal-auth.sh.
-# gcalcli resolves its token via platformdirs, ignoring --config-folder, so
-# XDG_DATA_HOME is the only way to keep one token per account.
+# Requires gcalcli (yay -S gcalcli). Accounts are added by google-auth.sh.
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=google-accounts.sh
+source "$script_dir/google-accounts.sh"
 
 if ! command -v gcalcli &> /dev/null; then
   echo "[]"
   exit 0
 fi
 
-accounts_base="$HOME/.local/share/gcalcli-accounts"
-accounts=("personal" "work" "startup")
-
 all_events=""
-for account in "${accounts[@]}"; do
-  account_data="$accounts_base/$account"
-  [ -f "$account_data/gcalcli/oauth" ] || continue
+while read -r account; do
+  [ -n "$account" ] || continue
+  google_account_has_calendar "$account" || continue
+  account_dir=$(google_account_dir "$account")
 
   # Without a token gcalcli prints its auth prompt to stdout and blocks on
   # stdin; </dev/null keeps the widget from hanging forever.
-  events=$(XDG_DATA_HOME="$account_data" gcalcli \
+  events=$(XDG_DATA_HOME="$account_dir" gcalcli \
     agenda --nostarted --details=calendar --tsv --military \
     < /dev/null 2>/dev/null | grep -E "^[0-9]{4}-[0-9]{2}-[0-9]{2}")
 
   [ -n "$events" ] && all_events+="${events}"$'\n'
-done
+done <<< "$(google_accounts_list)"
 
-# Merging accounts yields three chronological blocks; the new_day header logic
-# below assumes a single ordered stream.
+# Merging accounts yields one chronological block per account; the new_day
+# header logic below assumes a single ordered stream.
 all_events=$(printf "%s" "$all_events" | sort -t$'\t' -k1,1 -k2,2)
 
 if [ -z "$all_events" ]; then
