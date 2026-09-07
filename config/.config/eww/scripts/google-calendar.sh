@@ -1,24 +1,40 @@
 #!/usr/bin/env bash
 
-# Google Calendar script for eww
-# This script uses gcalcli to fetch calendar events
-# Install: pip install gcalcli or yay -S gcalcli
+# Requires gcalcli (yay -S gcalcli), authenticated per account by gcal-auth.sh.
+# gcalcli resolves its token via platformdirs, ignoring --config-folder, so
+# XDG_DATA_HOME is the only way to keep one token per account.
 
-# Check if gcalcli is installed
 if ! command -v gcalcli &> /dev/null; then
   echo "[]"
   exit 0
 fi
 
-# Get events with details
-all_events=$(gcalcli agenda --nostarted --details=calendar --tsv --military 2>/dev/null | tail -n +2)
+accounts_base="$HOME/.local/share/gcalcli-accounts"
+accounts=("personal" "work" "startup")
+
+all_events=""
+for account in "${accounts[@]}"; do
+  account_data="$accounts_base/$account"
+  [ -f "$account_data/gcalcli/oauth" ] || continue
+
+  # Without a token gcalcli prints its auth prompt to stdout and blocks on
+  # stdin; </dev/null keeps the widget from hanging forever.
+  events=$(XDG_DATA_HOME="$account_data" gcalcli \
+    agenda --nostarted --details=calendar --tsv --military \
+    < /dev/null 2>/dev/null | grep -E "^[0-9]{4}-[0-9]{2}-[0-9]{2}")
+
+  [ -n "$events" ] && all_events+="${events}"$'\n'
+done
+
+# Merging accounts yields three chronological blocks; the new_day header logic
+# below assumes a single ordered stream.
+all_events=$(printf "%s" "$all_events" | sort -t$'\t' -k1,1 -k2,2)
 
 if [ -z "$all_events" ]; then
   echo "[]"
   exit 0
 fi
 
-# Define color mapping for calendars
 declare -A calendar_colors=(
   ["martin.radovitzky@opti-task.com"]="#7aa2f7"
   ["Facultad Martin"]="#bb9af7"
@@ -27,63 +43,65 @@ declare -A calendar_colors=(
   ["Días feriados en Uruguay"]="#f7768e"
 )
 
-# Default color
 default_color="#9aa5ce"
 
-# Parse events into JSON format
 json_events="["
 first=true
 last_date=""
 event_count=0
 max_events=8
 
-while IFS=$'\t' read -r start_date start_time end_date end_time title calendar; do
-  # Skip empty lines
+while IFS= read -r line; do
+  [ -z "$line" ] && continue
+
+  # Tab is an IFS whitespace character, so `IFS=$'\t' read` collapses the empty
+  # time columns of all-day events and shifts every later field.
+  mapfile -t fields < <(printf "%s" "$line" | tr "\t" "\n")
+  start_date="${fields[0]}"
+  start_time="${fields[1]}"
+  end_time="${fields[3]}"
+  title="${fields[4]}"
+  calendar="${fields[5]}"
+
   [ -z "$start_date" ] && continue
-  
-  # Skip Joaquin calendars (they have their own widgets)
+
   if [[ "$calendar" == "joaquin.meerhoff@opti-task.com" ]] || [[ "$calendar" == "joaquin.rodriguez@opti-task.com" ]]; then
     continue
   fi
-  
-  # Stop after reaching max events
+
   if [ $event_count -ge $max_events ]; then
     break
   fi
-  
-  # Determine if this is a new day
+
   is_new_day="false"
   if [ "$start_date" != "$last_date" ]; then
     is_new_day="true"
     last_date="$start_date"
   fi
-  
-  # Format date nicely
+
   date_display=$(date -d "$start_date" "+%A, %B %d" 2>/dev/null || echo "$start_date")
-  
-  # Calculate duration
+
   if [ -n "$start_time" ] && [ -n "$end_time" ] && [[ "$start_time" =~ ^[0-9]{2}:[0-9]{2}$ ]]; then
     start_hour=${start_time:0:2}
     start_min=${start_time:3:2}
     end_hour=${end_time:0:2}
     end_min=${end_time:3:2}
-    
-    # Remove leading zeros to avoid octal interpretation
+
+    # Strip leading zeros so arithmetic does not read "08" as octal.
     start_hour=${start_hour#0}
     start_min=${start_min#0}
     end_hour=${end_hour#0}
     end_min=${end_min#0}
-    
-    # Handle empty strings after removing zeros
+
     start_hour=${start_hour:-0}
     start_min=${start_min:-0}
     end_hour=${end_hour:-0}
     end_min=${end_min:-0}
-    
+
     start_minutes=$((start_hour * 60 + start_min))
     end_minutes=$((end_hour * 60 + end_min))
     duration_minutes=$((end_minutes - start_minutes))
-    
+
     if [ $duration_minutes -lt 60 ]; then
       duration="${duration_minutes}m"
     else
@@ -95,31 +113,29 @@ while IFS=$'\t' read -r start_date start_time end_date end_time title calendar; 
         duration="${hours}h ${minutes}m"
       fi
     fi
-    
+
     time_display="$start_time"
   else
     duration="All day"
     time_display="All day"
   fi
-  
-  # Get calendar color
-  color="${calendar_colors[$calendar]:-$default_color}"
-  
-  # Escape quotes in title
+
+  color="$default_color"
+  if [ -n "$calendar" ]; then
+    color="${calendar_colors[$calendar]:-$default_color}"
+  fi
+
   title=$(echo "$title" | sed 's/"/\\"/g')
-  
-  # Add comma if not first event
+
   if [ "$first" = false ]; then
     json_events+=","
   fi
   first=false
-  
-  # Build JSON object
+
   json_events+="{\"time\":\"$time_display\",\"duration\":\"$duration\",\"title\":\"$title\",\"date\":\"$date_display\",\"color\":\"$color\",\"new_day\":$is_new_day}"
-  
-  # Increment event counter
+
   ((event_count++))
-  
+
 done <<< "$all_events"
 
 json_events+="]"
