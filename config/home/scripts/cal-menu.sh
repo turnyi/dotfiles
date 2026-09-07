@@ -51,7 +51,7 @@ A_YEL=$'\033[33m'; A_RED=$'\033[31m'; A_RST=$'\033[0m'
 # Preferred source: secret-iCal URLs in ~/.config/gcal-ics/urls (no OAuth, any
 # number of accounts) via cal-ics-fetch.py, which emits the same TSV gcalcli
 # would. Fallback when that file is absent: one gcalcli fetch per account under
-# ~/.config/gcalcli/accounts (or the plain default config), merged and
+# ~/.config/gcalcli/accounts (or the plain default token), merged and
 # re-sorted — gcalcli itself is single-account. A partial failure still
 # publishes what succeeded, but keeps the error flag for the popup/segment.
 refresh() {
@@ -69,7 +69,13 @@ refresh() {
   fi
   : >"$tmp.body"
   fetch_one() {
-    if timeout 60 gcalcli "$@" --nocolor agenda --tsv \
+    # gcalcli resolves its token through platformdirs and ignores
+    # --config-folder, so XDG_DATA_HOME is the only thing that selects an
+    # account; passing a config folder silently reuses one shared token.
+    local data_home="${1:-}"
+    local -a env_prefix=()
+    [ -n "$data_home" ] && env_prefix=(env "XDG_DATA_HOME=$data_home")
+    if timeout 60 "${env_prefix[@]}" gcalcli --nocolor agenda --tsv \
         --details url --details conference \
         "$(date '+%Y-%m-%dT00:00')" "$(date -d '+7 days' '+%Y-%m-%d')" \
         >"$tmp.one" 2>/dev/null; then
@@ -82,7 +88,7 @@ refresh() {
     rm -f "$tmp.one"
   }
   if ls -d "$ACCT_DIR"/*/ >/dev/null 2>&1; then
-    for f in "$ACCT_DIR"/*/; do fetch_one --config-folder "$f"; done
+    for f in "$ACCT_DIR"/*/; do fetch_one "$f"; done
   else
     fetch_one
   fi
@@ -111,7 +117,7 @@ auth() {
   mkdir -p "$folder"
   # `y` feeds the ignore-and-refresh prompt on a re-auth; on a first auth
   # gcalcli never reads stdin (id/secret come from the flags).
-  printf 'y\n' | gcalcli --config-folder "$folder" \
+  printf 'y\n' | XDG_DATA_HOME="$folder" gcalcli \
     --client-id "$cid" --client-secret "$csec" init || return 1
   "$SELF" --refresh
 }
