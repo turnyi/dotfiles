@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 
-# Requires gcalcli (yay -S gcalcli). Each Google account is authenticated into
-# its own config folder:
-#   gcalcli --config-folder ~/.config/gcalcli/<account> list
+# Requires gcalcli (yay -S gcalcli), authenticated per account by gcal-auth.sh.
+# gcalcli resolves its token via platformdirs, ignoring --config-folder, so
+# XDG_DATA_HOME is the only way to keep one token per account.
 
 if ! command -v gcalcli &> /dev/null; then
   echo "[]"
   exit 0
 fi
 
-gcalcli_config_base="$HOME/.config/gcalcli"
+accounts_base="$HOME/.local/share/gcalcli-accounts"
 accounts=("personal" "work" "startup")
 
 all_events=""
 for account in "${accounts[@]}"; do
-  config_folder="$gcalcli_config_base/$account"
-  [ -d "$config_folder" ] || continue
+  account_data="$accounts_base/$account"
+  [ -f "$account_data/gcalcli/oauth" ] || continue
 
-  # An unauthenticated folder makes gcalcli print its auth prompt to stdout and
-  # block on stdin; </dev/null keeps the widget from hanging forever.
-  events=$(gcalcli --config-folder "$config_folder" \
+  # Without a token gcalcli prints its auth prompt to stdout and blocks on
+  # stdin; </dev/null keeps the widget from hanging forever.
+  events=$(XDG_DATA_HOME="$account_data" gcalcli \
     agenda --nostarted --details=calendar --tsv --military \
     < /dev/null 2>/dev/null | grep -E "^[0-9]{4}-[0-9]{2}-[0-9]{2}")
 
