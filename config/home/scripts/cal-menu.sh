@@ -263,12 +263,27 @@ next_pos() {
   echo 1
 }
 
+# With no display there is no browser to hand the link to, and xdg-open still
+# exits 0 after falling through to text browsers that are not installed — so
+# enter looked like a no-op over ssh. Copy instead: the link crosses to the
+# local machine over OSC 52, which is the only route that actually works from
+# a remote host.
 go() {
   local url="${1:-}"
   [ -n "$url" ] && [ "$url" != "-" ] || return 0
-  if command -v xdg-open >/dev/null 2>&1; then xdg-open "$url" >/dev/null 2>&1 &
-  elif command -v open >/dev/null 2>&1; then open "$url" >/dev/null 2>&1 &
+
+  if [ -n "${WAYLAND_DISPLAY:-}" ] || [ -n "${DISPLAY:-}" ]; then
+    if command -v xdg-open > /dev/null 2>&1; then
+      xdg-open "$url" > /dev/null 2>&1 &
+      return 0
+    elif command -v open > /dev/null 2>&1; then
+      open "$url" > /dev/null 2>&1 &
+      return 0
+    fi
   fi
+
+  copy "$url" quiet
+  [ -n "${TMUX:-}" ] && tmux display-message "no browser here — copied: $url"
   return 0
 }
 
@@ -278,12 +293,13 @@ go() {
 # the text to the outer terminal over OSC 52, so it reaches the local machine.
 # Needs `set-clipboard on|external`, so say so rather than failing silently.
 copy() {
-  local url="${1:-}"
+  local url="${1:-}" quiet="${2:-}"
   [ -n "$url" ] && [ "$url" != "-" ] || return 0
 
   if [ -n "${TMUX:-}" ] && command -v tmux > /dev/null 2>&1; then
     printf '%s' "$url" | tmux load-buffer -w - 2> /dev/null \
       || printf '%s' "$url" | tmux load-buffer -
+    [ -n "$quiet" ] && return 0
     case "$(tmux show -gv set-clipboard 2> /dev/null)" in
       on | external) tmux display-message "copied: $url" ;;
       *) tmux display-message "copied to tmux buffer (set-clipboard is off)" ;;
