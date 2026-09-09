@@ -9,7 +9,9 @@
 #                        refresh when the cache is older than 5 min)
 #   cal-menu --popup     mission control: this week's agenda in a centered
 #                        tmux popup — j/k move, enter opens the meeting link,
-#                        y copies it, r refetches, esc/q closes
+#                        y copies it, g/n RSVP going / not going, i shows the
+#                        guest list, r refetches, esc/q closes. g used to mean
+#                        "first"; that moved to H, because g now writes.
 #   cal-menu --refresh   fetch the agenda into the cache (also used internally)
 #
 # Calendar source, simplest first: paste each calendar's "Secret address in
@@ -83,15 +85,17 @@ refresh() {
     # gcalcli resolves its token through platformdirs and ignores
     # --config-folder, so XDG_DATA_HOME is the only thing that selects an
     # account; passing a config folder silently reuses one shared token.
-    local data_home="${1:-}"
+    local data_home="${1:-}" account="${2:-}"
     local -a env_prefix=()
     [ -n "$data_home" ] && env_prefix=(env "XDG_DATA_HOME=$data_home")
     if timeout 60 "${env_prefix[@]}" gcalcli --nocolor agenda --tsv \
-        --details url --details conference --details calendar \
+        --details url --details conference --details calendar --details id \
         "$(date '+%Y-%m-%dT00:00')" "$(date -d '+7 days' '+%Y-%m-%d')" \
         >"$tmp.one" 2>/dev/null; then
-      [ -n "$header" ] || header=$(head -1 "$tmp.one")
-      tail -n +2 "$tmp.one" >>"$tmp.body"
+      # gcalcli cannot say which account a row came from, but RSVP and the
+      # guest list have to run as that account, so tag every row here.
+      [ -n "$header" ] || header="$(head -1 "$tmp.one")	account"
+      tail -n +2 "$tmp.one" | sed "s/\$/\t$account/" >>"$tmp.body"
       ok=$((ok + 1))
     else
       fail=$((fail + 1))
@@ -99,9 +103,9 @@ refresh() {
     rm -f "$tmp.one"
   }
   if ls -d "$ACCT_DIR"/*/ >/dev/null 2>&1; then
-    for f in "$ACCT_DIR"/*/; do fetch_one "$f"; done
+    for f in "$ACCT_DIR"/*/; do fetch_one "$f" "$(basename "$f")"; done
   else
-    fetch_one
+    fetch_one "" default
   fi
   if ((ok > 0)); then
     { printf '%s\n' "$header"; sort -t$'\t' -k1,1 -k2,2 "$tmp.body"; } >"$AGENDA"
@@ -141,7 +145,10 @@ refresh_bg_if_stale() {
 }
 
 # Normalised events from the cached TSV, one per line:
-#   start_epoch \t end_epoch \t allday(0/1) \t url \t title
+#   start_epoch \t end_epoch \t allday(0/1) \t url \t account \t calendar \t
+#   event_id \t title
+# Absent fields are "-" rather than empty: bash read collapses runs of tabs
+# (tab is IFS whitespace), so a blank would shift every later field.
 # Columns are located by header name so a gcalcli upgrade reordering the TSV
 # degrades to empty fields instead of scrambled ones. Link preference:
 # conference uri (the actual meet/zoom room) > legacy hangout > the event page.
@@ -193,8 +200,15 @@ events() {
       se = mktime(s " 00"); ee = mktime(e " 00")
       if (ee < cutoff) next
 
+      acct = ("account" in col) ? $col["account"] : ""
+      evid = ("id" in col) ? $col["id"] : ""
+      if (acct == "") acct = "-"
+      if (cal == "")  cal = "-"
+      if (evid == "") evid = "-"
+
       key = se "\t" ee "\t" $col["title"]
-      line = se "\t" ee "\t" allday "\t" url "\t" $col["title"]
+      line = se "\t" ee "\t" allday "\t" url "\t" acct "\t" cal "\t" evid \
+             "\t" $col["title"]
       if (!(key in best)) { ord[++n] = key; best[key] = line; brank[key] = rank }
       else if (rank > brank[key]) { best[key] = line; brank[key] = rank }
     }
@@ -207,9 +221,9 @@ segment() {
     [ -f "$ERR_FLAG" ] && printf '#[fg=%s]%s auth  ' "$RED" "$ICON_CAL"
     return 0
   fi
-  local now line s e allday url title
+  local now line s e allday url acct cal evid title
   now=$(date +%s)
-  while IFS=$'\t' read -r s e allday url title; do
+  while IFS=$'\t' read -r s e allday url acct cal evid title; do
     ((allday)) && continue
     ((e <= now)) && continue
     ((s > now + 36000)) && break
@@ -235,24 +249,26 @@ segment() {
 feed() {
   if [ ! -s "$AGENDA" ]; then
     if [ -f "$ERR_FLAG" ]; then
-      printf -- '-\t%s⚠ calendar fetch failed — check ~/.config/gcal-ics/urls%s\n' "$A_RED" "$A_RST"
+      printf -- '-\t%s⚠ calendar fetch failed — check ~/.config/gcal-ics/urls%s\t-\t-\t-\n' "$A_RED" "$A_RST"
     else
-      printf -- '-\t%sfetching agenda… press r%s\n' "$A_DIM" "$A_RST"
+      printf -- '-\t%sfetching agenda… press r%s\t-\t-\t-\n' "$A_DIM" "$A_RST"
     fi
     return 0
   fi
-  local now today s e allday url title day link stamp
+  local now today s e allday url acct cal evid title day link stamp meta
   now=$(date +%s); today=$(date +%Y-%m-%d)
-  while IFS=$'\t' read -r s e allday url title; do
+  while IFS=$'\t' read -r s e allday url acct cal evid title; do
+    # Fields 3-5 are the handle g/n/i need; --with-nth=2 keeps them off screen.
+    meta="$acct	$cal	$evid"
     if [ "$(date -d "@$s" +%Y-%m-%d)" = "$today" ]; then day="today "; else day=$(date -d "@$s" '+%a %d'); fi
     link=""; [ "$url" != "-" ] && link=" $A_BLUE$ICON_MEET$A_RST"
     if ((allday)); then stamp="all-day    "; else stamp="$(date -d "@$s" +%H:%M)–$(date -d "@$e" +%H:%M)"; fi
     if ((e <= now)) && ((allday == 0)); then
-      printf '%s\t%s%-6s %s %s%s\n' "${url:--}" "$A_DIM" "$day" "$stamp" "$title" "$A_RST"
+      printf '%s\t%s%-6s %s %s%s\t%s\n' "${url:--}" "$A_DIM" "$day" "$stamp" "$title" "$A_RST" "$meta"
     elif ((s <= now)) && ((allday == 0)); then
-      printf '%s\t%s%-6s%s %s%s● %s%s%s%s\n' "${url:--}" "$A_YEL" "$day" "$A_RST" "$stamp " "$A_GREEN" "$A_BOLD" "$title" "$A_RST" "$link"
+      printf '%s\t%s%-6s%s %s%s● %s%s%s%s\t%s\n' "${url:--}" "$A_YEL" "$day" "$A_RST" "$stamp " "$A_GREEN" "$A_BOLD" "$title" "$A_RST" "$link" "$meta"
     else
-      printf '%s\t%s%-6s%s %s %s%s%s%s\n' "${url:--}" "$A_YEL" "$day" "$A_RST" "$stamp" "$A_BOLD" "$title" "$A_RST" "$link"
+      printf '%s\t%s%-6s%s %s %s%s%s%s\t%s\n' "${url:--}" "$A_YEL" "$day" "$A_RST" "$stamp" "$A_BOLD" "$title" "$A_RST" "$link" "$meta"
     fi
   done < <(events)
 }
@@ -324,16 +340,50 @@ copy() {
   return 0
 }
 
+CAL_API="$HOME/scripts/cal-api.py"
+
+# Rows the agenda could not tag (the ics source carries no ids) come through as
+# "-", so refuse rather than calling the api with junk.
+rsvp() {
+  local acct="${1:-}" cal="${2:-}" evid="${3:-}" response="${4:-}"
+  if [ "$acct" = "-" ] || [ "$evid" = "-" ] || [ -z "$evid" ]; then
+    [ -n "${TMUX:-}" ] && tmux display-message "no event id on this row — RSVP needs the gcalcli source"
+    return 0
+  fi
+  local out
+  if out=$(python3 "$CAL_API" rsvp "$acct" "$cal" "$evid" "$response" 2>&1); then
+    [ -n "${TMUX:-}" ] && tmux display-message "$(printf '%s' "$out" | sed 's/\x1b\[[0-9;]*m//g' | head -1)"
+  else
+    [ -n "${TMUX:-}" ] && tmux display-message "RSVP failed: $(printf '%s' "$out" | sed 's/\x1b\[[0-9;]*m//g' | head -1)"
+  fi
+  return 0
+}
+
+info() {
+  local acct="${1:-}" cal="${2:-}" evid="${3:-}"
+  if [ "$acct" = "-" ] || [ "$evid" = "-" ] || [ -z "$evid" ]; then
+    printf '%sno event details on this row — needs the gcalcli source%s\n' "$A_DIM" "$A_RST"
+  else
+    python3 "$CAL_API" info "$acct" "$cal" "$evid" 2>&1
+  fi
+  printf '\n%s[enter] back%s ' "$A_DIM" "$A_RST"
+  read -r _
+  return 0
+}
+
 menu() {
   refresh_bg_if_stale
   feed | fzf --ansi --reverse --no-sort --no-input \
     --delimiter='\t' --with-nth=2 \
-    --footer='enter open link · y copy · r refetch · esc close' \
+    --footer='enter open · y copy · g going · n not · i info · r refetch · esc' \
     --bind="start:pos($(next_pos))" \
-    --bind='j:down,k:up,g:first,G:last' \
+    --bind='j:down,k:up,H:first,G:last' \
     --bind="enter:execute-silent($SELF --go {1})+abort" \
     --bind="o:execute-silent($SELF --go {1})+abort" \
     --bind="y:execute-silent($SELF --copy {1})" \
+    --bind="g:execute-silent($SELF --rsvp {3} {4} {5} accepted)" \
+    --bind="n:execute-silent($SELF --rsvp {3} {4} {5} declined)" \
+    --bind="i:execute($SELF --info {3} {4} {5})" \
     --bind="r:execute-silent($SELF --refresh)+reload($SELF --list)" \
     --bind='esc:abort' \
     --bind='q:abort' >/dev/null
@@ -351,10 +401,17 @@ case "${1:-menu}" in
   --next-pos)  next_pos ;;
   --go)        go "${2:-}" ;;
   --copy)      copy "${2:-}" ;;
+  --rsvp)      rsvp "${2:-}" "${3:-}" "${4:-}" "${5:-}" ;;
+  --info)      info "${2:-}" "${3:-}" "${4:-}" ;;
   --menu|menu) menu ;;
   --popup)
     n=$(events | grep -c .) || n=0
-    h=$((n + 5)); [ "$h" -lt 10 ] && h=10; [ "$h" -gt 26 ] && h=26
+    # fzf draws n rows plus a blank, a rule and the footer, and the popup's
+    # two border rows sit outside that: h = n + 6 leaves one spare line so a
+    # redraw cannot scroll the titled top border away.
+    h=$((n + 6)); [ "$h" -lt 10 ] && h=10; [ "$h" -gt 26 ] && h=26
+    ch=$(tmux display-message -p '#{client_height}' 2>/dev/null || echo 0)
+    [ "$ch" -gt 4 ] && [ "$h" -gt $((ch - 2)) ] && h=$((ch - 2))
     exec tmux display-popup -E -w 64 -h "$h" -T " $ICON_CAL agenda " \
       -b rounded -S "fg=$PEACH" -s 'bg=default' "$SELF --menu" ;;
   -h|--help)   sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' ;;
