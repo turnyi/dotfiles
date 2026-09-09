@@ -58,7 +58,9 @@ refresh() {
   exec 9>"$LOCK"
   flock -n 9 || return 0
   local tmp="$AGENDA.tmp" header="" ok=0 fail=0 f
-  if [ -s "$ICS_URLS" ]; then
+  # Test for an actual URL, not just a non-empty file: a comments-only urls
+  # file would otherwise win over the OAuth accounts and fetch nothing.
+  if grep -qE '^[^#]*https?://' "$ICS_URLS" 2> /dev/null; then
     python3 "$HOME/scripts/cal-ics-fetch.py" >"$tmp" 2>/dev/null
     case $? in
       0) mv "$tmp" "$AGENDA"; rm -f "$ERR_FLAG" ;;

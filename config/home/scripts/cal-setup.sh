@@ -26,6 +26,27 @@ B=$'\033[1m'; DIM=$'\033[90m'; GRN=$'\033[32m'; YEL=$'\033[33m'
 RED=$'\033[31m'; RST=$'\033[0m'
 
 say()  { printf '%s\n' "$*"; }
+
+# Echoes one * per character. A plain `read -rs` is silent, which over ssh
+# leaves no way to tell a paste that landed from one that did not.
+read_masked() {
+  local prompt="$1" __var="$2" out="" char got=0
+  printf '%s' "$prompt"
+  while IFS= read -rsn1 char; do
+    got=1
+    [ -z "$char" ] && break
+    case "$char" in
+      $'\177' | $'\b')
+        [ -n "$out" ] && { out="${out%?}"; printf '\b \b'; }
+        continue ;;
+    esac
+    out+="$char"
+    printf '*'
+  done
+  printf '\n'
+  printf -v "$__var" '%s' "$out"
+  ((got)) || return 1
+}
 ok()   { printf '%s✓%s %s\n' "$GRN" "$RST" "$*"; }
 warn() { printf '%s!%s %s\n' "$YEL" "$RST" "$*"; }
 bad()  { printf '%s✗%s %s\n' "$RED" "$RST" "$*" >&2; }
@@ -102,7 +123,8 @@ EOF
   local cid csec
   while :; do
     say
-    read -r -p "Client ID: " cid
+    read -r -p "Client ID: " cid || { bad "No input (EOF)."; exit 1; }
+    cid="${cid//[[:space:]]/}"
     [ -n "$cid" ] || { warn "Cannot be empty."; continue; }
     case "$cid" in
       *.apps.googleusercontent.com) break ;;
@@ -110,10 +132,23 @@ EOF
     esac
   done
   while :; do
-    # Silent: the secret should not land in scrollback.
-    read -rs -p "Client secret (hidden): " csec; say
-    [ -n "$csec" ] && break
-    warn "Cannot be empty."
+    read_masked "Client secret: " csec || { bad "No input (EOF)."; exit 1; }
+    csec="${csec//[[:space:]]/}"
+    # A clipboard holding both values pastes as one string with no visible
+    # feedback, so strip a leading client id rather than storing the pair.
+    case "$csec" in
+      "$cid"*) csec="${csec#"$cid"}"; warn "Stripped a client ID that came in with the secret." ;;
+    esac
+    [ -n "$csec" ] || { warn "Cannot be empty."; continue; }
+    case "$csec" in
+      GOCSPX-*) ;;
+      *) warn "Secrets normally start with GOCSPX-; got ${#csec} chars starting '${csec:0:4}'."
+         read -r -p "  Use it anyway? [y/N] " yn
+         [[ "$yn" == [Yy]* ]] || continue ;;
+    esac
+    say "  Got ${#csec} chars: ${csec:0:7}$(printf '%*s' $((${#csec} - 7)) '' | tr ' ' '*')"
+    read -r -p "  Correct? [Y/n] " yn
+    [[ "$yn" == [Nn]* ]] || break
   done
 
   mkdir -p "$(dirname "$OAUTH_CLIENT")"
