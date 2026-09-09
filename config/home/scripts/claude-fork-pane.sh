@@ -3,11 +3,7 @@
 # pane. `claude --resume <id> --fork-session` copies the transcript under a
 # fresh session id, so both sides continue independently from shared history.
 #
-#   claude-fork-pane.sh [vertical|horizontal|window] [initial prompt...]
-#
-# vertical (default) splits side by side, horizontal stacks top/bottom, and
-# window opens a new tmux window — matching the vsplit/hsplit vocabulary the
-# rest of the claude-* scripts use.
+#   claude-fork-pane.sh [right|left|bottom|top|window] [initial prompt...]
 set -eu
 
 PROJECTS="$HOME/.claude/projects"
@@ -16,11 +12,13 @@ encode_dir() { printf '%s' "$1" | sed 's/[^a-zA-Z0-9]/-/g'; }
 
 die() { printf '%s\n' "$1" >&2; exit 1; }
 
-layout=vertical
+direction=right
 case "${1:-}" in
-  vertical | vsplit | v | -h) layout=vertical; shift ;;
-  horizontal | hsplit | h | -v) layout=horizontal; shift ;;
-  window | w | tab) layout=window; shift ;;
+  right | r | vertical | vsplit | v) direction=right; shift ;;
+  left | l) direction=left; shift ;;
+  bottom | below | down | b | d | horizontal | hsplit | h) direction=bottom; shift ;;
+  top | above | up | t | u) direction=top; shift ;;
+  window | w | tab) direction=window; shift ;;
 esac
 
 [ -n "${TMUX:-}" ] || die 'not inside tmux — run this from a claude session in a tmux pane'
@@ -40,10 +38,12 @@ if [ "$#" -gt 0 ]; then
   cmd="$cmd $(printf '%q' "$*")"
 fi
 
-case "$layout" in
-  vertical)   tmux split-window -h -c "$PWD" "$cmd" ;;
-  horizontal) tmux split-window -v -c "$PWD" "$cmd" ;;
-  window)     tmux new-window -c "$PWD" -n "fork:${PWD##*/}" "$cmd" ;;
+case "$direction" in
+  right)  tmux split-window -h -c "$PWD" "$cmd" ;;
+  left)   tmux split-window -h -b -c "$PWD" "$cmd" ;;
+  bottom) tmux split-window -v -c "$PWD" "$cmd" ;;
+  top)    tmux split-window -v -b -c "$PWD" "$cmd" ;;
+  window) tmux new-window -c "$PWD" -n "fork:${PWD##*/}" "$cmd" ;;
 esac
 
-printf 'forked %s into a new %s\n' "$session" "$layout"
+printf 'forked %s to the %s\n' "$session" "$direction"

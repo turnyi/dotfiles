@@ -1,35 +1,38 @@
 ---
 name: fork-pane
-description: Clone this conversation into a new tmux pane so it continues in parallel. Use when the user says fork, clone, branch this conversation, split off, or asks for a second Claude in a vertical/horizontal split or new window.
+description: Clone this conversation into a new tmux pane so it continues in parallel. Use when the user says fork, clone, branch this conversation, split off, or asks for a second Claude to the right/left/above/below or in a new window.
 ---
 
 # Fork this conversation into a tmux pane
 
 Run the script and report the result. Nothing else — do not summarize context,
 do not write handoff notes, do not ask what the fork should work on unless the
-user's request is genuinely ambiguous about the layout.
+user's request is genuinely ambiguous about where the pane goes.
 
 ```bash
-~/scripts/claude-fork-pane.sh <layout> [initial prompt]
+~/scripts/claude-fork-pane.sh <direction> [initial prompt]
 ```
 
-`<layout>` is one of:
+`<direction>` is one of:
 
-| word | what you get |
+| word | where the fork opens |
 | --- | --- |
-| `vertical` | side-by-side split (default) |
-| `horizontal` | stacked top/bottom split |
+| `right` | to the right of this pane (default) |
+| `left` | to the left of this pane |
+| `bottom` | below this pane |
+| `top` | above this pane |
 | `window` | a new tmux window |
 
-Pick the layout from the user's words: "vertical", "side by side", "next to
-this" → `vertical`; "horizontal", "below", "underneath" → `horizontal`; "new
-window", "new tab" → `window`. With no hint, use `vertical`.
+Pick the direction from the user's words: "right", "side by side", "next to
+this" → `right`; "left" → `left`; "bottom", "below", "underneath", "down" →
+`bottom`; "top", "above", "up" → `top`; "new window", "new tab" → `window`.
+With no hint, use `right`.
 
-Anything the user wants the fork to start working on goes after the layout as
-a single quoted argument, e.g.:
+Anything the user wants the fork to start working on goes after the direction
+as a single quoted argument, e.g.:
 
 ```bash
-~/scripts/claude-fork-pane.sh horizontal "investigate the failing auth test"
+~/scripts/claude-fork-pane.sh bottom "investigate the failing auth test"
 ```
 
 ## What the fork gets
@@ -45,5 +48,5 @@ initial prompt.
 
 ## Reporting back
 
-One line: the layout used and, when given, what the fork was told to work on.
-The pane is already visible to the user — do not describe it further.
+One line: the direction used and, when given, what the fork was told to work
+on. The pane is already visible to the user — do not describe it further.
