@@ -22,6 +22,11 @@
 #                        (json: {"client_id": …, "client_secret": …})
 #   cal-menu --list      emit the fzf feed (used internally by reload)
 #   cal-menu --go URL    open a row's link (used internally)
+#
+# ~/.config/gcal/hidden holds one calendar-name substring per line (case
+# insensitive, # comments allowed); matching calendars are left out of both
+# the bar and the popup. Needs the gcalcli source — the ics feed carries no
+# calendar name.
 set -uo pipefail
 
 SELF="$HOME/scripts/cal-menu.sh"
@@ -30,6 +35,7 @@ AGENDA="$RUN_DIR/agenda.tsv"
 ERR_FLAG="$RUN_DIR/refresh-failed"
 LOCK="$RUN_DIR/refresh.lock"
 ICS_URLS="$HOME/.config/gcal-ics/urls"
+HIDE_FILE="$HOME/.config/gcal/hidden"
 ACCT_DIR="$HOME/.config/gcalcli/accounts"
 OAUTH_CLIENT="$HOME/.config/gcalcli/oauth-client"
 MAX_AGE=300
@@ -78,7 +84,7 @@ refresh() {
     local -a env_prefix=()
     [ -n "$data_home" ] && env_prefix=(env "XDG_DATA_HOME=$data_home")
     if timeout 60 "${env_prefix[@]}" gcalcli --nocolor agenda --tsv \
-        --details url --details conference \
+        --details url --details conference --details calendar \
         "$(date '+%Y-%m-%dT00:00')" "$(date -d '+7 days' '+%Y-%m-%d')" \
         >"$tmp.one" 2>/dev/null; then
       [ -n "$header" ] || header=$(head -1 "$tmp.one")
@@ -136,26 +142,58 @@ refresh_bg_if_stale() {
 # Columns are located by header name so a gcalcli upgrade reordering the TSV
 # degrades to empty fields instead of scrambled ones. Link preference:
 # conference uri (the actual meet/zoom room) > legacy hangout > the event page.
+#
+# Two passes of noise get dropped here. Calendars whose name matches a line in
+# ~/.config/gcal/hidden are skipped, which is how a partner's or a colleague's
+# shared calendar stays out of the bar. Then identical events are collapsed:
+# when two signed-in accounts are both invited to the same meeting each
+# account's agenda carries it, so it would otherwise appear once per account.
+# The copy carrying a join link wins, since only the invited account may have
+# the conference details.
 events() {
   [ -s "$AGENDA" ] || return 0
-  gawk -F'\t' '
+  gawk -F'\t' -v hidefile="$HIDE_FILE" '
+    BEGIN {
+      nh = 0
+      while ((getline line < hidefile) > 0) {
+        sub(/#.*/, "", line)
+        gsub(/^[ \t]+|[ \t]+$/, "", line)
+        if (line != "") hide[++nh] = tolower(line)
+      }
+    }
     NR == 1 { for (i = 1; i <= NF; i++) col[$i] = i; next }
     {
       sd = $col["start_date"]; st = $col["start_time"]
       ed = $col["end_date"];   et = $col["end_time"]
       if (sd == "") next
-      url = $col["conference_uri"]
-      if (url == "") url = $col["hangout_link"]
-      if (url == "") url = $col["html_link"]
+
+      # Guarded: the ics fetcher emits no calendar column, and an unset index
+      # would resolve to $0 and match every hide pattern against the row.
+      cal = ("calendar" in col) ? $col["calendar"] : ""
+      if (cal != "") {
+        lc = tolower(cal)
+        for (i = 1; i <= nh; i++) if (index(lc, hide[i])) next
+      }
+
+      # rank drives both the link preference and which duplicate survives:
+      # a real meeting room beats the event page, which beats nothing.
+      url = $col["conference_uri"]; rank = 2
+      if (url == "") { url = $col["hangout_link"]; rank = 2 }
+      if (url == "") { url = $col["html_link"];    rank = 1 }
       # "-" = no link: bash read collapses runs of tabs (tab is IFS
       # whitespace), so an empty field would shift the title into url.
-      if (url == "") url = "-"
+      if (url == "") { url = "-"; rank = 0 }
       allday = (st == "00:00" && et == "00:00" && ed > sd) ? 1 : 0
       s = sd " " st; e = ed " " et
       gsub(/[-:]/, " ", s); gsub(/[-:]/, " ", e)
-      printf "%d\t%d\t%d\t%s\t%s\n", \
-        mktime(s " 00"), mktime(e " 00"), allday, url, $col["title"]
-    }' "$AGENDA"
+      se = mktime(s " 00"); ee = mktime(e " 00")
+
+      key = se "\t" ee "\t" $col["title"]
+      line = se "\t" ee "\t" allday "\t" url "\t" $col["title"]
+      if (!(key in best)) { ord[++n] = key; best[key] = line; brank[key] = rank }
+      else if (rank > brank[key]) { best[key] = line; brank[key] = rank }
+    }
+    END { for (i = 1; i <= n; i++) print best[ord[i]] }' "$AGENDA"
 }
 
 segment() {
