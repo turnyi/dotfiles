@@ -39,6 +39,9 @@ HIDE_FILE="$HOME/.config/gcal/hidden"
 ACCT_DIR="$HOME/.config/gcalcli/accounts"
 OAUTH_CLIENT="$HOME/.config/gcalcli/oauth-client"
 MAX_AGE=300
+# How long a finished event stays listed. Keeping the last hour means a meeting
+# that just ended is still reachable for its link; older ones are noise.
+PAST_GRACE=3600
 mkdir -p "$RUN_DIR"
 
 DIM="#7f849c"
@@ -152,7 +155,8 @@ refresh_bg_if_stale() {
 # the conference details.
 events() {
   [ -s "$AGENDA" ] || return 0
-  gawk -F'\t' -v hidefile="$HIDE_FILE" '
+  gawk -F'\t' -v hidefile="$HIDE_FILE" \
+       -v cutoff="$(($(date +%s) - PAST_GRACE))" '
     BEGIN {
       nh = 0
       while ((getline line < hidefile) > 0) {
@@ -187,6 +191,7 @@ events() {
       s = sd " " st; e = ed " " et
       gsub(/[-:]/, " ", s); gsub(/[-:]/, " ", e)
       se = mktime(s " 00"); ee = mktime(e " 00")
+      if (ee < cutoff) next
 
       key = se "\t" ee "\t" $col["title"]
       line = se "\t" ee "\t" allday "\t" url "\t" $col["title"]
