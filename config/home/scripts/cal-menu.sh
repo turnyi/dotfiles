@@ -272,11 +272,33 @@ go() {
   return 0
 }
 
+# tmux first, and not merely as a fallback: over ssh the wayland/X helpers
+# either fail (no WAYLAND_DISPLAY in the session) or land in the *server's*
+# clipboard, which is not the one the user pastes from. `load-buffer -w` hands
+# the text to the outer terminal over OSC 52, so it reaches the local machine.
+# Needs `set-clipboard on|external`, so say so rather than failing silently.
 copy() {
   local url="${1:-}"
   [ -n "$url" ] && [ "$url" != "-" ] || return 0
-  if command -v wl-copy >/dev/null 2>&1; then printf '%s' "$url" | wl-copy
-  elif command -v pbcopy >/dev/null 2>&1; then printf '%s' "$url" | pbcopy
+
+  if [ -n "${TMUX:-}" ] && command -v tmux > /dev/null 2>&1; then
+    printf '%s' "$url" | tmux load-buffer -w - 2> /dev/null \
+      || printf '%s' "$url" | tmux load-buffer -
+    case "$(tmux show -gv set-clipboard 2> /dev/null)" in
+      on | external) tmux display-message "copied: $url" ;;
+      *) tmux display-message "copied to tmux buffer (set-clipboard is off)" ;;
+    esac
+    return 0
+  fi
+
+  if [ -n "${WAYLAND_DISPLAY:-}" ] && command -v wl-copy > /dev/null 2>&1; then
+    printf '%s' "$url" | wl-copy
+  elif [ -n "${DISPLAY:-}" ] && command -v xclip > /dev/null 2>&1; then
+    printf '%s' "$url" | xclip -selection clipboard
+  elif [ -n "${DISPLAY:-}" ] && command -v xsel > /dev/null 2>&1; then
+    printf '%s' "$url" | xsel --clipboard --input
+  elif command -v pbcopy > /dev/null 2>&1; then
+    printf '%s' "$url" | pbcopy
   fi
   return 0
 }
