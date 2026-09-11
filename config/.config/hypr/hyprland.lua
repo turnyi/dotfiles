@@ -40,28 +40,25 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 
 local g9 = "desc:Samsung Electric Company LC49G95T H4ZT100019"
 
+-- Pinned: "auto" monitors re-flow around the tablet output, which pushed the
+-- G9 out from above it as soon as TAB appeared.
+local side = { width = 1920 }
+local main = { x = side.width, width = 5120, height = 1440 }
+local tab = { width = 2960, height = 1848, scale = 2 }
+
+hl.monitor({ output = "desc:Audio Processing Technology  Ltd MNN", mode = "preferred", position = "0x0", scale = 1 })
+hl.monitor({ output = g9, mode = "5120x1440@120", position = main.x .. "x0", scale = 1 })
+hl.monitor({
+  output   = "TAB",
+  mode     = tab.width .. "x" .. tab.height .. "@120",
+  position = string.format("%dx%d", math.floor(main.x + (main.width - tab.width / tab.scale) / 2), main.height),
+  scale    = tab.scale,
+})
+
 hl.workspace_rule({
   workspace = "m[" .. g9 .. "]",
   layout    = "lua:centermaster",
 })
-
--- auto-center-down centers under the whole layout (HDMI + G9), not the G9,
--- so the tablet's position is computed from the G9 whenever TAB appears.
-local tab = { output = "TAB", mode = "2960x1848@120", scale = 2, w = 2960, h = 1848 }
-
-local function place_tab()
-  local main = hl.get_monitor(g9)
-  local position = "auto-center-down"
-  if main then
-    local x = main.x + math.floor((main.width / main.scale - tab.w / tab.scale) / 2)
-    local y = main.y + math.floor(main.height / main.scale)
-    position = x .. "x" .. y
-  end
-  hl.monitor({ output = tab.output, mode = tab.mode, position = position, scale = tab.scale })
-end
-
-place_tab()
-hl.on("monitor.added", place_tab)
 
 -------------------------------
 ---- ENVIRONMENT VARIABLES ----
