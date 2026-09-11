@@ -38,6 +38,11 @@ for _, out in ipairs({ "DP-1", "DP-2", "DP-3", "DP-4" }) do
 end
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 
+hl.workspace_rule({
+  workspace = "m[desc:Samsung Electric Company LC49G95T H4ZT100019]",
+  layout    = "lua:centermaster",
+})
+
 -------------------------------
 ---- ENVIRONMENT VARIABLES ----
 -------------------------------
@@ -67,7 +72,7 @@ hl.config({
     },
     resize_on_border = false,
     allow_tearing    = false,
-    layout           = "lua:centermaster",
+    layout           = "dwindle",
   },
 
   decoration = {
@@ -92,9 +97,8 @@ hl.config({
     enabled = false,
   },
 
-  -- dwindle is unused while the layout is centermaster; kept so switching back
-  -- lands on the old behaviour. pseudotile was dropped in 0.56 — pseudotiling
-  -- is dispatcher-only now (hl.dsp.window.pseudo()).
+  -- pseudotile was dropped in 0.56 — pseudotiling is dispatcher-only now
+  -- (hl.dsp.window.pseudo()).
   dwindle = {
     preserve_split = true,
   },
@@ -167,7 +171,6 @@ hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("killall waybar || waybar"), { release = true })
 hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("systemctl suspend & hyprlock"))
-hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("bash ~/.config/hypr/workspace_layout_resoultion.sh"))
 
 for key, dir in pairs({ left = "left", right = "right", up = "up", down = "down",
                         h = "left", l = "right", k = "up", j = "down" }) do
@@ -291,7 +294,6 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("hyprpaper")
   hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
   hl.exec_cmd("walker --gapplication-service")
-  hl.exec_cmd("bash ~/.config/hypr/workspace_layout_resoultion.sh")
   hl.exec_cmd("hypridle")
   hl.exec_cmd("vicinae server")
   hl.exec_cmd("espanso daemon")

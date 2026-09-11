@@ -108,7 +108,7 @@
   },
   "custom/pad5120": {
     "hide-empty-text": true,
-    "exec": "/bin/bash -c 'hyprctl monitors -j | jq -r \".[] | select(.width == 5120) | .name\"'"
+    "exec": "/bin/bash -c 'hyprctl monitors -j | jq -r \".[] | select(.name == env.WAYBAR_OUTPUT_NAME and .width == 5120) | .name\"'"
   },
   "custom/bluetooth": {
     "exec": "~/.config/waybar/scripts/bluetooth_status.sh",
