@@ -36,6 +36,7 @@ end
 for _, out in ipairs({ "DP-1", "DP-2", "DP-3", "DP-4" }) do
   hl.monitor({ output = out, mode = "5120x1440@120", position = "auto", scale = 1 })
 end
+hl.monitor({ output = "TAB", mode = "2960x1848@120", position = "auto-right", scale = 1.6 })
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 
 hl.workspace_rule({
