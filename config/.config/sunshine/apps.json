@@ -5,7 +5,13 @@
   "apps": [
     {
       "name": "Desktop",
-      "image-path": "desktop.png"
+      "image-path": "desktop.png",
+      "prep-cmd": [
+        {
+          "do": "$(HOME)/scripts/tablet-screen.sh output-add",
+          "undo": "$(HOME)/scripts/tablet-screen.sh output-remove"
+        }
+      ]
     }
   ]
 }
