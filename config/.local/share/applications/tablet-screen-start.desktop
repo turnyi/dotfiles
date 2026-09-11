@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Tablet Screen: Start
+Comment=Start the Sunshine server so the tablet can connect as a monitor
+Exec=sh -c "~/scripts/tablet-screen.sh start"
+Icon=video-display
+Terminal=false
+Categories=Utility;
+Keywords=tablet;sunshine;moonlight;monitor;screen;
