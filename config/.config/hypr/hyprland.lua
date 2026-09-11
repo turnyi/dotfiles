@@ -187,6 +187,7 @@ hl.bind(mainMod .. " + R",         hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("killall waybar || waybar"), { release = true })
+hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("bash ~/scripts/tablet-screen.sh toggle"))
 hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("systemctl suspend & hyprlock"))
 
 for key, dir in pairs({ left = "left", right = "right", up = "up", down = "down",

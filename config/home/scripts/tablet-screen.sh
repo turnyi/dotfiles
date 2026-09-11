@@ -12,31 +12,44 @@ if [ -z "${WAYLAND_DISPLAY:-}" ]; then
   done
 fi
 
-exists() {
+output_exists() {
   hyprctl monitors -j | jq -e --arg o "$OUTPUT" 'any(.[]; .name == $o)' >/dev/null
+}
+
+output_add() {
+  output_exists || hyprctl output create headless "$OUTPUT" >/dev/null
+}
+
+output_remove() {
+  ! output_exists || hyprctl output remove "$OUTPUT" >/dev/null
+}
+
+running() {
+  pgrep -x sunshine >/dev/null
 }
 
 stop_sunshine() {
   pkill -x sunshine || return 0
-  while pgrep -x sunshine >/dev/null; do sleep 0.2; done
+  while running; do sleep 0.2; done
 }
 
-on() {
-  exists || hyprctl output create headless "$OUTPUT" >/dev/null
+start() {
   stop_sunshine
   setsid -f sunshine >/dev/null 2>&1
-  notify-send "Tablet screen" "on — connect with Moonlight"
+  notify-send "Tablet screen" "server on — open Desktop in Moonlight"
 }
 
-off() {
+stop() {
   stop_sunshine
-  ! exists || hyprctl output remove "$OUTPUT" >/dev/null
-  notify-send "Tablet screen" "off"
+  output_remove
+  notify-send "Tablet screen" "server off"
 }
 
 case "${1:-toggle}" in
-  on) on ;;
-  off) off ;;
-  toggle) if exists; then off; else on; fi ;;
-  *) echo "Usage: $0 [on|off|toggle]" >&2; exit 1 ;;
+  start) start ;;
+  stop) stop ;;
+  toggle) if running; then stop; else start; fi ;;
+  output-add) output_add ;;
+  output-remove) output_remove ;;
+  *) echo "Usage: $0 [start|stop|toggle|output-add|output-remove]" >&2; exit 1 ;;
 esac
