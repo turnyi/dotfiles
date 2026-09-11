@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Tablet Screen: Stop
+Comment=Stop the Sunshine server and remove the tablet monitor
+Exec=sh -c "~/scripts/tablet-screen.sh stop"
+Icon=video-display
+Terminal=false
+Categories=Utility;
+Keywords=tablet;sunshine;moonlight;monitor;screen;
