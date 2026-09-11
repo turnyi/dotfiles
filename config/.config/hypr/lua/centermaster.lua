@@ -407,7 +407,10 @@ function M.setup(user_opts)
   -- Focus alone does not make the compositor re-run the layout, so an accordion
   -- column would keep whichever window was expanded when it was last laid out.
   hl.on("window.active", function()
-    hl.dispatch(hl.dsp.layout("refocus"))
+    local ws = hl.get_active_workspace()
+    if ws and ws.tiled_layout == "lua:centermaster" then
+      hl.dispatch(hl.dsp.layout("refocus"))
+    end
   end)
 end
 
