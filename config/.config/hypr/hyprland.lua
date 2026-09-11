@@ -193,10 +193,13 @@ hl.bind(mainMod .. " + CTRL + A",     hl.dsp.layout("sendotherside"))
 hl.bind(mainMod .. " + CTRL + SHIFT + L", hl.dsp.layout("mfact+"))
 hl.bind(mainMod .. " + CTRL + SHIFT + H", hl.dsp.layout("mfact-"))
 
-for key, delta in pairs({ h = { -40, 0 }, l = { 40, 0 }, k = { 0, -40 }, j = { 0, 40 } }) do
+for key, delta in pairs({ k = { 0, -40 }, j = { 0, 40 } }) do
   hl.bind(mainMod .. " + CTRL + " .. key,
     hl.dsp.window.resize({ x = delta[1], y = delta[2] }), { repeating = true })
 end
+
+hl.bind(mainMod .. " + CTRL + H", hl.dsp.workspace.move({ monitor = "l" }))
+hl.bind(mainMod .. " + CTRL + L", hl.dsp.workspace.move({ monitor = "r" }))
 
 for i = 1, 10 do
   local key = i % 10
