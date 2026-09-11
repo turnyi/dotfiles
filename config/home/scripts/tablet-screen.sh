@@ -2,17 +2,18 @@
 set -euo pipefail
 
 OUTPUT=TAB
-BASE_CONF="$HOME/.config/sunshine/sunshine.conf"
-RUN_CONF="${XDG_RUNTIME_DIR:-/tmp}/sunshine-tablet.conf"
+
+if [ -z "${WAYLAND_DISPLAY:-}" ]; then
+  for sock in "$XDG_RUNTIME_DIR"/wayland-*; do
+    if [ -S "$sock" ]; then
+      export WAYLAND_DISPLAY="${sock##*/}"
+      break
+    fi
+  done
+fi
 
 exists() {
   hyprctl monitors -j | jq -e --arg o "$OUTPUT" 'any(.[]; .name == $o)' >/dev/null
-}
-
-# Sunshine's wlr capture picks the output by its position in the wl_output
-# list, which follows Hyprland's monitor ids — not by name.
-capture_index() {
-  hyprctl monitors -j | jq --arg o "$OUTPUT" 'sort_by(.id) | map(.name) | index($o)'
 }
 
 stop_sunshine() {
@@ -20,13 +21,10 @@ stop_sunshine() {
   while pgrep -x sunshine >/dev/null; do sleep 0.2; done
 }
 
-# An output_name=N CLI argument only held for Sunshine's startup encoder probe;
-# real Moonlight sessions still captured monitor 0, so N goes in a config file.
 on() {
   exists || hyprctl output create headless "$OUTPUT" >/dev/null
   stop_sunshine
-  { cat "$BASE_CONF"; echo "output_name = $(capture_index)"; } >"$RUN_CONF"
-  setsid -f sunshine "$RUN_CONF" >/dev/null 2>&1
+  setsid -f sunshine >/dev/null 2>&1
   notify-send "Tablet screen" "on — connect with Moonlight"
 }
 
