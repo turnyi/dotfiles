@@ -1,9 +1,12 @@
 import {
   Action,
   ActionPanel,
+  Application,
   Color,
   Icon,
+  ImageLike,
   List,
+  getApplications,
   showToast,
   Toast,
   useNavigation,
@@ -36,6 +39,7 @@ type Entry = {
 type Thread = {
   key: string;
   app: string;
+  icon: ImageLike;
   sender: string;
   entries: Entry[];
   latest: Entry;
@@ -57,22 +61,104 @@ function parseStore(raw: string): Entry[] {
   return entries.reverse();
 }
 
-function appLabel(entry: Entry): string {
-  const entryName = entry.desktopEntry?.trim();
-  if (entryName) {
-    const tail = entryName.split(".").pop() ?? entryName;
-    return tail.charAt(0).toUpperCase() + tail.slice(1);
+const ORIGIN_LINE = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i;
+
+const BROWSERS = new Set([
+  "google-chrome",
+  "google-chrome-stable",
+  "chromium",
+  "brave-browser",
+  "firefox",
+  "microsoft-edge",
+]);
+
+type Identity = { name: string; icon: ImageLike };
+
+function normalizeId(value: string): string {
+  return value.trim().replace(/\.desktop$/i, "").toLowerCase();
+}
+
+function squash(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function firstWord(value: string): string {
+  return value.trim().split(/\s+/)[0] ?? value;
+}
+
+function originOf(body: string): string | null {
+  const first = body.split("\n")[0]?.trim() ?? "";
+  if (!first || !ORIGIN_LINE.test(first)) return null;
+  return first
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/.*$/, "")
+    .toLowerCase();
+}
+
+const PUBLIC_SUFFIX_HEAD = new Set(["co", "com", "net", "org", "gov", "edu", "ac"]);
+
+// news.ycombinator.com -> Ycombinator, web.whatsapp.com -> Whatsapp: the
+// registrable label, not whatever subdomain the notification happened to use.
+function siteLabel(origin: string): string {
+  const parts = origin.split(".").filter(Boolean);
+  if (parts.length < 2) return origin;
+  let index = parts.length - 2;
+  if (index > 0 && PUBLIC_SUFFIX_HEAD.has(parts[index])) index -= 1;
+  const label = parts[index];
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+function findApp(apps: Application[], predicate: (a: Application) => boolean) {
+  return apps.find(predicate) ?? null;
+}
+
+function appIdentity(app: Application): Identity {
+  return { name: app.name, icon: app.icon || Icon.AppWindow };
+}
+
+// A site notification arrives as the browser, so the origin in the body is the
+// only thing that names the PWA or website that actually sent it.
+function identityOf(entry: Entry, apps: Application[]): Identity {
+  const desktopEntry = normalizeId(entry.desktopEntry ?? "");
+  const byEntry = desktopEntry
+    ? findApp(apps, (a) => normalizeId(a.id) === desktopEntry)
+    : null;
+  const isBrowser = !desktopEntry || BROWSERS.has(desktopEntry);
+
+  if (isBrowser) {
+    const origin = originOf(entry.body);
+    if (origin) {
+      const label = siteLabel(origin);
+      const key = squash(label);
+      const matches = apps.filter(
+        (a) => squash(a.name) === key || squash(firstWord(a.name)) === key,
+      );
+      const names = new Set(matches.map((a) => squash(a.name)));
+      // One name matched by several entries is the same site installed under
+      // more than one browser; several names means "google" style ambiguity,
+      // where guessing an app is worse than showing the site plainly.
+      if (matches.length && names.size === 1) {
+        const prefix = desktopEntry.startsWith("firefox") ? "ffpwa" : "chrome-";
+        const preferred =
+          matches.find((a) => normalizeId(a.id).startsWith(prefix)) ?? matches[0];
+        return appIdentity(preferred);
+      }
+      return { name: label, icon: Icon.Globe };
+    }
   }
-  return entry.app || "Unknown";
+
+  if (byEntry) return appIdentity(byEntry);
+
+  const byName = findApp(apps, (a) => squash(a.name) === squash(entry.app));
+  if (byName) return appIdentity(byName);
+  return { name: entry.app || "Unknown", icon: Icon.Bell };
 }
 
 // Messaging apps put the person in the summary and the message in the body, so
 // the summary is the closest thing to a sender the spec gives us.
-function senderLabel(entry: Entry): string {
-  return entry.summary.trim() || appLabel(entry);
+function senderLabel(entry: Entry, identity: Identity): string {
+  return entry.summary.trim() || identity.name;
 }
-
-const ORIGIN_LINE = /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i;
 
 // Chrome opens a web notification's body with the sending origin on its own
 // line, which would otherwise be the whole preview for WhatsApp Web or Slack.
@@ -101,23 +187,32 @@ function relativeTime(ts: number): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-function urgencyColor(urgency: number): Color {
-  if (urgency >= 2) return Color.Red;
-  if (urgency === 0) return Color.SecondaryText;
-  return Color.Blue;
+function urgentTag(urgency: number) {
+  return urgency >= 2 ? [{ tag: { value: "urgent", color: Color.Red } }] : [];
 }
 
-function buildThreads(entries: Entry[], byAppOnly: boolean): Thread[] {
+function buildThreads(
+  entries: Entry[],
+  apps: Application[],
+  byAppOnly: boolean,
+): Thread[] {
   const map = new Map<string, Thread>();
   for (const entry of entries) {
-    const app = appLabel(entry);
-    const sender = byAppOnly ? app : senderLabel(entry);
-    const key = `${app}::${sender}`;
+    const identity = identityOf(entry, apps);
+    const sender = byAppOnly ? identity.name : senderLabel(entry, identity);
+    const key = `${identity.name}::${sender}`;
     const existing = map.get(key);
     if (existing) {
       existing.entries.push(entry);
     } else {
-      map.set(key, { key, app, sender, entries: [entry], latest: entry });
+      map.set(key, {
+        key,
+        app: identity.name,
+        icon: identity.icon,
+        sender,
+        entries: [entry],
+        latest: entry,
+      });
     }
   }
   return [...map.values()].sort((a, b) => b.latest.ts - a.latest.ts);
@@ -176,9 +271,12 @@ function ThreadView({
       {thread.entries.map((entry, index) => (
         <List.Item
           key={`${entry.ts}-${index}`}
-          icon={{ source: Icon.Bell, tintColor: urgencyColor(entry.urgency) }}
+          icon={{ source: thread.icon, fallback: Icon.Bell }}
           title={messageText(entry.body) || entry.summary}
-          accessories={[{ text: relativeTime(entry.ts) }]}
+          accessories={[
+            ...urgentTag(entry.urgency),
+            { text: relativeTime(entry.ts) },
+          ]}
           actions={
             <EntryActions
               entry={entry}
@@ -195,6 +293,7 @@ function ThreadView({
 
 export default function Command() {
   const [entries, setEntries] = useState<Entry[] | null>(null);
+  const [apps, setApps] = useState<Application[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<ViewMode>("threads");
   const { push } = useNavigation();
@@ -216,6 +315,9 @@ export default function Command() {
 
   useEffect(() => {
     load();
+    getApplications()
+      .then(setApps)
+      .catch(() => setApps([]));
   }, [load]);
 
   const clearPending = useCallback(async () => {
@@ -234,8 +336,8 @@ export default function Command() {
 
   const items = useMemo(() => entries ?? [], [entries]);
   const threads = useMemo(
-    () => (mode === "all" ? [] : buildThreads(items, mode === "apps")),
-    [items, mode],
+    () => (mode === "all" ? [] : buildThreads(items, apps, mode === "apps")),
+    [items, apps, mode],
   );
 
   const dropdown = (
@@ -287,12 +389,16 @@ export default function Command() {
         {items.map((entry, index) => (
           <List.Item
             key={`${entry.ts}-${index}`}
-            icon={{ source: Icon.Bell, tintColor: urgencyColor(entry.urgency) }}
+            icon={{
+              source: identityOf(entry, apps).icon,
+              fallback: Icon.Bell,
+            }}
             title={entry.summary || "(no summary)"}
             subtitle={messageText(entry.body)}
-            keywords={[appLabel(entry)]}
+            keywords={[identityOf(entry, apps).name]}
             accessories={[
-              { text: appLabel(entry) },
+              ...urgentTag(entry.urgency),
+              { text: identityOf(entry, apps).name },
               { text: relativeTime(entry.ts) },
             ]}
             actions={
@@ -319,14 +425,12 @@ export default function Command() {
   const renderThread = (thread: Thread) => (
     <List.Item
       key={thread.key}
-      icon={{
-        source: Icon.Bell,
-        tintColor: urgencyColor(thread.latest.urgency),
-      }}
+      icon={{ source: thread.icon, fallback: Icon.Bell }}
       title={thread.sender}
       subtitle={messageText(thread.latest.body)}
       keywords={[thread.app]}
       accessories={[
+        ...urgentTag(thread.latest.urgency),
         { text: `${thread.entries.length}` },
         { text: relativeTime(thread.latest.ts) },
       ]}
