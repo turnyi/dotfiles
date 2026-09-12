@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Notifications: Clear All
+Comment=Dismiss every notification sitting in the swaync control center
+Exec=swaync-client --close-all
+Icon=edit-clear-all
+Terminal=false
+Categories=Utility;
+Keywords=notifications;clear;dismiss;swaync;inbox;

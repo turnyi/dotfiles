@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Notifications: Toggle Panel
+Comment=Open or close the swaync notification control center
+Exec=swaync-client --toggle-panel
+Icon=preferences-system-notifications
+Terminal=false
+Categories=Utility;
+Keywords=notifications;panel;center;swaync;show;
