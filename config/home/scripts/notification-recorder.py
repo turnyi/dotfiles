@@ -32,15 +32,22 @@ def trim():
     tmp.replace(STORE)
 
 
+def hint_value(hints, key, fallback):
+    # busctl renders each hint as {"type": ..., "data": ...} rather than a bare value.
+    if not isinstance(hints, dict):
+        return fallback
+    raw = hints.get(key)
+    if isinstance(raw, dict):
+        return raw.get("data", fallback)
+    return fallback if raw is None else raw
+
+
 def record(seq, fields):
     app, _replaces, icon, summary, text, _actions, hints, _timeout = fields[:8]
     if app.casefold() in IGNORED_APPS:
         return False
-    urgency = 1
-    if isinstance(hints, dict):
-        raw = hints.get("urgency")
-        if isinstance(raw, dict):
-            urgency = raw.get("data", 1)
+    urgency = hint_value(hints, "urgency", 1)
+    desktop_entry = hint_value(hints, "desktop-entry", "")
     with STORE.open("a", encoding="utf-8") as fh:
         fh.write(
             json.dumps(
@@ -48,6 +55,7 @@ def record(seq, fields):
                     "seq": seq,
                     "ts": time.time(),
                     "app": app,
+                    "desktopEntry": desktop_entry,
                     "icon": icon,
                     "summary": summary,
                     "body": text,
