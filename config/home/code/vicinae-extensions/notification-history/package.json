@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/vicinaehq/vicinae/refs/heads/main/extra/schemas/extension.json",
+  "name": "notification-history",
+  "title": "Notification History",
+  "description": "Browse and search desktop notifications recorded from the session bus.",
+  "categories": [],
+  "license": "MIT",
+  "author": "turnyi",
+  "contributors": [],
+  "pastContributors": [],
+  "icon": "extension_icon.png",
+  "commands": [
+    {
+      "name": "history",
+      "title": "Notification History",
+      "subtitle": "Search notifications that have already been shown",
+      "description": "Browse, search and dismiss recorded desktop notifications",
+      "mode": "view"
+    }
+  ],
+  "preferences": [],
+  "scripts": {
+    "build": "vici build",
+    "dev": "vici develop"
+  },
+  "dependencies": {
+    "@vicinae/api": "^0.13.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
