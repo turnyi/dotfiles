@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Caffeine: On
+Comment=Keep the PC awake — no screen lock, no suspend
+Exec=sh -c "~/scripts/caffeine.sh on"
+Icon=preferences-desktop-screensaver
+Terminal=false
+Categories=Utility;
+Keywords=caffeine;awake;lock;sleep;suspend;idle;

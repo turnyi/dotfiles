@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Caffeine: Off
+Comment=Allow the screen lock and suspend again
+Exec=sh -c "~/scripts/caffeine.sh off"
+Icon=preferences-desktop-screensaver
+Terminal=false
+Categories=Utility;
+Keywords=caffeine;awake;lock;sleep;suspend;idle;
