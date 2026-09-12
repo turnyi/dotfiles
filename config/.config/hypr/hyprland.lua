@@ -4,7 +4,7 @@ local fileManager    = "dolphin"
 local discord        = "discord"
 local menu           = "vicinae toggle"
 local music          = "YouTube Music"
-local clipboard      = "vicinae vicinae://extensions/vicinae/clipboard"
+local clipboard      = "vicinae deeplink vicinae://launch/clipboard/history"
 local postman        = "postman"
 local screenRecorder = "wf-recorder-gui"
 
