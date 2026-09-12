@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Notifications: Toggle Do Not Disturb
+Comment=Silence or unsilence new notifications
+Exec=sh -c "~/scripts/swaync-dnd.sh"
+Icon=notifications-disabled
+Terminal=false
+Categories=Utility;
+Keywords=notifications;dnd;disturb;silence;mute;swaync;
