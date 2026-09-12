@@ -5,6 +5,7 @@ local discord        = "discord"
 local menu           = "vicinae toggle"
 local music          = "YouTube Music"
 local clipboard      = "vicinae deeplink vicinae://launch/clipboard/history"
+local notificationHistory = "vicinae cmd launch @turnyi/notification-history:history"
 local postman        = "postman"
 local screenRecorder = "wf-recorder-gui"
 
@@ -173,7 +174,8 @@ hl.bind(mainMod .. " + SHIFT + F", chrome_new_tab(chromeCentinel))
 hl.bind(mainMod .. " + E",         focus_or_launch(fileManager))
 hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + W",         focus_or_launch("whatsapp"))
-hl.bind(mainMod .. " + N",         hl.dsp.exec_cmd("swaync-client -t"))
+hl.bind(mainMod .. " + N",         hl.dsp.exec_cmd(notificationHistory))
+hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("swaync-client -t"))
 hl.bind(mainMod .. " + D",         focus_or_launch(discord))
 hl.bind(mainMod .. " + M",         focus_or_launch(music))
 hl.bind(mainMod .. " + P",         focus_or_launch(postman))
