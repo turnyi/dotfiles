@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="bell" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DCE9FF"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="512" height="512" rx="116" fill="url(#plate)"/>
+
+  <g transform="translate(256 262)">
+    <path fill="url(#bell)" d="
+      M 0 -142
+      c 12 0 22 9 22 21
+      v 12
+      c 50 11 86 55 86 108
+      v 50
+      c 0 24 11 37 28 48
+      c 10 6 15 14 15 23
+      c 0 14 -12 24 -28 24
+      h -246
+      c -16 0 -28 -10 -28 -24
+      c 0 -9 5 -17 15 -23
+      c 17 -11 28 -24 28 -48
+      v -50
+      c 0 -53 36 -97 86 -108
+      v -12
+      c 0 -12 10 -21 22 -21
+      z"/>
+    <path fill="url(#bell)" d="
+      M -46 152
+      h 92
+      c 0 25 -21 46 -46 46
+      c -25 0 -46 -21 -46 -46
+      z"/>
+  </g>
+</svg>
