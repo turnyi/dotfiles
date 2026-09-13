@@ -17,6 +17,7 @@
 #   proc-menu --float   floating terminal window (waybar click / WM bind)
 #   proc-menu --list    emit the row feed for the active sort (fzf reload)
 #   proc-menu --header   emit the header line (fzf transform-header)
+#   proc-menu --header-full  thermals block + header line
 #   proc-menu --cycle   advance the sort key (tab)
 set -uo pipefail
 
@@ -109,15 +110,21 @@ header() {
     "$c" CPU "$RST" "$r" RAM "$RST" "$g" GPU "$RST" "$t" THR "$RST" "$DIM" "$RST"
 }
 
+header_full() {
+  "$HOME/scripts/thermals.sh" --lines
+  printf '\n\n'
+  header
+}
+
 menu() {
   echo cpu >"$SORT_FILE"   # every open starts CPU-sorted, tab moves from there
   : | fzf --ansi --reverse --no-sort --no-input --height=100% \
     --header-first --header-lines=0 \
     --footer=" ${DIM}tab sort · C-f search · j/k move · q quit${RST}" \
-    --bind="start:reload($SELF --list)+transform-header($SELF --header)" \
-    --bind="load:reload(sleep 2; $SELF --list)" \
+    --bind="start:reload($SELF --list)+transform-header($SELF --header-full)" \
+    --bind="load:reload(sleep 2; $SELF --list)+transform-header($SELF --header-full)" \
     --bind='j:down,k:up,g:first,G:last' \
-    --bind="tab:execute-silent($SELF --cycle)+reload($SELF --list)+transform-header($SELF --header)" \
+    --bind="tab:execute-silent($SELF --cycle)+reload($SELF --list)+transform-header($SELF --header-full)" \
     --bind='ctrl-f:show-input+unbind(j,k,g,G,q,tab)' \
     --bind='esc:transform:[[ $FZF_INPUT_STATE = enabled ]] && echo "hide-input+rebind(j,k,g,G,q,tab)+clear-query" || echo abort' \
     --bind='q:abort' >/dev/null
@@ -128,12 +135,13 @@ menu() {
 case "${1:-menu}" in
   --list)       feed ;;
   --header)     header ;;
+  --header-full) header_full ;;
   --cycle)      cycle ;;
   --menu | menu) menu ;;
-  --popup)      exec tmux display-popup -E -w 46 -h 28 -T ' 󰻠 procs ' \
+  --popup)      exec tmux display-popup -E -w 46 -h 31 -T ' 󰻠 procs ' \
                   -b rounded -S 'fg=#cba6f7' -s 'bg=default' "$SELF --menu" ;;
   --float)      exec kitty --class proc-menu --title 'procs' \
-                  -o "initial_window_width=46c" -o "initial_window_height=28c" \
+                  -o "initial_window_width=46c" -o "initial_window_height=31c" \
                   -e "$SELF --menu" ;;
   -h | --help)  sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//' ;;
   *)            echo "usage: proc-menu [--popup|--float|--menu|--list]" >&2; exit 2 ;;
