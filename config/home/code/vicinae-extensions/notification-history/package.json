@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/vicinaehq/vicinae/refs/heads/main/extra/schemas/extension.json",
   "name": "notification-history",
   "title": "Notification History",
-  "description": "Browse and search desktop notifications recorded from the session bus.",
+  "description": "Browse recorded desktop notifications and dismiss the ones still pending.",
   "categories": [],
   "license": "MIT",
   "author": "turnyi",
@@ -11,10 +11,17 @@
   "icon": "extension_icon.png",
   "commands": [
     {
+      "name": "pending",
+      "title": "Pending Notifications",
+      "subtitle": "Dismiss notifications still in the control center",
+      "description": "List notifications that are still pending and dismiss them one by one or all at once",
+      "mode": "view"
+    },
+    {
       "name": "history",
       "title": "Notification History",
       "subtitle": "Search notifications that have already been shown",
-      "description": "Browse, search and dismiss recorded desktop notifications",
+      "description": "Browse and search recorded desktop notifications",
       "mode": "view"
     }
   ],
