@@ -4,6 +4,7 @@ import {
   ActionPanel,
   Action,
   showToast,
+  Toast,
   Icon,
   closeMainWindow,
 } from "@vicinae/api";
@@ -25,7 +26,7 @@ export default function Screenshot() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleScreenshot = async (values: Form.Values) => {
-    const formData = values as ScreenshotForm;
+    const formData = values as unknown as ScreenshotForm;
     setIsLoading(true);
 
     try {
@@ -93,7 +94,7 @@ export default function Screenshot() {
       }
     } catch (error) {
       await showToast({
-        style: "failure",
+        style: Toast.Style.Failure,
         title: "Screenshot failed",
         message: error instanceof Error ? error.message : "Unknown error",
       });
@@ -140,7 +141,6 @@ export default function Screenshot() {
       <Form.TextField
         id="filename"
         title="Filename"
-        placeholder="screenshot-2024-01-01.png"
         info="Optional custom filename (will auto-generate if empty)"
       />
 
