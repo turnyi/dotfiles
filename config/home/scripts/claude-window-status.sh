@@ -5,11 +5,18 @@
 # at a glance across the tabs, which windows want your attention.
 #
 # Claude panes:
+#   ? magenta agent asked you a question and is waiting on the answer
+#   ! red     agent is blocked on a permission prompt
 #   ● cyan    agent is working
-#   ✓ green   agent is idle / waiting for you
-# Claude Code sets each pane's title to "<glyph> <summary>", where the leading
-# glyph is a Braille spinner (U+2800-U+28FF, UTF-8 e2 a0..a3) while it is WORKING
-# and "✳" once it is IDLE.
+#   ✓ green   agent is idle / done
+# Preferred source is the @claude_state pane option, stamped by
+# claude-hook-state.sh from Claude Code's own hooks — the only way to see the
+# attention states, since a pane waiting on an answer is indistinguishable from
+# a finished one from the outside. Panes started before the hooks existed have
+# no option set and fall back to the inference below: Claude Code sets each
+# pane's title to "<glyph> <summary>", where the leading glyph is a Braille
+# spinner (U+2800-U+28FF, UTF-8 e2 a0..a3) while it is WORKING and "✳" once it
+# is IDLE.
 #
 # Ordinary panes:
 #   ● yellow  a command is running
@@ -28,8 +35,15 @@ set -u
 win="${1:-}"
 [ -n "$win" ] || exit 0
 
-while IFS=$'\t' read -r cmd title pid tty paneid; do
+while IFS=$'\t' read -r cmd title pid tty paneid state; do
   if [ "$cmd" = claude ]; then
+    case "$state" in
+      asking)  printf ' #[fg=magenta,bold]?#[fg=default,nobold]'; continue ;;
+      blocked) printf ' #[fg=red,bold]!#[fg=default,nobold]'; continue ;;
+      working) printf ' #[fg=cyan]●#[fg=default]'; continue ;;
+      done)    printf ' #[fg=green]✓#[fg=default]'; continue ;;
+    esac
+
     # The title spinner only runs while the model is streaming; during a tool
     # call the title shows the idle "✳" even though work is running. The tell
     # for that: claude keeps one persistent shell child, and a running tool
@@ -108,4 +122,4 @@ while IFS=$'\t' read -r cmd title pid tty paneid; do
     printf ' #[fg=yellow]●#[fg=default]'
   fi
 done < <(tmux list-panes -t "$win" \
-  -F $'#{pane_current_command}\t#{pane_title}\t#{pane_pid}\t#{pane_tty}\t#{pane_id}' 2>/dev/null)
+  -F $'#{pane_current_command}\t#{pane_title}\t#{pane_pid}\t#{pane_tty}\t#{pane_id}\t#{@claude_state}' 2>/dev/null)
