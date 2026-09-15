@@ -43,6 +43,27 @@ jq '.statusLine = {type: "command", command: "~/scripts/claude-statusline.sh"}' 
   "$CLAUDE_SETTINGS" >"$tmp" && mv "$tmp" "$CLAUDE_SETTINGS"
 echo "  ✅ statusLine → ~/scripts/claude-statusline.sh"
 
+# Report each agent's state onto its tmux pane (see scripts/claude-hook-state.sh).
+# Registration filters our own command out of each event before re-adding it, so
+# reruns stay idempotent without disturbing hooks owned by other projects.
+echo -e "\n🚦 Registering Claude agent state hooks..."
+tmp="$(mktemp)"
+jq --arg cmd "~/scripts/claude-hook-state.sh" '
+  def entry($matcher):
+    (if $matcher == null then {} else {matcher: $matcher} end)
+    + {hooks: [{type: "command", command: $cmd, timeout: 5, async: true}]};
+  def register($event; $matcher):
+    .hooks[$event] = (
+      ((.hooks[$event] // []) | map(select([.hooks[].command] | index($cmd) | not)))
+      + [entry($matcher)]
+    );
+  register("PreToolUse"; "*")
+  | register("Notification"; null)
+  | register("Stop"; null)
+  | register("UserPromptSubmit"; null)
+' "$CLAUDE_SETTINGS" >"$tmp" && mv "$tmp" "$CLAUDE_SETTINGS"
+echo "  ✅ PreToolUse/Notification/Stop/UserPromptSubmit → ~/scripts/claude-hook-state.sh"
+
 # Start every session in bypassPermissions. skipDangerousModePermissionPrompt
 # suppresses the confirmation dialog that mode otherwise shows on each startup.
 echo -e "\n🔓 Setting default permission mode..."
