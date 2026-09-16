@@ -75,7 +75,7 @@ bg_sessions() {
 
 pane_fmt="#{pane_id}${US}#{session_name}:#{window_index}.#{pane_index}${US}#{pane_current_command}${US}#{pane_current_path}${US}#{@claude_state}${US}#{@claude_state_since}${US}#{@claude_started}${US}#{@claude_budget}${US}#{@claude_task}${US}#{@claude_task_since}${US}#{@claude_subs}${US}#{@claude_sub_names}${US}#{@claude_last}${US}#{pane_title}"
 
-panes() { tmux list-panes -a -F "$pane_fmt" 2>/dev/null | awk -F"$US" '$3 == "claude"'; }
+panes() { tmux list-panes -a -F "$pane_fmt" 2>/dev/null | awk -F"$US" '$3 == "claude" || $5 != ""'; }
 
 title_state() {
   case "$(printf '%s' "$1" | head -c3 | xxd -p 2>/dev/null)" in

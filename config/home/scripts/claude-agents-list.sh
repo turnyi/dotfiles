@@ -49,7 +49,7 @@ fmt=$'#{pane_id}\t#{session_name}:#{window_index}.#{pane_index}\t#{pane_current_
 {
 tmux list-panes -a -F "$fmt" 2>/dev/null | sort -t $'\t' -k2,2 |
   while IFS=$'\t' read -r id loc cmd path state title; do
-    [ "$cmd" = claude ] || continue
+    [ "$cmd" = claude ] || [ -n "$state" ] || continue
 
     case "$state" in
       working | asking | blocked | done) status="$state" ;;

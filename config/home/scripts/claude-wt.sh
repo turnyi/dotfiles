@@ -49,9 +49,9 @@ open_window() {
   local path="$1" prompt="${2:-}" name
   name="$(basename "$path")"
   if [ -n "$prompt" ]; then
-    tmux new-window -n "$name" -c "$path" "claude \"\$0\"; exec \${SHELL:-bash}" "$prompt"
+    tmux new-window -n "$name" -c "$path" "exec claude \"\$0\"" "$prompt"
   else
-    tmux new-window -n "$name" -c "$path" "claude --continue || claude; exec \${SHELL:-bash}"
+    tmux new-window -n "$name" -c "$path" "exec claude --continue || exec claude"
   fi
 }
 

@@ -19,7 +19,7 @@ CACHE="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/claude-fleet/bg-blocked"
 blocked=0; asking=0; working=0; idle=0; subs=0
 
 while IFS=$'\x1f' read -r cmd state n title; do
-  [ "$cmd" = claude ] || continue
+  [ "$cmd" = claude ] || [ -n "$state" ] || continue
   if [ -z "$state" ]; then
     case "$(printf '%s' "$title" | head -c3 | xxd -p 2>/dev/null)" in
       e2a0* | e2a1* | e2a2* | e2a3*) state=working ;;

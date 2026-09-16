@@ -36,7 +36,7 @@ win="${1:-}"
 [ -n "$win" ] || exit 0
 
 while IFS=$'\t' read -r cmd title pid tty paneid state; do
-  if [ "$cmd" = claude ]; then
+  if [ "$cmd" = claude ] || [ -n "$state" ]; then
     case "$state" in
       asking)  printf ' #[fg=magenta,bold]?#[fg=default,nobold]'; continue ;;
       blocked) printf ' #[fg=red,bold]!#[fg=default,nobold]'; continue ;;
