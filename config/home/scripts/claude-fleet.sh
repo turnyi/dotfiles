@@ -8,6 +8,7 @@
 #   claude-fleet.sh --sidebar        compact looping list for a narrow pane (prefix S toggles it)
 #   claude-fleet.sh --stage %N       mission-control list pane, card below, stage %N on the right
 #   claude-fleet.sh --diff KEY       uncommitted + ahead-of-base diff in a new window
+#   claude-fleet.sh --watch [PANE]   live card for one pane / worktree (prefix T = the pane you are in)
 #
 # Every column is computed by a program, never narrated by a model:
 #   next     answer · approve · fix CI · triage review · merge · wait CI · reap · open PR ·
@@ -379,6 +380,7 @@ sorted_rows() { rows | sort -s -t$'\t' -k2,2n; }
 # ---------------------------------------------------------------- card
 
 line() { printf '%s%s%s  %s\n' "$c_dim" "$1" "$c_rst" "$2"; }
+section() { printf '\n%s%s%s %s──────────────────────────%s\n' "$c_bold" "$1" "$c_rst" "$c_dim" "$c_rst"; }
 
 card() {
   local key="$1" f
@@ -391,10 +393,17 @@ card() {
   last="$(g last)"; next="$(g next)"; why="$(g why)"; dirty="$(g dirty)"; ahead="$(g ahead)"; slot="$(g slot)"; slot_alive="$(g slot_alive)"
   slot_port="$(g slot_port)"; bg_name="$(g bg_name)"; local sess_id; sess_id="$(g sess_id)"
 
-  printf '%s%s%s  %s%s%s\n' "$c_bold" "$(basename "$wt")" "$c_rst" "$c_mag" "$branch" "$c_rst"
+  local badge_bg
+  case "$next" in
+    answer|approve) badge_bg=$'\033[1;97;41m' ;;
+    "fix CI"|"triage review") badge_bg=$'\033[1;30;43m' ;;
+    merge|"open PR"|"review diff"|reap) badge_bg=$'\033[1;97;45m' ;;
+    working) badge_bg=$'\033[1;30;46m' ;;
+    *) badge_bg=$'\033[1;30;47m' ;;
+  esac
+  printf '%s %s %s  %s%s%s  %s%s%s\n' "$badge_bg" "$(printf '%s' "$next" | tr a-z A-Z)" "$c_rst" "$c_bold" "$(basename "$wt")" "$c_rst" "$c_mag" "$branch" "$c_rst"
+  printf '%s%s%s\n' "$c_dim" "$why" "$c_rst"
   printf '%s%s%s\n\n' "$c_dim" "$wt" "$c_rst"
-
-  line "NEXT " "$(next_color "$next")${c_bold}${next}${c_rst}  ${c_dim}${why}${c_rst}"
 
   local sl=""
   if [ -n "$pane" ]; then
@@ -446,7 +455,7 @@ card() {
 
   local tf="$RUN/tasks/$sess_id.json" af="$RUN/actions/$sess_id.log"
   if [ -n "$sess_id" ] && [ -s "$tf" ]; then
-    printf '\n%s── tasks ──%s\n' "$c_dim" "$c_rst"
+    section "tasks $(jq -r '[.[]|.status] | "\(map(select(.=="completed"))|length)/\(length)"' "$tf" 2>/dev/null)"
     jq -r 'to_entries | map(.value) | (map(select(.status == "in_progress")) + map(select(.status == "pending")) + map(select(.status == "completed"))) | .[] | "\(.status)\t\(.subject)"' "$tf" 2>/dev/null |
       head -14 | while IFS=$'\t' read -r st subj; do
         case "$st" in
@@ -457,17 +466,17 @@ card() {
       done
   fi
   if [ -n "$sess_id" ] && [ -s "$af" ]; then
-    printf '\n%s── recent actions ──%s\n' "$c_dim" "$c_rst"
+    section "recent actions"
     tail -8 "$af" | tac | while IFS=$'\t' read -r ts tool detail; do
       printf '  %s%-5s%s %s%-8s%s %s\n' "$c_dim" "$(human $((now - ts)))" "$c_rst" "$c_blue" "$tool" "$c_rst" "$(printf '%s' "$detail" | head -c 90)"
     done
   fi
 
   if [ -n "$pane" ]; then
-    printf '\n%s── pane ──%s\n' "$c_dim" "$c_rst"
+    section "pane"
     tmux capture-pane -ep -t "$pane" 2>/dev/null | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' | tail -25
   elif [ "${key#bg:}" != "$key" ]; then
-    printf '\n%s── log ──%s\n' "$c_dim" "$c_rst"
+    section "log"
     claude logs "${key#bg:}" 2>/dev/null | tail -20
   fi
 }
@@ -542,12 +551,13 @@ sidebar_loop() {
       --ansi --no-sort --cycle --layout=reverse --info=hidden --no-scrollbar \
       --delimiter=$'\t' --with-nth=3 \
       --prompt='fleet ' \
-      --header='enter go · F full · v diff · x stop · q close' \
+      --header='enter go · t card · F full · v diff · x stop · q close' \
       --expect=q \
       --bind="load:reload-sync(sleep 5; FLEET_COMPACT=1 '$self' --rows)" \
       --bind="enter:execute-silent('$self' --goto {1})" \
       --bind="F:execute-silent(tmux display-popup -E -w 96% -h 85% '$self --popup')" \
       --bind="v:execute-silent('$self' --diff {1})" \
+      --bind="t:execute-silent(tmux display-popup -E -w 70% -h 80% '$self --watch {1}')" \
       --bind="x:execute('$self' --interrupt {1})" \
       --bind="ctrl-r:reload('$self' --refresh | FLEET_COMPACT=1 '$self' --rows)" \
       --bind="esc:ignore" | grep -q '^q$' && return 0
@@ -582,6 +592,34 @@ stage_loop() {
   done
 }
 
+resolve_key() {
+  local pane="$1" path
+  [ -n "$pane" ] || pane="$(tmux display -p '#{pane_id}')"
+  if [ -f "$CARDS/$(key_hash "$pane").json" ]; then printf '%s' "$pane"; return; fi
+  path="$(tmux display -p -t "$pane" '#{pane_current_path}' 2>/dev/null)"
+  worktrees | cut -d"$US" -f2 | awk -v p="$path" 'index(p, $0) == 1 {print length($0) "\t" $0}' | sort -rn | head -1 | cut -f2
+}
+
+watch_card() {
+  local pane="${1:-}" key k
+  printf '\033[?25l'
+  trap 'printf "\033[?25h"' EXIT INT TERM
+  while :; do
+    sorted_rows >/dev/null
+    key="$(resolve_key "$pane")"
+    printf '\033[H\033[2J'
+    if [ -n "$key" ]; then card "$key"; else printf '%sno Claude session or worktree under this pane%s\n' "$c_dim" "$c_rst"; fi
+    printf '\n%sq quit · r refresh · v diff · f fleet%s' "$c_dim" "$c_rst"
+    if read -r -t 4 -n 1 k; then
+      case "$k" in
+        q) break ;;
+        v) [ -n "$key" ] && show_diff "$key" ;;
+        f) exec "$S/claude-fleet.sh" --popup ;;
+      esac
+    fi
+  done
+}
+
 toggle_all() { if [ -f "$SHOW_ALL_FLAG" ]; then rm -f "$SHOW_ALL_FLAG"; else touch "$SHOW_ALL_FLAG"; fi; }
 
 case "${1:-}" in
@@ -596,6 +634,7 @@ case "${1:-}" in
   --diff) show_diff "${2:-}" ;;
   --diff-view) diff_view "${2:-}" "${3:-}" ;;
   --sidebar) sidebar_loop ;;
+  --watch) watch_card "${2:-}" ;;
   --stage) stage_loop "${2:-}" ;;
   --popup | "")
     self="$S/claude-fleet.sh"
