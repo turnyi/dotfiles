@@ -60,4 +60,17 @@ out+=$'\033[36m'"${dir/#$HOME/\~}"$'\033[0m'
 branch=$(git -C "$dir" branch --show-current 2>/dev/null)
 [ -n "$branch" ] && out+=$'  \033[35m'"$branch"$'\033[0m'
 [ -n "$model" ] && out+=$'  \033[2m'"$model"$'\033[0m'
+slot=$("$HOME/scripts/centinel-slot.sh" <<<"$in" 2>/dev/null)
+[ -n "$slot" ] && out+=$'  \033[33m'"⧉ $slot"$'\033[0m'
+if [ -n "${TMUX_PANE:-}" ]; then
+  subs=$(tmux show-option -qvp -t "$TMUX_PANE" @claude_subs 2>/dev/null)
+  case "$subs" in ''|0) ;; *) out+=$'  \033[38;5;215m'"↳ $subs"$'\033[0m' ;; esac
+  budget=$(tmux show-option -qvp -t "$TMUX_PANE" @claude_budget 2>/dev/null)
+  started=$(tmux show-option -qvp -t "$TMUX_PANE" @claude_started 2>/dev/null)
+  if [ -n "$budget" ] && [ -n "$started" ]; then
+    used=$(( $(date +%s) - started ))
+    col=$'\033[2m'; [ "$used" -gt "$budget" ] && col=$'\033[1;31m'
+    out+="  ${col}$((used / 60))/$((budget / 60))m"$'\033[0m'
+  fi
+fi
 printf '%s' "$out"

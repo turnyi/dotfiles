@@ -50,8 +50,8 @@ run_once() {
       --ansi --no-sort --cycle --layout=reverse --info=inline \
       --delimiter=$'\t' --with-nth=2 \
       --prompt='agents ❯ ' \
-      --footer='enter: go to pane · tab: pin to workspace · ctrl-x: close · alt-b: broadcast · ctrl-o: resume picker · :q/esc: quit' \
-      --expect=ctrl-o \
+      --footer='enter: go to pane · tab: pin to workspace · ctrl-x: close · alt-b: broadcast · ctrl-o: resume picker · ctrl-f: fleet · :q/esc: quit' \
+      --expect=ctrl-o,ctrl-f \
       --preview="tmux capture-pane -ep -t {1} 2>/dev/null" \
       --preview-window='right,60%,follow,border-left' \
       --bind="load:reload-sync(sleep 1; '$list')+refresh-preview" \
@@ -66,6 +66,7 @@ run_once() {
     sel="${out#*$'\n'}"; [ "$sel" = "$out" ] && sel=""
     # flip to the resume-picker view of the same palette
     [ "$key" = ctrl-o ] && exec "$S/claude-resume.sh" --pick
+    [ "$key" = ctrl-f ] && exec "$S/claude-fleet.sh" --popup
     pane="${sel%%$'\t'*}"
     [ -n "$pane" ] && "$S/claude-agents-goto.sh" "$pane"
     return 0

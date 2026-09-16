@@ -61,8 +61,12 @@ jq --arg cmd "~/scripts/claude-hook-state.sh" '
   | register("Notification"; null)
   | register("Stop"; null)
   | register("UserPromptSubmit"; null)
+  | register("SessionStart"; null)
+  | register("SessionEnd"; null)
+  | register("SubagentStart"; null)
+  | register("SubagentStop"; null)
 ' "$CLAUDE_SETTINGS" >"$tmp" && mv "$tmp" "$CLAUDE_SETTINGS"
-echo "  ✅ PreToolUse/Notification/Stop/UserPromptSubmit → ~/scripts/claude-hook-state.sh"
+echo "  ✅ PreToolUse/Notification/Stop/UserPromptSubmit/Session*/Subagent* → ~/scripts/claude-hook-state.sh"
 
 # Start every session in bypassPermissions. skipDangerousModePermissionPrompt
 # suppresses the confirmation dialog that mode otherwise shows on each startup.

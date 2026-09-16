@@ -3,14 +3,26 @@
 #
 # Wired to Claude Code hooks (see ~/.claude/settings.json). Every hook fires
 # inside the claude process, where $TMUX_PANE names the pane, so the state can
-# be stamped straight onto the pane as a tmux user option:
+# be stamped straight onto the pane as tmux user options:
 #
 #   @claude_state        working | asking | blocked | done
 #   @claude_state_since  epoch seconds the pane entered that state
+#   @claude_session      session id
+#   @claude_started      epoch seconds of the first prompt this session
+#   @claude_budget       seconds the operator allowed ("budget 45m" in a prompt)
+#   @claude_task         the todo item currently in progress
+#   @claude_task_since   epoch seconds that item became current
+#   @claude_subs         live subagent count
+#   @claude_sub_names    their agent types, comma separated
+#   @claude_last         first line of the last assistant message
 #
-# claude-window-status.sh and claude-agents-list.sh read those options out of
-# the list-panes format string they already run, which is both cheaper and more
-# truthful than inferring state from the pane title and /proc.
+# claude-window-status.sh, claude-agents-list.sh, claude-attention.sh and
+# claude-fleet.sh read those options out of list-panes format strings, which is
+# both cheaper and more truthful than inferring state from the pane title.
+#
+# Subagents are counted through files rather than a counter on the pane because
+# SubagentStart/Stop hooks run async and concurrently; two increments racing on
+# one option lose a subagent, two files never do.
 #
 # States that want you (asking, blocked) also raise a desktop notification and
 # force an immediate status repaint, because status-interval is 5s and a
@@ -21,35 +33,122 @@ set -u
 command -v tmux >/dev/null 2>&1 || exit 0
 
 payload="$(cat)"
-event="$(printf '%s' "$payload" | jq -r '.hook_event_name // empty' 2>/dev/null)"
-tool="$(printf '%s' "$payload" | jq -r '.tool_name // empty' 2>/dev/null)"
+field() { printf '%s' "$payload" | jq -r "$1 // empty" 2>/dev/null; }
 
-prev="$(tmux show-option -qvp -t "$TMUX_PANE" @claude_state 2>/dev/null)"
+event="$(field .hook_event_name)"
+tool="$(field .tool_name)"
+session="$(field .session_id)"
+now="$(date +%s)"
 
+SUBS_ROOT="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/claude-fleet/subs"
+
+setp() { tmux set-option -p -t "$TMUX_PANE" "$1" "$2" 2>/dev/null; }
+getp() { tmux show-option -qvp -t "$TMUX_PANE" "$1" 2>/dev/null; }
+unsetp() { tmux set-option -pu -t "$TMUX_PANE" "$1" 2>/dev/null; }
+
+one_line() { tr '\n' ' ' | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//' | head -c 160; }
+
+stamp_subs() {
+  local dir="$SUBS_ROOT/$session" n names
+  n=0; names=""
+  if [ -d "$dir" ]; then
+    n="$(find "$dir" -type f 2>/dev/null | wc -l | tr -d ' ')"
+    names="$(cat "$dir"/* 2>/dev/null | sort | uniq -c | sort -rn |
+      awk '{printf "%s%s%s", (NR>1?",":""), ($1>1?$1"×":""), $2}')"
+  fi
+  setp @claude_subs "$n"
+  setp @claude_sub_names "$names"
+}
+
+parse_budget() {
+  printf '%s' "$1" | grep -oiE '(budget|eta)[: ]+[0-9]+ ?(m|min|h|hr)' | head -1 |
+    awk '{ v=$0; sub(/^[^0-9]*/, "", v); n=v+0; if (v ~ /h/) n*=3600; else n*=60; print n }'
+}
+
+state=""
 case "$event" in
-  UserPromptSubmit) state=working ;;
-  Stop)             state=done ;;
+  SessionStart)
+    setp @claude_session "$session"
+    [ -n "$(getp @claude_started)" ] || setp @claude_started "$now"
+    stamp_subs
+    exit 0
+    ;;
+  SessionEnd)
+    for o in @claude_state @claude_state_since @claude_session @claude_started @claude_budget \
+             @claude_task @claude_task_since @claude_subs @claude_sub_names @claude_last; do
+      unsetp "$o"
+    done
+    rm -rf "$SUBS_ROOT/$session" 2>/dev/null
+    tmux refresh-client -S 2>/dev/null
+    exit 0
+    ;;
+  UserPromptSubmit)
+    state=working
+    setp @claude_session "$session"
+    [ -n "$(getp @claude_started)" ] || setp @claude_started "$now"
+    budget="$(parse_budget "$(field .prompt)")"
+    if [ -n "$budget" ] && [ "$budget" -gt 0 ]; then
+      setp @claude_budget "$budget"
+      setp @claude_started "$now"
+    fi
+    ;;
+  Stop)
+    state=done
+    last="$(field .last_assistant_message | one_line)"
+    [ -n "$last" ] && setp @claude_last "$last"
+    ;;
   PreToolUse)
     case "$tool" in
       AskUserQuestion | ExitPlanMode) state=asking ;;
-      *)                              state=working ;;
+      TodoWrite)
+        task="$(printf '%s' "$payload" |
+          jq -r '[.tool_input.todos[]? | select(.status == "in_progress") | .activeForm // .content][0] // empty' 2>/dev/null |
+          one_line)"
+        if [ -n "$task" ] && [ "$task" != "$(getp @claude_task)" ]; then
+          setp @claude_task "$task"
+          setp @claude_task_since "$now"
+        fi
+        state=working
+        ;;
+      TaskCreate)
+        task="$(field .tool_input.subject | one_line)"
+        if [ -n "$task" ]; then
+          setp @claude_task "$task"
+          setp @claude_task_since "$now"
+        fi
+        state=working
+        ;;
+      *) state=working ;;
     esac
     ;;
   Notification)
-    # Notification fires both for a real permission prompt and merely because
-    # the prompt sat idle for 60s. Only the former interrupts work, so treat it
-    # as blocking only when the pane was mid-task; an idle done/asking pane
-    # keeps whatever state it already had.
-    [ "$prev" = working ] || exit 0
-    state=blocked
+    case "$(field .notification_type)" in
+      permission_prompt) state=blocked ;;
+      elicitation_dialog | agent_needs_input) state=asking ;;
+      *) exit 0 ;;
+    esac
+    ;;
+  SubagentStart)
+    mkdir -p "$SUBS_ROOT/$session"
+    printf '%s\n' "$(field .agent_type)" >"$SUBS_ROOT/$session/$(field .agent_id)"
+    stamp_subs
+    tmux refresh-client -S 2>/dev/null
+    exit 0
+    ;;
+  SubagentStop)
+    rm -f "$SUBS_ROOT/$session/$(field .agent_id)" 2>/dev/null
+    stamp_subs
+    tmux refresh-client -S 2>/dev/null
+    exit 0
     ;;
   *) exit 0 ;;
 esac
 
+prev="$(getp @claude_state)"
 [ "$state" = "$prev" ] && exit 0
 
-tmux set-option -p -t "$TMUX_PANE" @claude_state "$state" 2>/dev/null
-tmux set-option -p -t "$TMUX_PANE" @claude_state_since "$(date +%s)" 2>/dev/null
+setp @claude_state "$state"
+setp @claude_state_since "$now"
 
 notify_file="${TMPDIR:-/tmp}/claude-notify${TMUX_PANE//%/.}"
 
