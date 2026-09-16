@@ -3,7 +3,7 @@
 #
 #   claude-fleet.sh --popup          fzf dashboard (prefix F, or ctrl-f from the agents popup)
 #   claude-fleet.sh --rows           the rows the popup renders (key \t sort \t display)
-#   claude-fleet.sh --preview KEY    the focus card for a row (state, task, PR, git, pane tail)
+#   claude-fleet.sh --preview KEY    the focus card for a row (state, tasks, actions, PR, pane tail)
 #   claude-fleet.sh --refresh        drop the PR cache so the next --rows refetches
 #   claude-fleet.sh --sidebar        compact looping list for a narrow pane (prefix S toggles it)
 #   claude-fleet.sh --stage %N       mission-control list pane, card below, stage %N on the right
@@ -73,7 +73,7 @@ bg_sessions() {
   jq -r '.[] | select(.kind == "background") | [.cwd, .name, .state // "", .status // "", .id // ""] | join("")' "$BGCACHE" 2>/dev/null
 }
 
-pane_fmt="#{pane_id}${US}#{session_name}:#{window_index}.#{pane_index}${US}#{pane_current_command}${US}#{pane_current_path}${US}#{@claude_state}${US}#{@claude_state_since}${US}#{@claude_started}${US}#{@claude_budget}${US}#{@claude_task}${US}#{@claude_task_since}${US}#{@claude_subs}${US}#{@claude_sub_names}${US}#{@claude_last}${US}#{pane_title}"
+pane_fmt="#{pane_id}${US}#{session_name}:#{window_index}.#{pane_index}${US}#{pane_current_command}${US}#{pane_current_path}${US}#{@claude_state}${US}#{@claude_state_since}${US}#{@claude_started}${US}#{@claude_budget}${US}#{@claude_task}${US}#{@claude_task_since}${US}#{@claude_subs}${US}#{@claude_sub_names}${US}#{@claude_last}${US}#{@claude_session}${US}#{@claude_tasks}${US}#{pane_title}"
 
 panes() { tmux list-panes -a -F "$pane_fmt" 2>/dev/null | awk -F"$US" '$3 == "claude" || $5 != ""'; }
 
@@ -238,13 +238,13 @@ rows() {
 
   while IFS="$US" read -r repo wt branch; do
     [ -n "$wt" ] || continue
-    local id="" loc="" path="" state="" since="" started="" budget="" task="" task_since="" subs="" sub_names="" last="" title=""
+    local id="" loc="" path="" state="" since="" started="" budget="" task="" task_since="" subs="" sub_names="" last="" sess_id="" tasks="" title=""
     local best=""
     while IFS="$US" read -r p_id _ _ p_path _; do
       case "$p_path" in "$wt" | "$wt"/*) [ -z "$best" ] && best="$p_id" ;; esac
     done <<<"$pane_data"
     if [ -n "$best" ]; then
-      IFS="$US" read -r id loc _ path state since started budget task task_since subs sub_names last title \
+      IFS="$US" read -r id loc _ path state since started budget task task_since subs sub_names last sess_id tasks title \
         < <(printf '%s\n' "$pane_data" | awk -F"$US" -v p="$best" '$1 == p')
       seen_panes="$seen_panes $id"
       [ -n "$state" ] || state="$(title_state "$title")"
@@ -314,6 +314,7 @@ rows() {
     [ "$dirty" -gt 0 ] && prcol="$prcol ${c_yel}~$dirty${c_rst}"
 
     local sess; sess="$(session_label "$id" "$state" "$since" "$started" "$budget" "$subs" "$bg_name" "$bg_state" "$slot" "$slot_alive")"
+    [ -n "$tasks" ] && sess="$sess ${c_dim}☑$tasks${c_rst}"
 
     local what
     if [ "$state" = working ] && [ -n "$task" ]; then what="$task"
@@ -332,14 +333,14 @@ rows() {
       --arg task "$task" --arg task_since "$task_since" --arg subs "$subs" --arg sub_names "$sub_names" --arg last "$last" \
       --arg next "$next" --arg why "$why" --arg dirty "$dirty" --arg ahead "$ahead" \
       --arg slot "$slot" --arg slot_alive "$slot_alive" --arg slot_port "$slot_port" \
-      --arg bg_name "$bg_name" --arg bg_state "$bg_state" --argjson pr "$pr" \
+      --arg bg_name "$bg_name" --arg bg_state "$bg_state" --arg sess_id "$sess_id" --arg tasks "$tasks" --argjson pr "$pr" \
       '$ARGS.named' >"$CARDS/$(key_hash "$key").json" 2>/dev/null
 
     [ "$show_all" = 0 ] && [ "$next" = "—" ] && continue
     emit "$key" "$prio" "$next" "$(next_color "$next")" "$name" "$prcol" "$sess" "$what" "$(short_label "$id" "$state" "$since" "$subs" "$bg_state")"
   done <<<"$wt_data"
 
-  while IFS="$US" read -r id loc _ path state since started budget task task_since subs sub_names last title; do
+  while IFS="$US" read -r id loc _ path state since started budget task task_since subs sub_names last sess_id tasks title; do
     [ -n "$id" ] || continue
     case " $seen_panes " in *" $id "*) continue ;; esac
     [ -n "$state" ] || state="$(title_state "$title")"
@@ -354,7 +355,7 @@ rows() {
     local sess; sess="$(session_label "$id" "$state" "$since" "$started" "$budget" "$subs" "" "" "" "")"
     jq -nc --arg key "$id" --arg wt "$path" --arg pane "$id" --arg loc "$loc" --arg state "$state" --arg since "$since" \
       --arg started "$started" --arg budget "$budget" --arg task "$task" --arg task_since "$task_since" --arg subs "$subs" \
-      --arg sub_names "$sub_names" --arg last "$last" --arg next "$next" --arg why "$why" --argjson pr '{"n":null}' \
+      --arg sub_names "$sub_names" --arg last "$last" --arg next "$next" --arg why "$why" --arg sess_id "$sess_id" --arg tasks "$tasks" --argjson pr '{"n":null}' \
       '$ARGS.named' >"$CARDS/$(key_hash "$id").json" 2>/dev/null
     emit "$id" "$prio" "$next" "$(next_color "$next")" "${c_loc}$(basename "$path")${c_rst}" "${c_dim}—${c_rst}" "$sess" \
       "${last:-$(printf '%s' "$title" | sed -E 's/^[^ ]+[[:space:]]+//')}" "$(short_label "$id" "$state" "$since" "$subs" "")"
@@ -388,7 +389,7 @@ card() {
   wt="$(g wt)"; branch="$(g branch)"; base="$(g base)"; pane="$(g pane)"; loc="$(g loc)"; state="$(g state)"; since="$(g since)"
   started="$(g started)"; budget="$(g budget)"; task="$(g task)"; task_since="$(g task_since)"; subs="$(g subs)"; sub_names="$(g sub_names)"
   last="$(g last)"; next="$(g next)"; why="$(g why)"; dirty="$(g dirty)"; ahead="$(g ahead)"; slot="$(g slot)"; slot_alive="$(g slot_alive)"
-  slot_port="$(g slot_port)"; bg_name="$(g bg_name)"
+  slot_port="$(g slot_port)"; bg_name="$(g bg_name)"; local sess_id; sess_id="$(g sess_id)"
 
   printf '%s%s%s  %s%s%s\n' "$c_bold" "$(basename "$wt")" "$c_rst" "$c_mag" "$branch" "$c_rst"
   printf '%s%s%s\n\n' "$c_dim" "$wt" "$c_rst"
@@ -443,14 +444,23 @@ card() {
     if [ "$slot_alive" = 1 ]; then line "SLOT " "${c_yel}⧉ $slot · :$slot_port · live${c_rst}"; else line "SLOT " "${c_dim}⧉ $slot · down${c_rst}"; fi
   fi
 
-  if [ -d "$wt" ] && git -C "$wt" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    printf '\n%s── commits ahead ──%s\n' "$c_dim" "$c_rst"
-    if [ -n "$base" ]; then git -C "$wt" -c color.ui=always log --oneline "origin/$base..HEAD" 2>/dev/null | head -6
-    else git -C "$wt" -c color.ui=always log --oneline -6 2>/dev/null; fi
-    if [ "${dirty:-0}" -gt 0 ]; then
-      printf '%s── dirty ──%s\n' "$c_dim" "$c_rst"
-      git -C "$wt" -c color.ui=always status --short 2>/dev/null | head -8
-    fi
+  local tf="$RUN/tasks/$sess_id.json" af="$RUN/actions/$sess_id.log"
+  if [ -n "$sess_id" ] && [ -s "$tf" ]; then
+    printf '\n%s── tasks ──%s\n' "$c_dim" "$c_rst"
+    jq -r 'to_entries | map(.value) | (map(select(.status == "in_progress")) + map(select(.status == "pending")) + map(select(.status == "completed"))) | .[] | "\(.status)\t\(.subject)"' "$tf" 2>/dev/null |
+      head -14 | while IFS=$'\t' read -r st subj; do
+        case "$st" in
+          completed)   printf '  %s✓ %s%s\n' "$c_dim" "$subj" "$c_rst" ;;
+          in_progress) printf '  %s● %s%s\n' "$c_cyan" "$subj" "$c_rst" ;;
+          *)           printf '  %s○ %s%s\n' "$c_yel" "$subj" "$c_rst" ;;
+        esac
+      done
+  fi
+  if [ -n "$sess_id" ] && [ -s "$af" ]; then
+    printf '\n%s── recent actions ──%s\n' "$c_dim" "$c_rst"
+    tail -8 "$af" | tac | while IFS=$'\t' read -r ts tool detail; do
+      printf '  %s%-5s%s %s%-8s%s %s\n' "$c_dim" "$(human $((now - ts)))" "$c_rst" "$c_blue" "$tool" "$c_rst" "$(printf '%s' "$detail" | head -c 90)"
+    done
   fi
 
   if [ -n "$pane" ]; then

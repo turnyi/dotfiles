@@ -15,6 +15,11 @@
 #   @claude_subs         live subagent count
 #   @claude_sub_names    their agent types, comma separated
 #   @claude_last         first line of the last assistant message
+#   @claude_tasks        "done/total" of the session's task list
+#
+# Per-session files under $XDG_RUNTIME_DIR/claude-fleet/ feed the fleet card:
+#   tasks/<session>.json    {"<id>": {"subject", "status"}} from TaskCreate/TaskUpdate/TodoWrite
+#   actions/<session>.log   "<epoch>\t<tool>\t<detail>" per tool call, last 60 kept
 #
 # claude-window-status.sh, claude-agents-list.sh, claude-attention.sh and
 # claude-fleet.sh read those options out of list-panes format strings, which is
@@ -40,7 +45,10 @@ tool="$(field .tool_name)"
 session="$(field .session_id)"
 now="$(date +%s)"
 
-SUBS_ROOT="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/claude-fleet/subs"
+FLEET_RUN="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/claude-fleet"
+SUBS_ROOT="$FLEET_RUN/subs"
+TASKS="$FLEET_RUN/tasks/$session.json"
+ACTIONS="$FLEET_RUN/actions/$session.log"
 
 setp() { tmux set-option -p -t "$TMUX_PANE" "$1" "$2" 2>/dev/null; }
 getp() { tmux show-option -qvp -t "$TMUX_PANE" "$1" 2>/dev/null; }
@@ -60,6 +68,36 @@ stamp_subs() {
   setp @claude_sub_names "$names"
 }
 
+log_action() {
+  local detail
+  detail="$(printf '%s' "$payload" | jq -r '.tool_input | (.file_path // .command // .pattern // .description // .subject // .prompt // .url // .query // (if .taskId then "#\(.taskId) \(.status // "")" else "" end)) | tostring' 2>/dev/null | one_line | head -c 100)"
+  mkdir -p "$(dirname "$ACTIONS")"
+  printf '%s\t%s\t%s\n' "$now" "$tool" "$detail" >>"$ACTIONS"
+  [ "$(wc -l <"$ACTIONS")" -gt 80 ] && { tail -60 "$ACTIONS" >"$ACTIONS.tmp" && mv -f "$ACTIONS.tmp" "$ACTIONS"; }
+  return 0
+}
+
+tasks_set() {
+  local id="$1" subject="$2" status="$3"
+  mkdir -p "$(dirname "$TASKS")"
+  [ -s "$TASKS" ] || echo '{}' >"$TASKS"
+  jq -c --arg id "$id" --arg subject "$subject" --arg status "$status" \
+    '.[$id] = ((.[$id] // {}) + (if $subject != "" then {subject: $subject} else {} end) + (if $status != "" then {status: $status} else {} end))' \
+    "$TASKS" >"$TASKS.tmp" 2>/dev/null && mv -f "$TASKS.tmp" "$TASKS"
+}
+
+stamp_tasks() {
+  [ -s "$TASKS" ] || return 0
+  local summary current
+  summary="$(jq -r '[.[] | .status] | "\(map(select(. == "completed")) | length)/\(length)"' "$TASKS" 2>/dev/null)"
+  current="$(jq -r '[.[] | select(.status == "in_progress") | .subject][0] // ""' "$TASKS" 2>/dev/null | one_line)"
+  setp @claude_tasks "$summary"
+  if [ -n "$current" ] && [ "$current" != "$(getp @claude_task)" ]; then
+    setp @claude_task "$current"
+    setp @claude_task_since "$now"
+  fi
+}
+
 parse_budget() {
   printf '%s' "$1" | grep -oiE '(budget|eta)[: ]+[0-9]+ ?(m|min|h|hr)' | head -1 |
     awk '{ v=$0; sub(/^[^0-9]*/, "", v); n=v+0; if (v ~ /h/) n*=3600; else n*=60; print n }'
@@ -75,10 +113,10 @@ case "$event" in
     ;;
   SessionEnd)
     for o in @claude_state @claude_state_since @claude_session @claude_started @claude_budget \
-             @claude_task @claude_task_since @claude_subs @claude_sub_names @claude_last; do
+             @claude_task @claude_task_since @claude_subs @claude_sub_names @claude_last @claude_tasks; do
       unsetp "$o"
     done
-    rm -rf "$SUBS_ROOT/$session" 2>/dev/null
+    rm -rf "$SUBS_ROOT/$session" "$TASKS" "$ACTIONS" 2>/dev/null
     tmux refresh-client -S 2>/dev/null
     exit 0
     ;;
@@ -98,28 +136,33 @@ case "$event" in
     [ -n "$last" ] && setp @claude_last "$last"
     ;;
   PreToolUse)
+    log_action
     case "$tool" in
       AskUserQuestion | ExitPlanMode) state=asking ;;
       TodoWrite)
-        task="$(printf '%s' "$payload" |
-          jq -r '[.tool_input.todos[]? | select(.status == "in_progress") | .activeForm // .content][0] // empty' 2>/dev/null |
-          one_line)"
-        if [ -n "$task" ] && [ "$task" != "$(getp @claude_task)" ]; then
-          setp @claude_task "$task"
-          setp @claude_task_since "$now"
-        fi
+        mkdir -p "$(dirname "$TASKS")"
+        printf '%s' "$payload" | jq -c '[.tool_input.todos[]?] | to_entries | map({key: ("todo-" + (.key|tostring)), value: {subject: (.value.activeForm // .value.content), status: .value.status}}) | from_entries' >"$TASKS" 2>/dev/null
+        stamp_tasks
         state=working
         ;;
-      TaskCreate)
-        task="$(field .tool_input.subject | one_line)"
-        if [ -n "$task" ]; then
-          setp @claude_task "$task"
-          setp @claude_task_since "$now"
-        fi
+      TaskUpdate)
+        tasks_set "$(field .tool_input.taskId)" "$(field .tool_input.subject | one_line)" "$(field .tool_input.status)"
+        stamp_tasks
         state=working
         ;;
       *) state=working ;;
     esac
+    ;;
+  PostToolUse)
+    [ "$tool" = TaskCreate ] || exit 0
+    created="$(printf '%s' "$payload" | jq -r '.tool_response | if type == "string" then . else (.content // .result // .text // tostring) end | tostring' 2>/dev/null | grep -oE 'Task #[0-9]+ created successfully: [^"}]*' | head -1)"
+    id="$(printf '%s' "$created" | grep -oE '#[0-9]+' | tr -d '#')"
+    subject="$(printf '%s' "$created" | sed -E 's/^Task #[0-9]+ created successfully: //' | one_line)"
+    [ -n "$subject" ] || subject="$(field .tool_input.subject | one_line)"
+    [ -n "$id" ] || id="new-$now"
+    tasks_set "$id" "$subject" "pending"
+    stamp_tasks
+    exit 0
     ;;
   Notification)
     case "$(field .notification_type)" in

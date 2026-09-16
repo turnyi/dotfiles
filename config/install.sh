@@ -58,6 +58,7 @@ jq --arg cmd "~/scripts/claude-hook-state.sh" '
       + [entry($matcher)]
     );
   register("PreToolUse"; "*")
+  | register("PostToolUse"; "TaskCreate")
   | register("Notification"; null)
   | register("Stop"; null)
   | register("UserPromptSubmit"; null)
