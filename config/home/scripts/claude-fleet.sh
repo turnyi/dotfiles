@@ -5,6 +5,9 @@
 #   claude-fleet.sh --rows           the rows the popup renders (key \t sort \t display)
 #   claude-fleet.sh --preview KEY    the focus card for a row (state, task, PR, git, pane tail)
 #   claude-fleet.sh --refresh        drop the PR cache so the next --rows refetches
+#   claude-fleet.sh --sidebar        compact looping list for a narrow pane (prefix S toggles it)
+#   claude-fleet.sh --stage %N       mission-control list pane, card below, stage %N on the right
+#   claude-fleet.sh --diff KEY       uncommitted + ahead-of-base diff in a new window
 #
 # Every column is computed by a program, never narrated by a model:
 #   next     answer · approve · fix CI · triage review · merge · wait CI · reap · open PR ·
@@ -157,7 +160,12 @@ pr_get() {
 # ---------------------------------------------------------------- rows
 
 emit() {
-  local key="$1" prio="$2" next="$3" ncol="$4" name="$5" prcol="$6" sess="$7" what="$8"
+  local key="$1" prio="$2" next="$3" ncol="$4" name="$5" prcol="$6" sess="$7" what="$8" short="${9:-}"
+  if [ "${FLEET_COMPACT:-0}" = 1 ]; then
+    local plain; plain="$(printf '%s' "$name" | strip | cut -c1-18)"
+    printf '%s\t%s\t%s %s %s\n' "$key" "$prio" "$(pad "${ncol}${next}${c_rst}" 10)" "$(pad "${c_loc}${plain}${c_rst}" 18)" "$short"
+    return
+  fi
   printf '%s\t%s\t%s %s %s %s %s%s%s\n' \
     "$key" "$prio" \
     "$(pad "${ncol}${next}${c_rst}" 13)" \
@@ -202,6 +210,22 @@ session_label() {
     [ "$slot_alive" = 1 ] && sess="$sess ${c_yel}⧉$slot${c_rst}" || sess="$sess ${c_dim}⧉$slot↓${c_rst}"
   fi
   printf '%s' "$sess"
+}
+
+short_label() {
+  local id="$1" state="$2" since="$3" subs="$4" bg_state="$5" age
+  if [ -n "$id" ]; then
+    age=$((now - ${since:-$now}))
+    case "$state" in
+      asking)  printf '%s? %s%s' "$c_mag" "$(human $age)" "$c_rst" ;;
+      blocked) printf '%s! %s%s' "$c_red" "$(human $age)" "$c_rst" ;;
+      working) printf '%s● %s%s' "$c_cyan" "$(human $age)" "$c_rst" ;;
+      *)       printf '%s✓ %s%s' "$c_green" "$(human $age)" "$c_rst" ;;
+    esac
+    case "$subs" in ''|0) ;; *) printf ' %s↳%s%s' "$c_orange" "$subs" "$c_rst" ;; esac
+  elif [ -n "$bg_state" ]; then printf '%sbg %s%s' "$c_red" "$bg_state" "$c_rst"
+  else printf '%s·%s' "$c_dim" "$c_rst"
+  fi
 }
 
 rows() {
@@ -312,7 +336,7 @@ rows() {
       '$ARGS.named' >"$CARDS/$(key_hash "$key").json" 2>/dev/null
 
     [ "$show_all" = 0 ] && [ "$next" = "—" ] && continue
-    emit "$key" "$prio" "$next" "$(next_color "$next")" "$name" "$prcol" "$sess" "$what"
+    emit "$key" "$prio" "$next" "$(next_color "$next")" "$name" "$prcol" "$sess" "$what" "$(short_label "$id" "$state" "$since" "$subs" "$bg_state")"
   done <<<"$wt_data"
 
   while IFS="$US" read -r id loc _ path state since started budget task task_since subs sub_names last title; do
@@ -333,7 +357,7 @@ rows() {
       --arg sub_names "$sub_names" --arg last "$last" --arg next "$next" --arg why "$why" --argjson pr '{"n":null}' \
       '$ARGS.named' >"$CARDS/$(key_hash "$id").json" 2>/dev/null
     emit "$id" "$prio" "$next" "$(next_color "$next")" "${c_loc}$(basename "$path")${c_rst}" "${c_dim}—${c_rst}" "$sess" \
-      "${last:-$(printf '%s' "$title" | sed -E 's/^[^ ]+[[:space:]]+//')}"
+      "${last:-$(printf '%s' "$title" | sed -E 's/^[^ ]+[[:space:]]+//')}" "$(short_label "$id" "$state" "$since" "$subs" "")"
   done <<<"$pane_data"
 
   while IFS="$US" read -r cwd bname bstate bstatus bid; do
@@ -345,7 +369,7 @@ rows() {
     fi
     jq -nc --arg key "bg:$bid" --arg wt "$cwd" --arg bg_name "$bname" --arg bg_state "$bstate" --arg state "$bstatus" \
       --arg next "$next" --arg why "$why" --argjson pr '{"n":null}' '$ARGS.named' >"$CARDS/$(key_hash "bg:$bid").json" 2>/dev/null
-    emit "bg:$bid" "$prio" "$next" "$(next_color "$next")" "${c_loc}$(basename "$cwd") ${c_dim}bg${c_rst}" "${c_dim}—${c_rst}" "$sess" "$bname"
+    emit "bg:$bid" "$prio" "$next" "$(next_color "$next")" "${c_loc}$(basename "$cwd") ${c_dim}bg${c_rst}" "${c_dim}—${c_rst}" "$sess" "$bname" "$(short_label "" "" "" "" "${bstate:-bg}")"
   done <<<"$bg_data"
 }
 
@@ -478,6 +502,76 @@ reap() {
   read -r -p 'enter to continue' _
 }
 
+show_diff() {
+  local key="$1" f wt base
+  f="$CARDS/$(key_hash "$key").json"
+  wt="$(jq -r '.wt // ""' "$f" 2>/dev/null)"; base="$(jq -r '.base // ""' "$f" 2>/dev/null)"
+  [ -d "$wt" ] && git -C "$wt" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+  tmux new-window -n "diff:$(basename "$wt")" -c "$wt" "$S/claude-fleet.sh --diff-view '$wt' '$base'"
+}
+
+diff_view() {
+  local wt="$1" base="$2"
+  {
+    printf '\033[1m══ uncommitted ══\033[0m\n'
+    git -C "$wt" diff --color=always
+    git -C "$wt" diff --color=always --cached
+    if [ -n "$base" ]; then
+      printf '\n\033[1m══ commits ahead of %s ══\033[0m\n' "$base"
+      git -C "$wt" log --color=always --oneline "origin/$base..HEAD"
+      echo
+      git -C "$wt" diff --color=always "origin/$base...HEAD"
+    fi
+  } | less -R
+}
+
+sidebar_loop() {
+  local self="$S/claude-fleet.sh"
+  while :; do
+    FLEET_COMPACT=1 "$self" --rows | fzf \
+      --ansi --no-sort --cycle --layout=reverse --info=hidden --no-scrollbar \
+      --delimiter=$'\t' --with-nth=3 \
+      --prompt='fleet ' \
+      --header='enter go · F full · v diff · x stop · q close' \
+      --expect=q \
+      --bind="load:reload-sync(sleep 5; FLEET_COMPACT=1 '$self' --rows)" \
+      --bind="enter:execute-silent('$self' --goto {1})" \
+      --bind="F:execute-silent(tmux display-popup -E -w 96% -h 85% '$self --popup')" \
+      --bind="v:execute-silent('$self' --diff {1})" \
+      --bind="x:execute('$self' --interrupt {1})" \
+      --bind="ctrl-r:reload('$self' --refresh | FLEET_COMPACT=1 '$self' --rows)" \
+      --bind="esc:ignore" | grep -q '^q$' && return 0
+    sleep 0.2
+  done
+}
+
+stage_loop() {
+  local stage="$1" self="$S/claude-fleet.sh"
+  local SEL="${TMPDIR:-/tmp}/claude-agents-sel.$stage"
+  while :; do
+    "$self" --rows | fzf \
+      --ansi --no-sort --cycle --layout=reverse --info=inline \
+      --delimiter=$'\t' --with-nth=3 \
+      --prompt='fleet ❯ ' \
+      --footer='enter: go · tab: pin/unpin tile · ctrl-v: diff · ctrl-s: message · ctrl-x: interrupt · ctrl-a: all · :q / esc esc: quit · C-b: hide list' \
+      --preview="'$self' --preview {1}" \
+      --preview-window='down,55%,border-top,wrap' \
+      --bind="start:execute-silent(printf %s {1} > '$SEL')" \
+      --bind="focus:execute-silent(printf %s {1} > '$SEL')+refresh-preview" \
+      --bind="load:reload-sync(sleep 5; '$self' --rows)+refresh-preview" \
+      --bind="ctrl-r:reload('$self' --refresh)+refresh-preview" \
+      --bind="ctrl-a:execute-silent('$self' --toggle-all)+reload('$self' --rows)" \
+      --bind="enter:execute-silent('$S/claude-agents-enter.sh' {q} '' '$stage'; '$self' --goto {1})+abort" \
+      --bind="tab:execute-silent('$S/claude-agents-dock.sh' {1} '$stage')" \
+      --bind="ctrl-u:execute-silent('$S/claude-agents-dock.sh' --untile {1} '$stage')" \
+      --bind="ctrl-v:execute-silent('$self' --diff {1})" \
+      --bind="ctrl-s:execute('$S/claude-agents-send.sh' {1})+refresh-preview" \
+      --bind="ctrl-x:execute('$self' --interrupt {1})+refresh-preview" \
+      --bind="esc:execute-silent('$S/claude-agents-quit.sh' --tap '$stage')+abort"
+    sleep 0.2
+  done
+}
+
 toggle_all() { if [ -f "$SHOW_ALL_FLAG" ]; then rm -f "$SHOW_ALL_FLAG"; else touch "$SHOW_ALL_FLAG"; fi; }
 
 case "${1:-}" in
@@ -489,6 +583,10 @@ case "${1:-}" in
   --open-pr) open_pr "${2:-}" ;;
   --interrupt) interrupt "${2:-}" ;;
   --reap) reap "${2:-}" ;;
+  --diff) show_diff "${2:-}" ;;
+  --diff-view) diff_view "${2:-}" "${3:-}" ;;
+  --sidebar) sidebar_loop ;;
+  --stage) stage_loop "${2:-}" ;;
   --popup | "")
     self="$S/claude-fleet.sh"
     out="$("$self" --rows | fzf \
@@ -496,7 +594,7 @@ case "${1:-}" in
       --delimiter=$'\t' --with-nth=3 \
       --prompt='fleet ❯ ' \
       --header="$(printf '%-13s %-24s %-28s %-22s %s' NEXT WORKTREE PR SESSION 'TASK / LAST')" \
-      --footer='enter: go · ctrl-y: PR · ctrl-s: message · ctrl-x: interrupt · ctrl-d: reap · ctrl-a: all/active · ctrl-r: refetch · ctrl-f: agents · esc: quit' \
+      --footer='enter: go · ctrl-y: PR · ctrl-v: diff · ctrl-s: message · ctrl-x: interrupt · ctrl-d: reap · ctrl-a: all/active · ctrl-r: refetch · ctrl-f: agents · esc: quit' \
       --expect=ctrl-f \
       --preview="'$self' --preview {1}" \
       --preview-window='right,58%,border-left,wrap' \
@@ -506,6 +604,7 @@ case "${1:-}" in
       --bind="ctrl-a:execute-silent('$self' --toggle-all)+reload('$self' --rows)" \
       --bind="ctrl-/:toggle-preview" \
       --bind="ctrl-y:execute-silent('$self' --open-pr {1})" \
+      --bind="ctrl-v:execute-silent('$self' --diff {1})+abort" \
       --bind="ctrl-s:execute('$S/claude-agents-send.sh' {1})+refresh-preview" \
       --bind="ctrl-x:execute('$self' --interrupt {1})+refresh-preview" \
       --bind="ctrl-d:execute('$self' --reap {1})+reload('$self' --refresh)")"

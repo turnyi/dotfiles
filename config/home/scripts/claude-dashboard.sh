@@ -23,14 +23,18 @@ ensure_window() {
     return 0
   fi
   # stage pane first (right side); keep its id stable via respawn-pane
-  win="$(tmux new-window -d -P -F '#{window_id}' -t "$sess" -n agents "exec \${SHELL:-/bin/sh}")"
+  win="$(tmux new-window -d -P -F '#{window_id}' -t "$sess:" -n agents "exec \${SHELL:-/bin/sh}")"
+  # An empty id here would make every -t below resolve to the CURRENT pane, and
+  # respawn-pane -k would kill whatever the operator is looking at.
+  [ -n "$win" ] || return 1
   stage="$(tmux display -p -t "$win" '#{pane_id}')"
+  [ -n "$stage" ] || return 1
   : >"${TMPDIR:-/tmp}/claude-agents-tiles.$stage"
   : >"${TMPDIR:-/tmp}/claude-agents-sel.$stage"
   tmux respawn-pane -k -t "$stage" "$S/claude-agents-stage.sh $stage"
-  # list pane to the LEFT (38%), mission-control mode
+  # list pane to the LEFT (38%), mission-control mode: fleet rows with the card below
   list="$(tmux split-window -h -b -l 38% -P -F '#{pane_id}' -t "$stage" \
-    "$S/claude-agents.sh --loop --stage $stage")"
+    "$S/claude-fleet.sh --stage $stage")"
   tmux set-option -w -t "$win" @ac_stage "$stage"
   tmux set-option -w -t "$win" @ac_list "$list"
   tmux set-window-option -t "$win" main-pane-width 38%
