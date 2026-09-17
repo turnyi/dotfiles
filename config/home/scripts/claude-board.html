@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Board</title>
+<style>
+:root{--bg:#1e1e2e;--panel:#181825;--card:#24243a;--line:#313244;--fg:#cdd6f4;--muted:#7f849c;--mauve:#cba6f7;--red:#f38ba8;--peach:#fab387;--yellow:#f9e2af;--green:#a6e3a1;--blue:#89b4fa;--teal:#94e2d5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;align-items:center;gap:16px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:2}
+header h1{font-size:15px;font-weight:600;margin:0;letter-spacing:.02em}
+header .meta{color:var(--muted);font-size:12px;margin-left:auto;font-variant-numeric:tabular-nums}
+header button{background:transparent;border:1px solid var(--line);color:var(--fg);padding:4px 10px;border-radius:6px;cursor:pointer;font:inherit;font-size:12px}
+header button:hover{border-color:var(--mauve)}
+main{display:grid;grid-template-columns:repeat(4,minmax(280px,1fr));gap:14px;padding:16px 20px;min-height:calc(100vh - 50px);overflow-x:auto}
+.col{background:var(--panel);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.col h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin:2px 4px 0;color:var(--muted);display:flex;justify-content:space-between}
+.col h2 .n{font-variant-numeric:tabular-nums}
+.col[data-col="needs_you"] h2{color:var(--red)}
+.col[data-col="working"] h2{color:var(--blue)}
+.col[data-col="action"] h2{color:var(--peach)}
+.col[data-col="idle"] h2{color:var(--green)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.card.pulse{border-color:var(--red);box-shadow:0 0 0 1px var(--red) inset}
+.top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.name{font-weight:600;color:var(--yellow)}
+.loc{font-family:ui-monospace,monospace;font-size:12px;color:var(--muted)}
+.pill{font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill.next{color:var(--fg);border-color:var(--mauve)}
+.pill.state-working{color:var(--blue);border-color:var(--blue)}
+.pill.state-asking,.pill.state-blocked{color:var(--red);border-color:var(--red)}
+.pill.state-done{color:var(--green);border-color:var(--green)}
+.pill.eta{color:var(--teal);border-color:var(--teal)}
+.pill.pr{color:var(--peach);border-color:var(--peach)}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.why{color:var(--muted);font-size:12px}
+.branch{font-family:ui-monospace,monospace;font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green)}
+.task{font-size:12px}
+.task b{color:var(--blue);font-weight:500}
+.last{font-size:12.5px;white-space:pre-wrap;word-break:break-word;max-height:7.5em;overflow:hidden;position:relative}
+.last.open{max-height:none}
+.last:not(.open)::after{content:"";position:absolute;inset:auto 0 0 0;height:2em;background:linear-gradient(transparent,var(--card))}
+details{font-size:12px}
+summary{cursor:pointer;color:var(--muted);user-select:none}
+details ul{margin:6px 0 0;padding-left:16px}
+details li{margin:2px 0;word-break:break-word}
+.tasks li.completed{color:var(--muted);text-decoration:line-through}
+.tasks li.in_progress{color:var(--blue)}
+.actions li{font-family:ui-monospace,monospace;font-size:11px;color:var(--muted)}
+.actions li b{color:var(--fg);font-weight:500}
+.btns{display:flex;gap:6px;margin-top:2px}
+.btns button{background:var(--line);border:0;color:var(--fg);padding:5px 10px;border-radius:6px;cursor:pointer;font:inherit;font-size:12px}
+.btns button.go{background:var(--mauve);color:#1e1e2e;font-weight:600}
+.btns button:hover{filter:brightness(1.15)}
+pre.tail{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px;font-size:11px;max-height:300px;overflow:auto;white-space:pre-wrap;margin:0}
+.empty{color:var(--muted);font-size:12px;padding:6px 4px}
+@media (max-width:1200px){main{grid-template-columns:repeat(2,minmax(280px,1fr))}}
+@media (max-width:640px){main{grid-template-columns:1fr;padding:12px 16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Claude board</h1>
+  <button onclick="fetch('/api/refresh',{method:'POST'})">refresh</button>
+  <span class="meta" id="meta">loading…</span>
+</header>
+<main id="board">
+  <section class="col" data-col="needs_you"><h2>Needs you <span class="n"></span></h2><div class="cards"></div></section>
+  <section class="col" data-col="working"><h2>Working <span class="n"></span></h2><div class="cards"></div></section>
+  <section class="col" data-col="action"><h2>Your move <span class="n"></span></h2><div class="cards"></div></section>
+  <section class="col" data-col="idle"><h2>Done / idle <span class="n"></span></h2><div class="cards"></div></section>
+</main>
+<script>
+const open = new Set();
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ago = (epoch, now) => {
+  if (!epoch) return "";
+  const s = Math.max(0, now - Number(epoch));
+  if (s < 60) return s + "s";
+  if (s < 3600) return Math.floor(s / 60) + "m";
+  return Math.floor(s / 3600) + "h" + String(Math.floor(s % 3600 / 60)).padStart(2, "0") + "m";
+};
+const clock = iso => iso ? new Date(iso).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) : "";
+
+function taskBar(c) {
+  const list = c.tasks_list || [];
+  if (!list.length) return "";
+  const done = list.filter(t => t.status === "completed").length;
+  const pct = Math.round(done / list.length * 100);
+  const cur = list.find(t => t.status === "in_progress");
+  return `
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <div class="task">${done}/${list.length} done${cur ? ` · now: <b>${esc(cur.subject)}</b>` : ""}</div>
+    <details class="tasks"><summary>tasks</summary><ul>${list.map(t => `<li class="${esc(t.status)}">${esc(t.subject)}</li>`).join("")}</ul></details>`;
+}
+
+function card(c, now) {
+  const t = c.transcript || {};
+  const last = t.last_assistant || c.last || "";
+  const eta = t.eta;
+  const pane = c.pane || "";
+  const key = c.key;
+  const isOpen = open.has(key);
+  return `
+  <div class="card ${c.column === "needs_you" ? "pulse" : ""}" data-key="${esc(key)}">
+    <div class="top">
+      <span class="name">${esc(c.name)}</span>
+      ${c.loc ? `<span class="loc">${esc(c.loc)}</span>` : ""}
+      ${c.state ? `<span class="pill state-${esc(c.state)}">${esc(c.state)} ${ago(c.since, now)}</span>` : ""}
+      ${c.subs && c.subs !== "0" ? `<span class="pill">↳${esc(c.subs)} ${esc(c.sub_names)}</span>` : ""}
+    </div>
+    <div class="row">
+      <span class="pill next">${esc(c.next)}</span>
+      ${eta ? `<span class="pill eta">ETA ${esc(eta)}</span>` : ""}
+      ${c.pr && c.pr.n ? `<span class="pill pr">#${c.pr.n} ${esc(c.pr.state || "")}</span>` : ""}
+      ${c.why ? `<span class="why">${esc(c.why)}</span>` : ""}
+    </div>
+    ${c.branch ? `<div class="branch">${esc(c.branch)}${c.ahead && c.ahead !== "0" ? ` · +${esc(c.ahead)}` : ""}${c.dirty && c.dirty !== "0" ? ` · ${esc(c.dirty)} dirty` : ""}</div>` : ""}
+    ${taskBar(c)}
+    ${t.last_prompt ? `<details><summary>you asked</summary><div class="last open">${esc(t.last_prompt)}</div></details>` : ""}
+    ${last ? `<div class="last ${isOpen ? "open" : ""}" onclick="toggle('${esc(key)}')">${esc(last)}</div>` : ""}
+    ${t.last_ts ? `<div class="why">last activity ${clock(t.last_ts)}${t.tools_this_turn ? ` · ${t.tools_this_turn} tool calls this turn` : ""}</div>` : ""}
+    ${(c.actions || []).length ? `<details class="actions"><summary>recent actions</summary><ul>${c.actions.slice().reverse().map(a => `<li><b>${esc(a.tool)}</b> ${esc(a.detail)} <span>· ${ago(a.at, now)} ago</span></li>`).join("")}</ul></details>` : ""}
+    ${pane ? `<div class="btns"><button class="go" onclick="goto('${esc(pane)}')">go to pane</button><button onclick="tail(this,'${esc(pane)}')">peek</button></div>` : ""}
+  </div>`;
+}
+
+function toggle(key) { open.has(key) ? open.delete(key) : open.add(key); render(lastData); }
+function goto(pane) { fetch("/api/goto?pane=" + encodeURIComponent(pane), {method: "POST"}); }
+async function tail(btn, pane) {
+  const host = btn.closest(".card");
+  const existing = host.querySelector("pre.tail");
+  if (existing) { existing.remove(); return; }
+  const r = await fetch("/api/tail?pane=" + encodeURIComponent(pane));
+  const j = await r.json();
+  const pre = document.createElement("pre");
+  pre.className = "tail";
+  pre.textContent = j.tail.trimEnd();
+  host.appendChild(pre);
+}
+
+let lastData = null;
+function render(d) {
+  if (!d) return;
+  lastData = d;
+  for (const col of document.querySelectorAll(".col")) {
+    const name = col.dataset.col;
+    const cards = d.cards.filter(c => c.column === name);
+    col.querySelector(".n").textContent = cards.length;
+    col.querySelector(".cards").innerHTML = cards.length ? cards.map(c => card(c, d.now)).join("") : `<div class="empty">nothing here</div>`;
+  }
+  document.getElementById("meta").textContent = `${d.cards.length} agents · updated ${ago(d.generated, d.now)} ago`;
+  document.title = (d.cards.filter(c => c.column === "needs_you").length ? "● " : "") + "Claude board";
+}
+
+async function poll() {
+  try {
+    const r = await fetch("/api/board");
+    const peeks = new Set([...document.querySelectorAll(".card:has(pre.tail)")].map(e => e.dataset.key));
+    render(await r.json());
+    for (const k of peeks) { const b = document.querySelector(`.card[data-key="${CSS.escape(k)}"] .btns button:not(.go)`); if (b) b.click(); }
+  } catch (e) {
+    document.getElementById("meta").textContent = "server unreachable";
+  }
+}
+poll();
+setInterval(poll, 5000);
+</script>
+</body>
+</html>
