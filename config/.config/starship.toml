@@ -18,6 +18,12 @@ $character\
 palette = 'dracula'
 add_newline = true
 
+# Defaults are 30ms/500ms. A cold FS cache or a directory with many entries
+# blows past 30ms and starship prints "Scanning current directory timed out"
+# instead of rendering the language modules.
+scan_timeout = 100
+command_timeout = 1000
+
 [palettes.dracula]
 foreground = '#F8F8F2'
 background = '#282A36'

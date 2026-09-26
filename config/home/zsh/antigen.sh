@@ -26,7 +26,9 @@ antigen bundle zdharma-continuum/fast-syntax-highlighting
 antigen bundle hlissner/zsh-autopair
 # antigen bundle buonomo/yarn-completion
 antigen bundle lukechilds/zsh-better-npm-completion
-antigen bundle mattberther/zsh-pyenv
+# pyenv is initialised in ~/.zprofile. This bundle re-ran `pyenv init --path`,
+# `pyenv init -` and `pyenv virtualenv-init -` a second time (~170ms).
+# antigen bundle mattberther/zsh-pyenv
 antigen bundle greymd/docker-zsh-completion
 antigen bundle nekofar/zsh-pnpm
 antigen bundle g-plane/pnpm-shell-completion@main

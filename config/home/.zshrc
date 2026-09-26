@@ -1,5 +1,11 @@
 
 
+# The oh-my-zsh docker plugin regenerates its completion on every single start,
+# forking OrbStack's 72MB docker binary twice to do it. This zstyle takes the
+# plugin's cheap `cp`-a-bundled-file path instead; the block further down keeps
+# a current, natively generated _docker ahead of it in fpath.
+zstyle ':omz:plugins:docker' legacy-completion yes
+
 #install plugins
 source "$HOME/zsh/antigen_install.zsh"
 source "$HOME/zsh/antigen.sh"
@@ -73,9 +79,6 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
 # Switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
 
-# Add custom script stowed to ~/bin and ~/vntana_bin to path
-export PATH="$HOME/scripts:$PATH"
-
 # FD
 FD_OPTIONS="--follow --exclude .git --exclude node_modules"
 export FZF_DEFAULT_OPTS='--no-height'
@@ -89,17 +92,31 @@ export PATH="/usr/local/opt/ruby/bin:$PATH"
 # Bat
 export BAT_PAGER="less -R"
 
-# Add scripts to path
-export PATH="~/.dotfiles/scripts:$PATH"
-
 # Bun
 export PATH="$HOME/.bun/bin:$PATH"
 
-# Configure aws autocomplete
-export PATH=/Users/ignaciobarreto/.pyenv/shims/aws_completer:$PATH
+# Regenerate docker's own completion weekly in the background rather than every
+# shell. Written via a temp file so compinit never reads a half-finished one.
+() {
+  local dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/completions"
+  fpath=("$dir" $fpath)
+  [[ -n $dir/_docker(#qN.mh-168) ]] && return
+  (( $+commands[docker] )) || return
+  mkdir -p "$dir"
+  { docker completion zsh >| "$dir/_docker.new" 2>/dev/null &&
+      mv -f "$dir/_docker.new" "$dir/_docker" } &!
+}
+
 autoload bashcompinit && bashcompinit
-autoload -Uz compinit && compinit
-complete -C '/Users/ignaciobarreto/.pyenv/shims/aws_completer' aws
+# Rebuild the completion dump at most once a day; -C otherwise skips both the
+# compaudit security scan and the ~150ms compdump rewrite that oh-my-zsh's own
+# compinit already invalidates on every start.
+autoload -Uz compinit
+if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
 
 # Normal files to source
 source "$HOME/zsh/exports.zsh"
@@ -156,7 +173,41 @@ export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/centinel/dev-cli.json"
 # Must load LAST: exports.zsh and other blocks above re-prepend /opt/homebrew/bin,
 # which would shadow nvm's node with Homebrew's.
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
-# Activate the default version (24) up front so its bin dir is prepended ahead of
-# Homebrew's node. Without this, `node` stays on brew until you manually `nvm use`.
-nvm use default --silent 2>/dev/null
+
+# Sourcing nvm.sh and running `nvm use default` costs ~1.1s of the ~1.6s startup:
+# nvm.sh is 4k lines of POSIX shell and every alias lookup forks. All it
+# ultimately does here is prepend one bin dir, so do that by reading the alias
+# file, and defer nvm.sh itself until something actually calls `nvm`.
+() {
+  local target dir
+  local -a cands
+  [[ -r "$NVM_DIR/alias/default" ]] || return
+  target=$(<"$NVM_DIR/alias/default")
+  # default may point at another alias (lts/*, node) rather than a version.
+  [[ -r "$NVM_DIR/alias/$target" ]] && target=$(<"$NVM_DIR/alias/$target")
+  # Numeric glob sort, else v24.9.0 would sort above v24.18.0.
+  cands=("$NVM_DIR"/versions/node/v${target#v}*(Nn/))
+  (( $#cands )) || return
+  dir=$cands[-1]
+  export NVM_BIN="$dir/bin"
+  export PATH="$NVM_BIN:$PATH"
+}
+
+# First `nvm` call pays for the real thing. --no-use skips nvm_auto (~380ms),
+# which would only redo the PATH prepend above.
+nvm() {
+  unfunction nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use
+  nvm "$@"
+}
+
+# PATH hygiene, last word after every block above (and after /etc/zprofile's
+# path_helper, .zprofile, and orbstack have each had their turn). Without this
+# PATH carried 88 entries, 36 of them nonexistent and 25 duplicated: every
+# command lookup walked all of them and compinit scanned each one.
+# -U keeps the first occurrence, so precedence is preserved; the glob drops
+# entries that aren't directories. Both re-run each shell, so a directory
+# created later (cargo, go, an Android SDK) reappears on the next one.
+typeset -U path fpath
+path=($^path(N-/))
+fpath=($^fpath(N-/))
