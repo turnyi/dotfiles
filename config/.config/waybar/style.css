@@ -1,3 +1,4 @@
+@define-color black #181819;
 @define-color white #e2e2e3;
 @define-color red #fc5d7c;
 @define-color green #9ed072;
@@ -8,7 +9,6 @@
 @define-color grey #7f8490;
 @define-color chip-bg rgba(24, 24, 25, 0.9);
 @define-color chip-border #3b3a4a;
-@define-color accent #5a4f80;
 @define-color popup-bg rgba(44, 46, 52, 0.75);
 
 * {
@@ -68,7 +68,7 @@ tooltip label {
 }
 
 #workspaces button {
-  color: @white;
+  color: @grey;
   background: transparent;
   border: none;
   border-radius: 7px;
@@ -77,12 +77,12 @@ tooltip label {
 }
 
 #workspaces button.active {
-  color: @white;
-  background-color: @accent;
+  color: @black;
+  background-color: @blue;
 }
 
 #workspaces button:hover {
-  color: @blue;
+  color: @white;
   background-color: @chip-border;
 }
 
