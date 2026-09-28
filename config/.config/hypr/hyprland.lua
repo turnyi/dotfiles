@@ -56,10 +56,26 @@ hl.monitor({
   scale    = tab.scale,
 })
 
+local g9Layout = "lua:centermaster"
 hl.workspace_rule({
   workspace = "m[" .. g9 .. "]",
-  layout    = "lua:centermaster",
+  layout    = g9Layout,
 })
+
+-- At boot the G9's workspace is laid out before its description is known, and a
+-- workspace rule never re-evaluates an existing workspace; only a reload does.
+local g9Desc = g9:sub(#"desc:" + 1)
+hl.on("monitor.added", function(m)
+  if m.description:sub(1, #g9Desc) ~= g9Desc then return end
+  hl.timer(function()
+    for _, ws in ipairs(hl.get_workspaces()) do
+      if ws.monitor and ws.monitor.name == m.name and ws.tiled_layout ~= g9Layout then
+        hl.dispatch(hl.dsp.exec_cmd("hyprctl reload"))
+        return
+      end
+    end
+  end, { timeout = 500, type = "oneshot" })
+end)
 
 -------------------------------
 ---- ENVIRONMENT VARIABLES ----
