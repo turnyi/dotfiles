@@ -91,8 +91,9 @@ tooltip label {
 
 #custom-pad5120 {
   color: transparent;
-  padding-left: 700px;
-  padding-right: 700px;
+  font-size: 1px;
+  padding: 0;
+  min-width: 1284px;
 }
 
 #clock {
