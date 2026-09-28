@@ -46,11 +46,11 @@ MAX_AGE=300
 PAST_GRACE=3600
 mkdir -p "$RUN_DIR"
 
-DIM="#7f849c"
-TEXT="#cdd6f4"
-PEACH="#fab387"
-RED="#f38ba8"
-GREEN="#a6e3a1"
+DIM="#7f8490"
+TEXT="#e2e2e3"
+PEACH="#f39660"
+RED="#fc5d7c"
+GREEN="#9ed072"
 
 ICON_CAL=$'\U000f00ed'
 ICON_MEET=$'\U000f0919'

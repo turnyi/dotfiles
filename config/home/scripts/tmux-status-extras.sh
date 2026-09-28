@@ -13,23 +13,26 @@ set -uo pipefail
 # tmux) and piles up one orphan client per status-interval.
 run() { timeout 2 "$@"; }
 
-DIM="#7f849c"
-TEXT="#cdd6f4"
-BLUE="#89b4fa"
-PEACH="#fab387"
-RED="#f38ba8"
+DIM="#7f8490"
+TEXT="#e2e2e3"
+BLUE="#76cce0"
+PEACH="#f39660"
+RED="#fc5d7c"
+GREEN="#9ed072"
+MAGENTA="#b39df3"
 
 ICON_PF=$'\uf0ec'
 ICON_BELL=$'\U000f009a'
 ICON_BELL_OFF=$'\U000f009c'
-ICON_VOL_MUTE=$'\uf026'
-ICON_VOL_LOW=$'\uf027'
-ICON_VOL_HIGH=$'\uf028'
+ICON_VOL_MUTE=$'\U000f075f'
+ICON_VOL_LOW=$'\U000f0580'
+ICON_VOL_HIGH=$'\U000f057e'
 ICON_PLUG=$'\uf1e6'
 ICON_BAT=($'\uf244' $'\uf243' $'\uf242' $'\uf241' $'\uf240')
-ICON_WIFI=$'\U000f0922'
+ICON_WIFI=$'\U000f05a9'
+ICON_WIFI_OFF=$'\U000f05aa'
 ICON_ETH=$'\U000f0200'
-ICON_BT=$'\uf293'
+ICON_BT=$'\U000f00af'
 
 segments=()
 
@@ -40,7 +43,7 @@ port_forwards() {
     [ -n "$name" ] && [ "$status" = "on" ] && running=$((running + 1))
   done <<<"$(run "$pf" list 2>/dev/null)"
   if ((running > 0)); then
-    segments+=("#[fg=$BLUE]$ICON_PF $running")
+    segments+=("#[fg=$GREEN]$ICON_PF $running")
   else
     segments+=("#[fg=$DIM]$ICON_PF")
   fi
@@ -54,8 +57,10 @@ notifications() {
   dnd=$(run swaync-client -D 2>/dev/null) || dnd=false
   local glyph="$ICON_BELL"
   [ "$dnd" = "true" ] && glyph="$ICON_BELL_OFF"
-  if ((${count:-0} > 0)); then
-    segments+=("#[fg=$PEACH]$glyph $count")
+  if [ "$dnd" = "true" ]; then
+    segments+=("#[fg=$PEACH]$glyph")
+  elif ((${count:-0} > 0)); then
+    segments+=("#[fg=$RED]$glyph $count")
   else
     segments+=("#[fg=$DIM]$glyph")
   fi
@@ -70,9 +75,9 @@ volume() {
   if [[ "$out" == *MUTED* ]]; then
     segments+=("#[fg=$DIM]$ICON_VOL_MUTE")
   elif ((pct < 50)); then
-    segments+=("#[fg=$TEXT]$ICON_VOL_LOW $pct%")
+    segments+=("#[fg=$MAGENTA]$ICON_VOL_LOW $pct%")
   else
-    segments+=("#[fg=$TEXT]$ICON_VOL_HIGH $pct%")
+    segments+=("#[fg=$MAGENTA]$ICON_VOL_HIGH $pct%")
   fi
 }
 
@@ -97,13 +102,13 @@ battery() {
     icon="${ICON_BAT[4]}"
   fi
   if ((percent < 15)); then
-    color="#FF5555"
+    color="#fc5d7c"
   elif ((percent < 40)); then
-    color="#F1C40F"
+    color="#e7c664"
   elif ((percent < 75)); then
-    color="#8AC926"
+    color="#9ed072"
   else
-    color="#00CCFF"
+    color="#76cce0"
   fi
   case "$state" in charging | fully-charged) icon="$ICON_PLUG" ;; esac
   segments+=("#[fg=$color]$percent% $icon")
@@ -118,7 +123,7 @@ network() {
   elif grep -qx 'ethernet:connected' <<<"$devices"; then
     segments+=("#[fg=$TEXT]$ICON_ETH")
   else
-    segments+=("#[fg=$RED]$ICON_WIFI")
+    segments+=("#[fg=$RED]$ICON_WIFI_OFF")
   fi
 }
 

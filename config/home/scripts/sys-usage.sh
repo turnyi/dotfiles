@@ -10,11 +10,11 @@ set -euo pipefail
 STATE_FILE="${XDG_RUNTIME_DIR:-/tmp}/tmux-sys-usage-cpu.state"
 
 # Catppuccin Mocha thresholds.
-COLOR_OK="#a6e3a1"   # green
-COLOR_WARN="#f9e2af" # yellow
-COLOR_HIGH="#f38ba8" # red
-ICON_CPU="󰻠"
-ICON_RAM="󰍛"
+COLOR_OK="#9ed072"   # green
+COLOR_WARN="#e7c664" # yellow
+COLOR_HIGH="#fc5d7c" # red
+ICON_CPU="󰍛"
+ICON_RAM="󰘚"
 
 cpu_snapshot() {
   # Print "total idle" jiffies from the aggregate cpu line of /proc/stat.
@@ -60,10 +60,10 @@ fi
 # ram_pct drives the color; used/total (in GiB, one decimal) is what we show.
 read -r ram_pct ram_used ram_total < <(
   awk '/^MemTotal:/ {t = $2} /^MemAvailable:/ {a = $2}
-       END { printf "%d %.1f %.1f\n", (100 * (t - a)) / t, (t - a) / 1048576, t / 1048576 }' \
+       END { printf "%d %d %d\n", (100 * (t - a)) / t, (t - a) / 1048576, t / 1048576 }' \
     /proc/meminfo
 )
 
-printf '#[fg=%s]%s %3d%%#[fg=default]  #[fg=%s]%s %s/%sG#[fg=default]' \
+printf '#[fg=%s]%s %3d%%#[fg=default]  #[fg=%s]%s %s/%s GB#[fg=default]' \
   "$(pct_color "$cpu")" "$ICON_CPU" "$cpu" \
   "$(pct_color "$ram_pct")" "$ICON_RAM" "$ram_used" "$ram_total"

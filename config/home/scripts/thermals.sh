@@ -66,11 +66,11 @@ board_fans() {
 }
 
 segment() {
-  declare -A C=([ok]="#a6e3a1" [warn]="#f9e2af" [high]="#f38ba8")
+  declare -A C=([ok]="#9ed072" [warn]="#e7c664" [high]="#fc5d7c")
   local out=()
   [[ -n $CPU_TEMP ]] && out+=("#[fg=${C[$(temp_level "$CPU_TEMP")]}]󰔏 ${CPU_TEMP}°")
   [[ -n ${GPU_TEMP:-} ]] && out+=("#[fg=${C[$(temp_level "$GPU_TEMP")]}]󰢮 ${GPU_TEMP}°")
-  [[ ${GPU_FAN:-} =~ ^[0-9]+$ ]] && out+=("#[fg=#7f849c]󰈐 ${GPU_FAN}%")
+  [[ ${GPU_FAN:-} =~ ^[0-9]+$ ]] && out+=("#[fg=#7f8490]󰈐 ${GPU_FAN}%")
   local IFS=' '
   ((${#out[@]})) && printf '%s#[fg=default]' "${out[*]}"
 }

@@ -48,15 +48,15 @@ blocked=$((blocked + bg))
 [ $((blocked + asking + working + idle)) -eq 0 ] && exit 0
 
 out=""
-[ "$blocked" -gt 0 ] && out="$out#[fg=#f38ba8,bold]! $blocked#[fg=default,nobold]  "
-[ "$asking" -gt 0 ]  && out="$out#[fg=#cba6f7,bold]? $asking#[fg=default,nobold]  "
-[ "$working" -gt 0 ] && out="$out#[fg=#89dceb]● $working#[fg=default]  "
-[ "$idle" -gt 0 ]    && out="$out#[fg=#a6e3a1]✓ $idle#[fg=default]  "
-[ "$subs" -gt 0 ]    && out="$out#[fg=#fab387]↳ $subs#[fg=default]  "
+[ "$blocked" -gt 0 ] && out="$out#[fg=#fc5d7c,bold]! $blocked#[fg=default,nobold]  "
+[ "$asking" -gt 0 ]  && out="$out#[fg=#b39df3,bold]? $asking#[fg=default,nobold]  "
+[ "$working" -gt 0 ] && out="$out#[fg=#76cce0]● $working#[fg=default]  "
+[ "$idle" -gt 0 ]    && out="$out#[fg=#9ed072]✓ $idle#[fg=default]  "
+[ "$subs" -gt 0 ]    && out="$out#[fg=#f39660]↳ $subs#[fg=default]  "
 
 slots="$("$S/centinel-slots.sh" --summary 2>/dev/null)"
 if [ -n "$slots" ] && [ "${slots%%/*}" -gt 0 ]; then
-  out="$out#[fg=#f9e2af]⧉ $slots#[fg=default]  "
+  out="$out#[fg=#e7c664]⧉ $slots#[fg=default]  "
 fi
 
 printf '%s' "$out"
