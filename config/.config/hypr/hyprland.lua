@@ -208,6 +208,18 @@ hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("killall waybar || waybar"), { releas
 hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("bash ~/scripts/tablet-screen.sh toggle"))
 hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("systemctl suspend & hyprlock"))
 
+local function toggle_layout()
+  local ws = hl.get_active_workspace()
+  if not ws then return end
+  local onG9 = ws.monitor and ws.monitor.description:sub(1, #g9Desc) == g9Desc
+  local masterLayout = onG9 and g9Layout or "master"
+  hl.workspace_rule({
+    workspace = tostring(ws.id),
+    layout    = ws.tiled_layout == "dwindle" and masterLayout or "dwindle",
+  })
+end
+hl.bind(mainMod .. " + SHIFT + Y", toggle_layout)
+
 for key, dir in pairs({ left = "left", right = "right", up = "up", down = "down",
                         h = "left", l = "right", k = "up", j = "down" }) do
   hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ direction = dir }))
