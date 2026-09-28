@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Get memory info
-MEM_INFO=$(free -h | awk 'NR==2{gsub(/Gi/, "GB", $3); gsub(/Gi/, "GB", $2); print $3"/"$2}')
+MEM_USED=$(free -g | awk 'NR==2{print $3}')
+MEM_TOTAL=$(free -g | awk 'NR==2{print $2}')
 MEM_PERCENT=$(free | awk 'NR==2{printf "%.0f", $3*100/$2}')
 
 # Get top 10 memory consuming processes with memory in GB
@@ -24,10 +25,10 @@ else
 fi
 
 # Format display text
-TEXT="󰘚  $MEM_INFO"
+TEXT="󰘚  <sup>${MEM_USED}</sup>⁄<sub>${MEM_TOTAL}</sub> GB"
 
 # Create tooltip with top processes
-TOOLTIP="Memory Usage: ${MEM_PERCENT}%\\n\\nTop Memory Consumers:\\n${TOP_PROCS}"
+TOOLTIP="Memory Usage: ${MEM_USED}/${MEM_TOTAL} GB (${MEM_PERCENT}%)\\n\\nTop Memory Consumers:\\n${TOP_PROCS}"
 
 # Output JSON for waybar
 echo "{\"text\": \"$TEXT\", \"tooltip\": \"$TOOLTIP\", \"class\": \"$CLASS\"}"
