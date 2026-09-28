@@ -2,7 +2,7 @@
 
 # Check if LM Studio is running
 if ! pgrep -f "lm-studio" > /dev/null; then
-  echo '{"text": "🧠 No LLM", "tooltip": "LM Studio not running", "class": "inactive"}'
+  echo '{"text": "󰧑 No LLM", "tooltip": "LM Studio not running", "class": "inactive"}'
   exit 0
 fi
 
@@ -10,7 +10,7 @@ fi
 GPU_INFO=$(nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits 2>/dev/null)
 
 if [[ -z "$GPU_INFO" ]]; then
-  echo '{"text": "🧠 LLM ❌GPU", "tooltip": "LM Studio running but GPU info unavailable", "class": "warning"}'
+  echo '{"text": "󰧑 LLM no GPU", "tooltip": "LM Studio running but GPU info unavailable", "class": "warning"}'
   exit 0
 fi
 
@@ -50,9 +50,9 @@ fi
 
 # Format display text
 if [[ -n "$CURRENT_MODEL" ]]; then
-  TEXT="🧠 $CURRENT_MODEL 🖥️ ${GPU_MEM_USED_GB}/${GPU_MEM_TOTAL_GB}GB"
+  TEXT="󰧑 $CURRENT_MODEL 󰢮 ${GPU_MEM_USED_GB}/${GPU_MEM_TOTAL_GB}GB"
 else
-  TEXT="🧠 LLM 🖥️ ${GPU_MEM_USED_GB}/${GPU_MEM_TOTAL_GB}GB"
+  TEXT="󰧑 LLM 󰢮 ${GPU_MEM_USED_GB}/${GPU_MEM_TOTAL_GB}GB"
 fi
 
 # Create tooltip

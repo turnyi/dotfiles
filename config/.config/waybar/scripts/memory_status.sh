@@ -24,7 +24,7 @@ else
 fi
 
 # Format display text
-TEXT="💾 $MEM_INFO"
+TEXT="󰘚  $MEM_INFO"
 
 # Create tooltip with top processes
 TOOLTIP="Memory Usage: ${MEM_PERCENT}%\\n\\nTop Memory Consumers:\\n${TOP_PROCS}"

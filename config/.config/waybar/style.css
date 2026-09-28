@@ -6,14 +6,16 @@
 @define-color orange #f39660;
 @define-color magenta #b39df3;
 @define-color grey #7f8490;
-@define-color chip-bg rgba(58, 47, 85, 0.88);
-@define-color chip-border #7361a6;
+@define-color chip-bg rgba(24, 24, 25, 0.9);
+@define-color chip-border #3b3a4a;
+@define-color accent #5a4f80;
 @define-color popup-bg rgba(44, 46, 52, 0.75);
 
 * {
-  font-family: JetbrainsMono Nerd Font;
+  font-family: "Adwaita Sans", "JetBrainsMono Nerd Font";
+  font-feature-settings: "tnum";
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   min-height: 0;
 }
 
@@ -76,12 +78,12 @@ tooltip label {
 
 #workspaces button.active {
   color: @white;
-  background-color: @chip-border;
+  background-color: @accent;
 }
 
 #workspaces button:hover {
   color: @blue;
-  background-color: rgba(115, 97, 166, 0.4);
+  background-color: @chip-border;
 }
 
 #workspaces button.urgent {

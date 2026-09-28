@@ -1,21 +1,21 @@
 #!/bin/bash
 
 if ! pgrep -f "ollama serve" > /dev/null 2>&1; then
-  echo '{"text": "🤖 No Ollama", "tooltip": "Ollama not running", "class": "inactive"}'
+  echo '{"text": "󱙺 No Ollama", "tooltip": "Ollama not running", "class": "inactive"}'
   exit 0
 fi
 
 RUNNING=$(curl -s http://localhost:11434/api/ps 2>/dev/null)
 
 if [[ -z "$RUNNING" ]] || [[ "$RUNNING" == "{}" ]]; then
-  echo '{"text": "🤖 Ollama Idle", "tooltip": "Ollama running but no model loaded", "class": "idle"}'
+  echo '{"text": "󱙺 Ollama Idle", "tooltip": "Ollama running but no model loaded", "class": "idle"}'
   exit 0
 fi
 
 MODELS=$(echo "$RUNNING" | jq -r '.models[]?.name // ""' 2>/dev/null)
 
 if [[ -z "$MODELS" ]] || [[ "$MODELS" == "null" ]]; then
-  echo '{"text": "🤖 Ollama Idle", "tooltip": "Ollama running but no model loaded", "class": "idle"}'
+  echo '{"text": "󱙺 Ollama Idle", "tooltip": "Ollama running but no model loaded", "class": "idle"}'
   exit 0
 fi
 
@@ -34,7 +34,7 @@ if [[ -n "$GPU_INFO" ]]; then
   GPU_MEM_TOTAL=$(echo "$GPU_MEM_TOTAL" | xargs)
   GPU_MEM_USED_GB=$(awk "BEGIN {printf \"%.1f\", $GPU_MEM_USED/1024}")
   GPU_MEM_TOTAL_GB=$(awk "BEGIN {printf \"%.1f\", $GPU_MEM_TOTAL/1024}")
-  GPU_TEXT=" 🖥️ ${GPU_MEM_USED_GB}/${GPU_MEM_TOTAL_GB}GB"
+  GPU_TEXT=" 󰢮 ${GPU_MEM_USED_GB}/${GPU_MEM_TOTAL_GB}GB"
 else
   GPU_TEXT=""
   GPU_UTIL=0
@@ -48,7 +48,7 @@ else
   CLASS="low"
 fi
 
-TEXT="🤖 $MODEL_SHORT$GPU_TEXT"
+TEXT="󱙺 $MODEL_SHORT$GPU_TEXT"
 TOOLTIP="Model: $MODEL\\nVRAM: ${SIZE_VRAM_GB}GB\\nGPU Util: ${GPU_UTIL}%\\nGPU Memory: ${GPU_MEM_USED_GB}GB / ${GPU_MEM_TOTAL_GB}GB"
 
 echo "{\"text\": \"$TEXT\", \"tooltip\": \"$TOOLTIP\", \"class\": \"$CLASS\"}"

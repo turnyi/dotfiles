@@ -45,7 +45,7 @@ jq -cn --argjson count "${count:-0}" --arg dnd "$dnd" \
   ($dnd == "true") as $is_dnd |
   (if $is_dnd then $bell_off else $bell end) as $glyph |
   {
-    text: (if $count > 0 then "\($glyph) \($count)" else $glyph end),
+    text: (if $count > 0 then "\($glyph)  \($count)" else $glyph end),
     tooltip: (
       (if $count == 0 then "No notifications"
        elif $count == 1 then "1 notification"

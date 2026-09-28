@@ -11,4 +11,4 @@ else
 fi
 
 # Output JSON for Waybar
-echo "{\"text\": \"\", \"tooltip\": \"$TOOLTIP\"}"
+echo "{\"text\": \"󰂯\", \"tooltip\": \"$TOOLTIP\"}"
