@@ -1,6 +1,7 @@
 {
   "layer": "top",
   "position": "top",
+  "height": 32,
   "modules-left": [
     "custom/pad5120",
     "custom/stream_status",

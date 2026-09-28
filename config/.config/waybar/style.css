@@ -1,208 +1,179 @@
+@define-color white #e2e2e3;
+@define-color red #fc5d7c;
+@define-color green #9ed072;
+@define-color blue #76cce0;
+@define-color yellow #e7c664;
+@define-color orange #f39660;
+@define-color magenta #b39df3;
+@define-color grey #7f8490;
+@define-color chip-bg rgba(58, 47, 85, 0.88);
+@define-color chip-border #7361a6;
+@define-color popup-bg rgba(44, 46, 52, 0.75);
+
 * {
   font-family: JetbrainsMono Nerd Font;
-  font-size: 20px;
+  font-size: 14px;
+  font-weight: 600;
   min-height: 0;
-  padding-right: 2px;
-  padding-left: 2px;
-  padding-bottom: 0px;
 }
 
 #waybar {
   background: transparent;
-  color: #c6d0f5;
-  margin: 2px 2px;
-  background-color: rgba(30, 30, 46, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: none;
+  color: @white;
 }
 
-#workspaces {
-  border-radius: 5px;
-  margin: 5px;
-  margin-left: 1rem;
+tooltip {
+  background-color: @popup-bg;
+  border: 2px solid @grey;
+  border-radius: 9px;
 }
 
-#workspaces button {
-  color: #babbf1;
-  border-radius: 5px;
-  padding: 0.4rem;
+tooltip label {
+  color: @white;
+  font-size: 13px;
 }
 
-#workspaces button.active {
-  color: #99d1db;
-  border-radius: 5px;
-}
-
-#workspaces button:hover {
-  color: #85c1dc;
-  border-radius: 5px;
-}
-
+#workspaces,
+#custom-stream_status,
 #custom-music,
 #tray,
 #backlight,
 #clock,
 #battery,
+#custom-battery,
 #pulseaudio,
 #network,
 #cpu,
 #memory,
+#custom-memory,
 #custom-lock,
 #custom-bluetooth,
 #custom-power,
 #custom-port_forwards,
 #custom-notifications,
-#custom-lms_status {
-  padding: 0.5rem 1rem;
-  margin: 5px 0;
-  margin-left: 1rem;
-  border-radius: 5px;
+#custom-lms_status,
+#custom-ollama_status {
+  background-color: @chip-bg;
+  border: 2px solid @chip-border;
+  border-radius: 9px;
+  padding: 0 10px;
+  margin: 2px 5px;
 }
 
-#custom-stream_status {
-  padding: 0.5rem 1rem;
-  margin: 5px 0;
-  border-radius: 5px;
+#workspaces {
+  padding: 0;
 }
 
-#custom-stream_status.up {
-  color: #c3e88d;
+#workspaces button {
+  color: @white;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  box-shadow: none;
+  padding: 0 8px;
 }
 
-#custom-stream_status.warning {
-  color: #ff9e64;
+#workspaces button.active {
+  color: @white;
+  background-color: @chip-border;
 }
 
-#custom-stream_status.down {
-  color: #ea999c;
+#workspaces button:hover {
+  color: @blue;
+  background-color: rgba(115, 97, 166, 0.4);
 }
 
-#memory {
-  border-radius: 5px;
-}
-
-#clock {
-  color: #8caaee;
-  border-radius: 5px;
-  margin-right: 1rem;
-}
-
-#battery {
-  color: #a6d189;
-}
-
-#battery.charging {
-  color: #a6d189;
-}
-
-#battery.warning:not(.charging) {
-  color: #e78284;
-}
-
-#backlight {
-  color: #e5c890;
-}
-
-#backlight,
-#battery {
-  border-radius: 5px;
-}
-
-#pulseaudio {
-  color: #ea999c;
-  border-radius: 5px;
-}
-
-#custom-music {
-  color: #ca9ee6;
-  border-radius: 5px;
-}
-
-#custom-lock {
-  border-radius: 5px;
-  color: #babbf1;
-}
-
-#custom-power {
-  margin-right: 1rem;
-  border-radius: 5px;
-  color: #e78284;
-}
-
-#tray {
-  margin-right: 1rem;
-  margin-left: 1rem;
-  border-radius: 5px;
+#workspaces button.urgent {
+  color: @red;
 }
 
 #custom-pad5120 {
-  color: rgba(30, 30, 46, 0.4);
-  padding-left: 700;
-  padding-right: 700;
+  color: transparent;
+  padding-left: 700px;
+  padding-right: 700px;
 }
 
-#custom-lms_status.high {
-  color: #e78284;
+#clock {
+  color: @blue;
 }
 
-#custom-lms_status.medium {
-  color: #e5c890;
+#pulseaudio,
+#custom-music {
+  color: @magenta;
 }
 
+#backlight {
+  color: @yellow;
+}
+
+#custom-power {
+  color: @red;
+}
+
+#battery,
+#custom-battery {
+  color: @green;
+}
+
+#battery.warning:not(.charging) {
+  color: @red;
+}
+
+#custom-stream_status.up {
+  color: @green;
+}
+
+#custom-stream_status.warning {
+  color: @orange;
+}
+
+#custom-stream_status.down {
+  color: @red;
+}
+
+#cpu,
+#memory,
+#custom-memory,
 #custom-lms_status.low {
-  color: #a6d189;
+  color: @green;
+}
+
+#cpu.medium,
+#memory.medium,
+#custom-memory.medium,
+#custom-lms_status.medium {
+  color: @yellow;
+}
+
+#cpu.high,
+#memory.high,
+#custom-memory.high,
+#custom-lms_status.high {
+  color: @red;
 }
 
 #custom-lms_status.inactive {
-  color: #6c7086;
+  color: @grey;
 }
 
 #custom-lms_status.warning {
-  color: #ef9f76;
+  color: @orange;
 }
 
-#cpu.high {
-  color: #e78284;
-}
-
-#cpu.medium {
-  color: #e5c890;
-}
-
-#cpu:not(.high):not(.medium) {
-  color: #a6d189;
-}
-
-#memory.high {
-  color: #e78284;
-}
-
-#memory.medium {
-  color: #e5c890;
-}
-
-#memory:not(.high):not(.medium) {
-  color: #a6d189;
-}
-
-/* ⇄ port forwards — green while any tunnel is up, dim otherwise (mirrors the
-   sketchybar item's grey/green icon states). */
 #custom-port_forwards.active {
-  color: #a6d189;
+  color: @green;
 }
 
-#custom-port_forwards.idle {
-  color: #a5adce;
-}
-
-/* 🔔 notifications — red with a pending count, dim when clear, amber on DND. */
-#custom-notifications.active {
-  color: #e78284;
-}
-
+#custom-port_forwards.idle,
 #custom-notifications.idle {
-  color: #a5adce;
+  color: @grey;
+}
+
+#custom-notifications.active {
+  color: @red;
 }
 
 #custom-notifications.dnd {
-  color: #ef9f76;
+  color: @orange;
 }
