@@ -210,14 +210,47 @@ hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("bash ~/scripts/tablet-screen
 hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("systemctl suspend & hyprlock"))
 
 local overview = "~/scripts/hypr-overview.sh"
--- Hyprland may match a lone Super_L with or without the SUPER mask, so both
--- spellings are bound; the script ignores the duplicate call.
-for _, key in ipairs({ "Super_L", mainMod .. " + Super_L" }) do
-  hl.bind(key, hl.dsp.exec_cmd(overview .. " show"), { long_press = true, non_consuming = true })
-  hl.bind(key, hl.dsp.exec_cmd(overview .. " hide"), { release = true, non_consuming = true })
+local overviewDelayMs = 400
+-- xkb keycodes (evdev + 8), as input.keyboard.key reports them.
+local superKeys = { [133] = true, [134] = true }
+local heldKeys = {}
+local overviewPress = 0
+local overviewOpen = false
+
+local function hideOverview()
+  overviewPress = overviewPress + 1
+  if not overviewOpen then return end
+  overviewOpen = false
+  hl.exec_cmd(overview .. " hide")
 end
+
+local function onlySuperHeld()
+  for keycode in pairs(heldKeys) do
+    if not superKeys[keycode] then return false end
+  end
+  return true
+end
+
+hl.on("input.keyboard.key", function(keycode, _, state)
+  local pressed = state == 1
+  heldKeys[keycode] = pressed or nil
+  if pressed and superKeys[keycode] and onlySuperHeld() then
+    overviewPress = overviewPress + 1
+    local press = overviewPress
+    hl.timer(function()
+      if press ~= overviewPress then return end
+      overviewOpen = true
+      hl.exec_cmd(overview .. " show")
+    end, { timeout = overviewDelayMs, type = "oneshot" })
+  elseif pressed or superKeys[keycode] then
+    hideOverview()
+  end
+end)
+
 for _, event in ipairs({ "workspace.active", "window.active", "window.open", "window.close", "window.move_to_workspace" }) do
-  hl.on(event, function() hl.exec_cmd(overview .. " refresh") end)
+  hl.on(event, function()
+    if overviewOpen then hl.exec_cmd(overview .. " refresh") end
+  end)
 end
 
 hl.layer_rule({
