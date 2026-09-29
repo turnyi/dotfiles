@@ -12,9 +12,12 @@ case "${1:-}" in
   show)
     [ -e "$STATE" ] && exit 0
     touch "$STATE"
+    trap 'rm -f "$STATE"' ERR
     push_data
-    monitor=$(hyprctl -j monitors | jq -r '.[] | select(.focused) | .name')
-    "${EWW[@]}" open overview --screen "$monitor"
+    # eww 0.5 addresses monitors by model, not connector; the index is the
+    # fallback for outputs without one (the tablet's virtual display).
+    screen=$(hyprctl -j monitors | jq -r '.[] | select(.focused) | if .model != "" then .model else (.id | tostring) end')
+    "${EWW[@]}" open overview --screen "$screen"
     [ -e "$STATE" ] || "${EWW[@]}" close overview >/dev/null 2>&1 || true
     ;;
   hide)
