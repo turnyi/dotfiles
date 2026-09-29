@@ -38,6 +38,7 @@ tooltip label {
 #workspaces,
 #custom-stream_status,
 #custom-music,
+#custom-calendar,
 #tray,
 #backlight,
 #clock,
@@ -174,6 +175,19 @@ tooltip label {
 
 #custom-notifications.active {
   color: @red;
+}
+
+#custom-calendar.soon {
+  color: @orange;
+}
+
+#custom-calendar.imminent,
+#custom-calendar.error {
+  color: @red;
+}
+
+#custom-calendar.now {
+  color: @green;
 }
 
 #custom-notifications.dnd {

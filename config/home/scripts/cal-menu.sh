@@ -8,6 +8,8 @@
 #                        once it is 30 min away, with a countdown (reads the
 #                        cache only; kicks a detached refresh when the cache
 #                        is older than 5 min)
+#   cal-menu --waybar    the same meeting as waybar JSON (empty when none)
+#   cal-menu --join      open the link of the meeting the bar is showing
 #   cal-menu --popup     mission control: this week's agenda in a centered
 #                        tmux popup — j/k move, enter opens the meeting link,
 #                        y copies it, g/n RSVP going / not going, i shows the
@@ -216,31 +218,81 @@ events() {
     END { for (i = 1; i <= n; i++) print best[ord[i]] }' "$AGENDA"
 }
 
+# Prints "state<TAB>countdown<TAB>title<TAB>url" for the ongoing meeting, or the
+# next one once it is within LOOKAHEAD; prints nothing otherwise.
+upcoming() {
+  local now s e allday url acct cal evid title
+  now=$(date +%s)
+  while IFS=$'\t' read -r s e allday url acct cal evid title; do
+    ((allday)) && continue
+    ((e <= now)) && continue
+    ((s > now + LOOKAHEAD)) && return 0
+    local mins=$(((s - now + 59) / 60))
+    if ((s <= now)); then
+      printf 'now\tnow\t%s\t%s\n' "$title" "$url"
+    elif ((mins <= 5)); then
+      printf 'imminent\t%sm\t%s\t%s\n' "$mins" "$title" "$url"
+    else
+      printf 'soon\t%sm\t%s\t%s\n' "$mins" "$title" "$url"
+    fi
+    return 0
+  done < <(events | sort -t $'\t' -k1,1n)
+}
+
 segment() {
   refresh_bg_if_stale
   if [ ! -s "$AGENDA" ]; then
     [ -f "$ERR_FLAG" ] && printf '#[fg=%s]%s auth  ' "$RED" "$ICON_CAL"
     return 0
   fi
-  local now line s e allday url acct cal evid title
-  now=$(date +%s)
-  while IFS=$'\t' read -r s e allday url acct cal evid title; do
-    ((allday)) && continue
-    ((e <= now)) && continue
-    ((s > now + LOOKAHEAD)) && break
-    local mins=$(((s - now + 59) / 60)) color when
-    if ((s <= now)); then
-      color=$GREEN; when="now"
-    elif ((mins <= 5)); then
-      color=$RED; when="${mins}m"
-    else
-      color=$PEACH; when="${mins}m"
-    fi
-    ((${#title} > 24)) && title="${title:0:23}…"
-    printf '#[fg=%s]%s %s %s#[fg=default]  ' "$color" "$ICON_MEET" "$title" "$when"
+  local state when title color
+  IFS=$'\t' read -r state when title _ <<<"$(upcoming)"
+  if [ -z "$state" ]; then
+    printf '#[fg=%s]%s#[fg=default]  ' "$DIM" "$ICON_FREE"
     return 0
-  done < <(events)
-  printf '#[fg=%s]%s#[fg=default]  ' "$DIM" "$ICON_FREE"
+  fi
+  case "$state" in
+    now) color=$GREEN ;;
+    imminent) color=$RED ;;
+    *) color=$PEACH ;;
+  esac
+  ((${#title} > 24)) && title="${title:0:23}…"
+  printf '#[fg=%s]%s %s %s#[fg=default]  ' "$color" "$ICON_MEET" "$title" "$when"
+}
+
+waybar_segment() {
+  refresh_bg_if_stale
+  if [ ! -s "$AGENDA" ]; then
+    if [ -f "$ERR_FLAG" ]; then
+      jq -cn --arg t "$ICON_CAL auth" \
+        '{text: $t, tooltip: "calendar fetch failed", class: "error"}'
+    else
+      jq -cn '{text: ""}'
+    fi
+    return 0
+  fi
+  local state when title url short
+  IFS=$'\t' read -r state when title url <<<"$(upcoming)"
+  if [ -z "$state" ]; then
+    jq -cn '{text: ""}'
+    return 0
+  fi
+  short=$title
+  ((${#short} > 32)) && short="${short:0:31}…"
+  jq -cn --arg icon "$ICON_MEET" --arg short "$short" --arg title "$title" \
+    --arg when "$when" --arg state "$state" --arg url "$url" '
+    def markup: gsub("&"; "&amp;") | gsub("<"; "&lt;") | gsub(">"; "&gt;");
+    {
+      text: "\($icon)  \($short | markup)  \($when)",
+      tooltip: (($title | markup) + (if $url != "" and $url != "-" then "\n\nclick: join" else "" end)),
+      class: $state
+    }'
+}
+
+join() {
+  local url
+  IFS=$'\t' read -r _ _ _ url <<<"$(upcoming)"
+  go "$url"
 }
 
 feed() {
@@ -392,6 +444,8 @@ menu() {
 
 case "${1:-menu}" in
   --segment)   segment ;;
+  --waybar)    waybar_segment ;;
+  --join)      join ;;
   --refresh)   refresh ;;
   --auth)      auth "${2:-}" ;;
   --list)      feed ;;

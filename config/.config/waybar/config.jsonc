@@ -13,6 +13,7 @@
     "custom/memory"
   ],
   "modules-right": [
+    "custom/calendar",
     "custom/music",
     "custom/port_forwards",
     "custom/notifications",
@@ -136,6 +137,14 @@
     "format": "{}",
     "on-click": "~/scripts/pf-menu.sh --float",
     "on-click-right": "~/scripts/pf-ctl.sh stop-all"
+  },
+  "custom/calendar": {
+    "exec": "~/scripts/cal-menu.sh --waybar",
+    "interval": 15,
+    "return-type": "json",
+    "tooltip": true,
+    "format": "{}",
+    "on-click": "~/scripts/cal-menu.sh --join"
   },
   "custom/music": {
     "exec": "~/scripts/now-playing.sh 40",
