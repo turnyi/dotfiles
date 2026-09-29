@@ -209,6 +209,25 @@ hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("killall waybar || waybar"), { releas
 hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("bash ~/scripts/tablet-screen.sh toggle"))
 hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("systemctl suspend & hyprlock"))
 
+local overview = "~/scripts/hypr-overview.sh"
+-- Hyprland may match a lone Super_L with or without the SUPER mask, so both
+-- spellings are bound; the script ignores the duplicate call.
+for _, key in ipairs({ "Super_L", mainMod .. " + Super_L" }) do
+  hl.bind(key, hl.dsp.exec_cmd(overview .. " show"), { long_press = true, non_consuming = true })
+  hl.bind(key, hl.dsp.exec_cmd(overview .. " hide"), { release = true, non_consuming = true })
+end
+for _, event in ipairs({ "workspace.active", "window.active", "window.open", "window.close", "window.move_to_workspace" }) do
+  hl.on(event, function() hl.exec_cmd(overview .. " refresh") end)
+end
+
+hl.layer_rule({
+  name  = "hypr-overview-blur",
+  match = { namespace = "^hypr-overview$" },
+  blur         = true,
+  ignore_alpha = 0.2,
+  no_anim      = true,
+})
+
 local function toggle_layout()
   local ws = hl.get_active_workspace()
   if not ws then return end
@@ -361,5 +380,6 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("~/scripts/notification-recorder.py")
   hl.exec_cmd("espanso daemon")
   hl.exec_cmd("eww daemon")
+  hl.exec_cmd("eww -c ~/.config/eww-overview daemon")
   hl.exec_cmd('gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"')
 end)

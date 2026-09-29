@@ -1,0 +1,42 @@
+(defvar overview "{\"time\":\"\",\"date\":\"\",\"title\":\"\",\"workspaces\":[]}")
+
+(defwidget app-tile [app]
+  (box :class "app ${app.focused ? 'focused' : ''}"
+       :orientation "v"
+       :space-evenly false
+       :spacing 4
+    (image :path {app.icon} :image-width 40 :image-height 40)
+    (label :class "dots" :text {app.dots})))
+
+(defwidget workspace-card [ws]
+  (box :class "card ${ws.active ? 'active' : (ws.visible ? 'visible' : '')}"
+       :orientation "v"
+       :space-evenly false
+       :spacing 12
+    (box :class "card-head" :space-evenly false
+      (label :class "ws-num" :xalign 0 :text {ws.name})
+      (label :class "ws-mon" :hexpand true :xalign 1 :text {ws.monitor}))
+    (box :class "apps" :space-evenly false :spacing 12 :halign "center" :valign "center" :vexpand true
+      (for app in {ws.apps}
+        (app-tile :app app))
+      (label :class "empty" :visible {ws.empty} :text "empty"))))
+
+(defwidget overview-panel []
+  (box :class "overview" :orientation "v" :space-evenly false :spacing 20
+    (box :class "header" :space-evenly false :spacing 18
+      (label :class "clock" :valign "center" :text {overview.time})
+      (box :class "meta" :orientation "v" :space-evenly false :valign "center" :spacing 2
+        (label :class "date" :xalign 0 :text {overview.date})
+        (label :class "title" :xalign 0 :limit-width 70 :text {overview.title})))
+    (box :class "cards" :space-evenly false :spacing 14 :halign "center"
+      (for ws in {overview.workspaces}
+        (workspace-card :ws ws)))))
+
+(defwindow overview
+  :monitor 0
+  :geometry (geometry :anchor "center")
+  :stacking "overlay"
+  :focusable false
+  :exclusive false
+  :namespace "hypr-overview"
+  (overview-panel))
