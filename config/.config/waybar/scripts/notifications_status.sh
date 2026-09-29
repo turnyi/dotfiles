@@ -51,7 +51,7 @@ jq -cn --argjson count "${count:-0}" --arg dnd "$dnd" \
        elif $count == 1 then "1 notification"
        else "\($count) notifications" end)
       + (if $is_dnd then "  ·  do not disturb" else "" end)
-      + "\n\nclick: open the panel  ·  right-click: toggle DND"
+      + "\n\nclick: pending notifications  ·  right-click: toggle DND"
     ),
     class: (if $is_dnd then "dnd" elif $count > 0 then "active" else "idle" end)
   }

@@ -142,7 +142,7 @@
     "return-type": "json",
     "tooltip": true,
     "format": "{}",
-    "on-click": "swaync-client -t",
+    "on-click": "vicinae cmd launch @turnyi/notification-history:pending",
     "on-click-right": "swaync-client -d"
   }
 }
