@@ -4,9 +4,10 @@
 # ~/.config/gcalcli/oauth); every reader goes through an on-disk cache because
 # a gcalcli round-trip takes seconds and the status bar redraws every 5s.
 #
-#   cal-menu --segment   status-bar segment: the ongoing / next meeting with a
-#                        countdown (reads the cache only; kicks a detached
-#                        refresh when the cache is older than 5 min)
+#   cal-menu --segment   status-bar segment: the ongoing meeting, or the next one
+#                        once it is 30 min away, with a countdown (reads the
+#                        cache only; kicks a detached refresh when the cache
+#                        is older than 5 min)
 #   cal-menu --popup     mission control: this week's agenda in a centered
 #                        tmux popup — j/k move, enter opens the meeting link,
 #                        y copies it, g/n RSVP going / not going, i shows the
@@ -44,10 +45,10 @@ MAX_AGE=300
 # How long a finished event stays listed. Keeping the last hour means a meeting
 # that just ended is still reachable for its link; older ones are noise.
 PAST_GRACE=3600
+LOOKAHEAD=1800
 mkdir -p "$RUN_DIR"
 
 DIM="#7f8490"
-TEXT="#e2e2e3"
 PEACH="#f39660"
 RED="#fc5d7c"
 GREEN="#9ed072"
@@ -226,18 +227,14 @@ segment() {
   while IFS=$'\t' read -r s e allday url acct cal evid title; do
     ((allday)) && continue
     ((e <= now)) && continue
-    ((s > now + 36000)) && break
+    ((s > now + LOOKAHEAD)) && break
     local mins=$(((s - now + 59) / 60)) color when
     if ((s <= now)); then
       color=$GREEN; when="now"
     elif ((mins <= 5)); then
       color=$RED; when="${mins}m"
-    elif ((mins <= 30)); then
-      color=$PEACH; when="${mins}m"
-    elif ((mins <= 480)); then
-      color=$TEXT; when="$(date -d "@$s" '+%H:%M')"
     else
-      color=$DIM; when="$(date -d "@$s" '+%a %H:%M')"
+      color=$PEACH; when="${mins}m"
     fi
     ((${#title} > 24)) && title="${title:0:23}…"
     printf '#[fg=%s]%s %s %s#[fg=default]  ' "$color" "$ICON_MEET" "$title" "$when"
