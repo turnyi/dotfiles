@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tmux twin of the waybar right-side modules (⇄ port-forwards, 🔔 notifications,
+# tmux twin of the waybar right-side modules (♪ now playing, ⇄ port-forwards, 🔔 notifications,
 # volume, battery, network, bluetooth). One process per status-interval instead
 # of six #() jobs. Every segment is guarded, so machines without the tool (or a
 # battery) simply drop the segment instead of printing garbage.
@@ -21,6 +21,7 @@ RED="#fc5d7c"
 GREEN="#9ed072"
 MAGENTA="#b39df3"
 
+ICON_MUSIC=$'\U000f075a'
 ICON_PF=$'\uf0ec'
 ICON_BELL=$'\U000f009a'
 ICON_BELL_OFF=$'\U000f009c'
@@ -35,6 +36,14 @@ ICON_ETH=$'\U000f0200'
 ICON_BT=$'\U000f00af'
 
 segments=()
+
+now_playing() {
+  local script="$HOME/scripts/now-playing.sh" track
+  [ -x "$script" ] || return 0
+  track=$(run "$script" 30) || return 0
+  [ -n "$track" ] || return 0
+  segments+=("#[fg=$MAGENTA]$ICON_MUSIC ${track//#/##}")
+}
 
 port_forwards() {
   local pf="$HOME/scripts/pf-ctl.sh" running=0 status
@@ -138,6 +147,7 @@ bluetooth() {
   fi
 }
 
+now_playing
 port_forwards
 notifications
 volume

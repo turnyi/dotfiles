@@ -13,6 +13,7 @@
     "custom/memory"
   ],
   "modules-right": [
+    "custom/music",
     "custom/port_forwards",
     "custom/notifications",
     "pulseaudio",
@@ -135,6 +136,16 @@
     "format": "{}",
     "on-click": "~/scripts/pf-menu.sh --float",
     "on-click-right": "~/scripts/pf-ctl.sh stop-all"
+  },
+  "custom/music": {
+    "exec": "~/scripts/now-playing.sh 40",
+    "interval": 2,
+    "escape": true,
+    "format": "󰝚  {}",
+    "tooltip": false,
+    "on-click": "playerctl play-pause",
+    "on-scroll-up": "playerctl next",
+    "on-scroll-down": "playerctl previous"
   },
   "custom/notifications": {
     "exec": "~/.config/waybar/scripts/notifications_status.sh",
