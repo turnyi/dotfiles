@@ -123,6 +123,8 @@ cask "1password"
 cask "aerospace"
 cask "alt-tab"
 cask "amethyst"
+# adb, which is how the sketchybar battery widget reads the tablet's charge
+cask "android-platform-tools"
 cask "basictex"
 cask "dbeaver-community"
 cask "discord"
