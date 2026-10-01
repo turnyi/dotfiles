@@ -25,6 +25,11 @@ icon_for_app() {
 FOCUSED_WS=$(aerospace list-workspaces --focused 2>/dev/null | tr -d '[:space:]')
 WINDOWS=$(aerospace list-windows --workspace "$WS" 2>/dev/null)
 
+# Which monitor this workspace is pinned to (see [workspace-to-monitor-force-
+# assignment] in ~/.aerospace.toml). One call returns the whole mapping.
+MONITOR=$(aerospace list-workspaces --monitor all --format '%{workspace}|%{monitor-id}' 2>/dev/null \
+          | awk -F'|' -v w="$WS" '$1==w {print $2; exit}')
+
 ICONS=""
 SEEN=""
 while IFS= read -r line; do
@@ -38,28 +43,43 @@ done <<< "$WINDOWS"
 FOCUSED=false
 [ "$WS" = "$FOCUSED_WS" ] && FOCUSED=true
 
-# Always visible — focused=bright, occupied=normal, empty=dim
+# Catppuccin Macchiato. The workspaces share one frosted pill, so only the
+# focused one draws a chip; the rest sit on the shared glass.
+#
+# The number is tinted by which monitor the workspace lives on, so a glance
+# tells you which screen alt-N will jump to. App glyphs stay neutral — tinting
+# them would recolour the app logos themselves.
+#
+# Empty workspaces are hidden outright rather than dimmed. The exception is an
+# empty workspace you are focused on: it has to stay visible or the bar would
+# show no current workspace at all.
+CRUST=0xff181926
+TEXT=0xffcad3f5
+
+case "$MONITOR" in
+  1) ACCENT=0xffb7bdf8 ;;  # lavender  -> built-in
+  2) ACCENT=0xff8bd5ca ;;  # teal      -> secondary
+  3) ACCENT=0xfff5bde6 ;;  # pink      -> third, if one ever appears
+  *) ACCENT=0xffb7bdf8 ;;
+esac
+CLEAR=0x00000000
+
 if $FOCUSED; then
   sketchybar --set "space.$WS" \
     drawing=on \
     label="$ICONS" \
-    icon.color=0xffe2e2e3 \
-    label.color=0xffe2e2e3 \
-    background.color=0xff414550 \
-    background.border_color=0xff7f8490
+    icon.color=$CRUST \
+    label.color=$CRUST \
+    background.color=$ACCENT \
+    background.border_color=$CLEAR
 elif [ -n "$WINDOWS" ]; then
   sketchybar --set "space.$WS" \
     drawing=on \
     label="$ICONS" \
-    icon.color=0xff7f8490 \
-    label.color=0xff7f8490 \
-    background.color=0xff363944 \
-    background.border_color=0xff414550
+    icon.color=$ACCENT \
+    label.color=$TEXT \
+    background.color=$CLEAR \
+    background.border_color=$CLEAR
 else
-  sketchybar --set "space.$WS" \
-    drawing=on \
-    label="" \
-    icon.color=0x557f8490 \
-    background.color=0x22363944 \
-    background.border_color=0x22414550
+  sketchybar --set "space.$WS" drawing=off
 fi

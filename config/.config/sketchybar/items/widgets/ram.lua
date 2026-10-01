@@ -5,7 +5,7 @@ local ram = sbar.add("item", "widgets.ram", {
   position = "right",
   update_freq = 5,
   icon = {
-    string = "\xef\x87\x80",
+    string = utf8.char(0xf035b), -- md-memory
     font = { family = settings.font.text, style = "Regular", size = 14.0 },
     color = colors.blue,
   },

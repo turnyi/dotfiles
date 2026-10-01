@@ -5,7 +5,7 @@ local cpu = sbar.add("item", "widgets.cpu", {
   position = "right",
   update_freq = 5,
   icon = {
-    string = "\xef\x80\x93",
+    string = utf8.char(0xf061a), -- md-chip
     font = { family = settings.font.text, style = "Regular", size = 14.0 },
     color = colors.blue,
   },
