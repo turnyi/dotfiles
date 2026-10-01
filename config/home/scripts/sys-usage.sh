@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Emit a tmux-styled CPU + RAM usage segment for the status bar.
+# Emit the tmux status centre groups: CPU (usage, temp, fan), GPU (usage, temp,
+# fan) and RAM. Temps and fans come from thermals.sh --values.
 #
 # CPU% is averaged over the gap between calls (tmux status-interval) using a
 # stateful /proc/stat delta, so there is no blocking sample on the common path.
@@ -15,6 +16,9 @@ COLOR_WARN="#e7c664" # yellow
 COLOR_HIGH="#fc5d7c" # red
 ICON_CPU="󰍛"
 ICON_RAM="󰘚"
+ICON_GPU="󰢮"
+ICON_FAN="󰈐"
+COLOR_DIM="#7f8490"
 
 cpu_snapshot() {
   # Print "total idle" jiffies from the aggregate cpu line of /proc/stat.
@@ -38,16 +42,19 @@ pct_color() {
 
 read -r cur_total cur_idle < <(cpu_snapshot)
 
-if [[ -r "$STATE_FILE" ]]; then
-  read -r prev_total prev_idle <"$STATE_FILE"
-else
+# Several tmux clients run this concurrently, and a run killed mid-write once
+# left the file empty — a failed read here aborted the whole segment.
+prev_total="" prev_idle=""
+[[ -r "$STATE_FILE" ]] && read -r prev_total prev_idle <"$STATE_FILE" || true
+if ! [[ $prev_total =~ ^[0-9]+$ && $prev_idle =~ ^[0-9]+$ ]]; then
   # No history yet: take one short sample so the first render is meaningful.
   prev_total="$cur_total"
   prev_idle="$cur_idle"
   sleep 0.2
   read -r cur_total cur_idle < <(cpu_snapshot)
 fi
-printf '%s %s\n' "$cur_total" "$cur_idle" >"$STATE_FILE"
+printf '%s %s\n' "$cur_total" "$cur_idle" >"$STATE_FILE.$$"
+mv -f "$STATE_FILE.$$" "$STATE_FILE"
 
 delta_total=$((cur_total - prev_total))
 delta_idle=$((cur_idle - prev_idle))
@@ -64,6 +71,34 @@ read -r ram_pct ram_used ram_total < <(
     /proc/meminfo
 )
 
-printf '#[fg=%s]%s %3d%%#[fg=default]  #[fg=%s]%s %s/%s GB#[fg=default]' \
-  "$(pct_color "$cpu")" "$ICON_CPU" "$cpu" \
-  "$(pct_color "$ram_pct")" "$ICON_RAM" "$ram_used" "$ram_total"
+temp_color() {
+  local t="$1"
+  if ((t >= 85)); then
+    printf '%s' "$COLOR_HIGH"
+  elif ((t >= 70)); then
+    printf '%s' "$COLOR_WARN"
+  else
+    printf '%s' "$COLOR_OK"
+  fi
+}
+
+read -r cpu_temp cpu_fan gpu_temp gpu_fan gpu_util < <(
+  "$(dirname "$0")/thermals.sh" --values 2>/dev/null || echo "- - - - -"
+)
+
+cpu_group="#[fg=$(pct_color "$cpu")]$ICON_CPU $(printf '%3d' "$cpu")%"
+[[ $cpu_temp != - ]] && cpu_group+=" #[fg=$(temp_color "$cpu_temp")]${cpu_temp}°"
+[[ $cpu_fan != - ]] && cpu_group+=" #[fg=$COLOR_DIM]$ICON_FAN ${cpu_fan}"
+
+gpu_group=""
+if [[ $gpu_util != - ]]; then
+  gpu_group="#[fg=$(pct_color "$gpu_util")]$ICON_GPU $(printf '%3d' "$gpu_util")%"
+  [[ $gpu_temp != - ]] && gpu_group+=" #[fg=$(temp_color "$gpu_temp")]${gpu_temp}°"
+  [[ $gpu_fan != - ]] && gpu_group+=" #[fg=$COLOR_DIM]$ICON_FAN ${gpu_fan}%"
+fi
+
+ram_group="#[fg=$(pct_color "$ram_pct")]$ICON_RAM $ram_used/$ram_total GB"
+
+printf '%s#[fg=default]  ' "$cpu_group"
+[[ -n $gpu_group ]] && printf '%s#[fg=default]  ' "$gpu_group"
+printf '%s#[fg=default]' "$ram_group"

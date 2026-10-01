@@ -2,7 +2,7 @@
 # thermals — CPU / GPU / NVMe temperatures and fan speeds, read straight from
 # /sys/class/hwmon plus nvidia-smi for the GPU.
 #
-#   thermals --segment   compact tmux status segment (CPU°, GPU°, GPU fan)
+#   thermals --values    "cpu_temp cpu_fan gpu_temp gpu_fan gpu_util" ("-" when unknown)
 #   thermals --lines     ANSI block for the proc-menu popup header
 #
 # Motherboard fan RPMs only exist once the Super I/O driver is loaded
@@ -37,8 +37,8 @@ nvme_temps() {
   local IFS=/; printf '%s' "${out[*]}"
 }
 
-read -r GPU_TEMP GPU_FAN < <(
-  timeout 2 nvidia-smi --query-gpu=temperature.gpu,fan.speed --format=csv,noheader,nounits 2>/dev/null |
+read -r GPU_TEMP GPU_FAN GPU_UTIL < <(
+  timeout 2 nvidia-smi --query-gpu=temperature.gpu,fan.speed,utilization.gpu --format=csv,noheader,nounits 2>/dev/null |
     head -n1 | tr -d ' ' | tr ',' ' '
 )
 CPU_TEMP=$(cpu_temp 2>/dev/null)
@@ -65,14 +65,21 @@ board_fans() {
   done < <(hwmon_dir nct6798; hwmon_dir nct6799; hwmon_dir nct6775; hwmon_dir it8689)
 }
 
-segment() {
-  declare -A C=([ok]="#9ed072" [warn]="#e7c664" [high]="#fc5d7c")
-  local out=()
-  [[ -n $CPU_TEMP ]] && out+=("#[fg=${C[$(temp_level "$CPU_TEMP")]}]󰔏 ${CPU_TEMP}°")
-  [[ -n ${GPU_TEMP:-} ]] && out+=("#[fg=${C[$(temp_level "$GPU_TEMP")]}]󰢮 ${GPU_TEMP}°")
-  [[ ${GPU_FAN:-} =~ ^[0-9]+$ ]] && out+=("#[fg=#7f8490]󰈐 ${GPU_FAN}%")
-  local IFS=' '
-  ((${#out[@]})) && printf '%s#[fg=default]' "${out[*]}"
+# nct6798 exposes no fan labels; on the ASRock B660M the CPU_FAN1 header is
+# fan2 (it tracks CPU load, the others are chassis headers).
+cpu_fan() {
+  local d
+  d=$(hwmon_dir nct6798 | head -n1)
+  [[ -n $d && -r $d/fan2_input ]] || return 1
+  printf '%d' "$(<"$d/fan2_input")"
+}
+
+values() {
+  local v out=()
+  for v in "$CPU_TEMP" "$(cpu_fan 2>/dev/null)" "${GPU_TEMP:-}" "${GPU_FAN:-}" "${GPU_UTIL:-}"; do
+    [[ $v =~ ^[0-9]+$ ]] && out+=("$v") || out+=("-")
+  done
+  printf '%s\n' "${out[*]}"
 }
 
 lines() {
@@ -91,8 +98,8 @@ lines() {
   printf '%s\n%s' "$temps" "$fans"
 }
 
-case "${1:---segment}" in
-  --segment) segment ;;
+case "${1:---values}" in
+  --values)  values ;;
   --lines)   lines ;;
-  *)         echo "usage: thermals [--segment|--lines]" >&2; exit 2 ;;
+  *)         echo "usage: thermals [--values|--lines]" >&2; exit 2 ;;
 esac
