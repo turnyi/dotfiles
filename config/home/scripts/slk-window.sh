@@ -25,6 +25,18 @@ SLK="$HOME/.local/bin/slk-rounded"
   exit 1
 }
 
+# Launching from inside a tmux pane leaks that pane's environment through kitty
+# into slk, and slk decides how to draw images purely from it:
+#
+#   func inTmux() bool { return os.Getenv("TMUX") != "" }
+#   if inTmux() { seq = wrapForTmux(seq) }   // \x1bPtmux; ... \x1b\\
+#
+# So with TMUX still set, slk wraps every graphics escape in tmux passthrough
+# and kitty receives a DCS envelope with no tmux anywhere to unwrap it. The
+# window has to be scrubbed of tmux's fingerprints, not merely started outside
+# the multiplexer.
+#
 # --single-instance reuses the running kitty, so this is a new OS window rather
 # than a second kitty process.
-exec "$KITTY" --single-instance --title slk "$SLK"
+exec env -u TMUX -u TMUX_PANE -u TERM_PROGRAM -u TERM_PROGRAM_VERSION \
+  "$KITTY" --single-instance --title slk "$SLK"
