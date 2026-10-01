@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Emit the tmux status centre groups: CPU (usage, temp, fan), GPU (usage, temp,
-# fan) and RAM. Temps and fans come from thermals.sh --values.
+# Emit the tmux status centre groups: CPU usage, GPU usage and RAM. A group's
+# temp and fan only appear once its temp reaches HOT_TEMP. Temps and fans come
+# from thermals.sh --values.
 #
 # CPU% is averaged over the gap between calls (tmux status-interval) using a
 # stateful /proc/stat delta, so there is no blocking sample on the common path.
@@ -19,6 +20,7 @@ ICON_RAM="󰘚"
 ICON_GPU="󰢮"
 ICON_FAN="󰈐"
 COLOR_DIM="#7f8490"
+HOT_TEMP=70
 
 cpu_snapshot() {
   # Print "total idle" jiffies from the aggregate cpu line of /proc/stat.
@@ -75,7 +77,7 @@ temp_color() {
   local t="$1"
   if ((t >= 85)); then
     printf '%s' "$COLOR_HIGH"
-  elif ((t >= 70)); then
+  elif ((t >= HOT_TEMP)); then
     printf '%s' "$COLOR_WARN"
   else
     printf '%s' "$COLOR_OK"
@@ -87,14 +89,18 @@ read -r cpu_temp cpu_fan gpu_temp gpu_fan gpu_util < <(
 )
 
 cpu_group="#[fg=$(pct_color "$cpu")]$ICON_CPU $(printf '%3d' "$cpu")%"
-[[ $cpu_temp != - ]] && cpu_group+=" #[fg=$(temp_color "$cpu_temp")]${cpu_temp}°"
-[[ $cpu_fan != - ]] && cpu_group+=" #[fg=$COLOR_DIM]$ICON_FAN ${cpu_fan}"
+if [[ $cpu_temp != - ]] && ((cpu_temp >= HOT_TEMP)); then
+  cpu_group+=" #[fg=$(temp_color "$cpu_temp")]${cpu_temp}°"
+  [[ $cpu_fan != - ]] && cpu_group+=" #[fg=$COLOR_DIM]$ICON_FAN ${cpu_fan}"
+fi
 
 gpu_group=""
 if [[ $gpu_util != - ]]; then
   gpu_group="#[fg=$(pct_color "$gpu_util")]$ICON_GPU $(printf '%3d' "$gpu_util")%"
-  [[ $gpu_temp != - ]] && gpu_group+=" #[fg=$(temp_color "$gpu_temp")]${gpu_temp}°"
-  [[ $gpu_fan != - ]] && gpu_group+=" #[fg=$COLOR_DIM]$ICON_FAN ${gpu_fan}%"
+  if [[ $gpu_temp != - ]] && ((gpu_temp >= HOT_TEMP)); then
+    gpu_group+=" #[fg=$(temp_color "$gpu_temp")]${gpu_temp}°"
+    [[ $gpu_fan != - ]] && gpu_group+=" #[fg=$COLOR_DIM]$ICON_FAN ${gpu_fan}%"
+  fi
 fi
 
 ram_group="#[fg=$(pct_color "$ram_pct")]$ICON_RAM $ram_used/$ram_total GB"
