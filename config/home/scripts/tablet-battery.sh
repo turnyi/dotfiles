@@ -1,24 +1,27 @@
 #!/usr/bin/env bash
-# Battery of an Android tablet attached to this Mac as a second screen, read for
-# the sketchybar battery widget.
+# Battery of an Android tablet attached to this machine as a second screen, for
+# the sketchybar battery widget on macOS and the waybar one on Linux.
 #
 # Prints "level|status|link|name" while a tablet is reachable and nothing at all
-# when it is not — the empty output is what makes the widget hide itself. adb is
-# the only transport that reports the tablet's battery, so "attached" here means
-# "adb can see it", whether that is over USB or over wifi.
+# when it is not — the empty output is what makes both bars hide their widget.
+# adb is the only transport that reports the tablet's battery, so "attached"
+# here means "adb can see it", whether that is over USB or over wifi. Each
+# machine therefore only shows the tablet while it is the one holding it.
 set -euo pipefail
 
-# sketchybar runs with a bare PATH, so adb has to be located by hand.
+# Status bars run with a bare PATH, so adb has to be located by hand.
 ADB_CANDIDATES=(
   "${TABLET_ADB_BIN:-}"
   "/opt/homebrew/bin/adb"
   "/usr/local/bin/adb"
+  "/usr/bin/adb"
   "$HOME/Library/Android/sdk/platform-tools/adb"
 )
 TIMEOUT_CANDIDATES=(
   "/opt/homebrew/bin/timeout"
   "/opt/homebrew/bin/gtimeout"
   "/usr/local/bin/timeout"
+  "/usr/bin/timeout"
 )
 # A tablet on wifi only answers once `adb connect` has run, and the address is
 # the one thing that cannot be discovered, so it is read from here. No file
@@ -58,11 +61,16 @@ authorized_serials() {
   run_adb devices 2>/dev/null | awk '$2 == "device" { print $1 }'
 }
 
+# GNU stat on Linux, BSD stat on macOS — the flags are mutually exclusive.
+file_mtime() {
+  stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || echo 0
+}
+
 connect_attempted_recently() {
   local now stamp
   [ -f "$CONNECT_STAMP" ] || return 1
   now="$(date +%s)"
-  stamp="$(stat -f %m "$CONNECT_STAMP" 2>/dev/null || echo 0)"
+  stamp="$(file_mtime "$CONNECT_STAMP")"
   [ $((now - stamp)) -lt "$CONNECT_RETRY_SECONDS" ]
 }
 

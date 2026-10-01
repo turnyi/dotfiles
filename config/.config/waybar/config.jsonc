@@ -15,6 +15,7 @@
     "custom/port_forwards",
     "custom/notifications",
     "pulseaudio",
+    "custom/tablet",
     "custom/battery",
     "network",
     "custom/bluetooth",
@@ -49,6 +50,14 @@
   "custom/battery": {
     "exec": "~/.config/waybar/scripts/battery_status.sh",
     "interval": 5,
+    "hide-empty-text": true
+  },
+  // Charge of the tablet used as a second screen, drawn only while this machine
+  // is the one it is attached to. 30s rather than the battery's 5s: the reading
+  // costs an adb round trip, and a tablet's charge moves slowly.
+  "custom/tablet": {
+    "exec": "~/.config/waybar/scripts/tablet_status.sh",
+    "interval": 30,
     "hide-empty-text": true
   },
   "cpu": {
