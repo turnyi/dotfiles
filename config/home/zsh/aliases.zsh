@@ -109,6 +109,17 @@ alias docker-status='systemctl status docker'
 alias docker-sp-all='docker stop $(docker ps -aq)'
 alias docker-rm-all='docker rm $(docker ps -aq)'
 
-# sync 
+# sync
 alias arch-sync='bash ~/Projects/dotfiles/setup-arch.sh --sync'
 alias arch-clean-setup='bash ~/Projects/dotfiles/setup-arch.sh'
+
+# slk, built from v0.22.0 with every panel border rounded (upstream draws the
+# FOCUSED pane with square ThickBorder corners as its focus cue; the patched
+# build keeps the cue as border colour alone). Homebrew's copy is untouched and
+# still first on PATH, so dropping this one line reverts to stock slk.
+# Rebuild after a `brew upgrade`: see scripts/slk-build-rounded.sh
+[ -x "$HOME/.local/bin/slk-rounded" ] && alias slk="$HOME/.local/bin/slk-rounded"
+
+# slk in its own kitty window, outside tmux — the only way inline images stay
+# put, since tmux tracks text rows but not kitty graphics placements.
+alias slkw='~/scripts/slk-window.sh'
