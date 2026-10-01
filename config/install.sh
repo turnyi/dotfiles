@@ -103,6 +103,15 @@ for slot in centinel optitask; do
   fi
 done
 
+# Clipboard sync between machines (see scripts/clipcascade.sh). It needs the
+# tailnet and, off the server host, ssh to it — so warn rather than fail.
+echo -e "\n📎 Setting up ClipCascade clipboard sync..."
+if bash "$HOME_SOURCE/scripts/clipcascade.sh" setup; then
+  echo "  ✅ ClipCascade ready"
+else
+  echo "  ⚠️  ClipCascade setup failed — rerun: ~/scripts/clipcascade.sh setup"
+fi
+
 # if grep -qi "arch" /etc/os-release; then
 #   echo "🟢 Running on Arch Linux"
 #   arch_install="$SCRIPT_DIR/install-arch.sh"

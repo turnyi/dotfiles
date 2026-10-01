@@ -36,6 +36,36 @@ Take screenshots with `Cmd+Ctrl+Shift+4` so they land on the clipboard, then
 per read; point `SHOT2SERVER_DEST` at a gitignored dir inside the repo to skip
 the prompt.
 
+## ClipCascade — shared clipboard (text and images) across machines
+
+A self-hosted [ClipCascade](https://github.com/Sathvik-Rao/ClipCascade) server
+runs in Docker on the `turny` box, published tailnet-only at
+`https://turny.tail02a788.ts.net:8686` by `tailscale serve`. Every machine runs
+a client; `scripts/clipcascade.sh setup` installs and logs it in, and
+`config/install.sh` calls that, so a fresh checkout needs nothing else:
+
+```sh
+cd ~/Projects/dotfiles && git pull
+bash config/install.sh scripts
+```
+
+- **Server host (`turny`)**: starts the container, replaces the default admin
+  password with a random one in `~/.config/clipcascade/password` (never in the
+  repo), and Hyprland autostarts the headless client.
+- **Mac**: downloads the app into `/Applications`, fetches the password over
+  ssh from the server host, pre-seeds the login, adds a login item, and opens
+  it. Needs Tailscale up and `ssh turny@turny.tail02a788.ts.net` working
+  (override with `CLIPCASCADE_SSH` / `CLIPCASCADE_HOST`).
+
+Encryption is off on every client on purpose: it is the only mode where a
+client can log back in unattended, and traffic already rides Tailscale + TLS.
+A server restart logs all devices out; the Linux launcher restarts its client
+within a minute, the Mac app needs a relaunch.
+
+Manual Mac login, if the script cannot be used: server URL above, user
+`admin`, password from the server host's `~/.config/clipcascade/password`,
+"Enable Encryption" unchecked, "Save Password" checked.
+
 ## TODO — node / nvm cleanup (2026-07-24)
 
 Context: `nvm use <ver>` wasn't sticking on the Mac — Homebrew's node (v26) shadowed
