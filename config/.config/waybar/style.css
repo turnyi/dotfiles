@@ -1,3 +1,6 @@
+/* Catppuccin Macchiato — the same flavour as the Mac sketchybar config, so
+   the two bars in the fleet read as one system. Was Frappe accents sitting on
+   a Mocha base, which looked like drift rather than a choice. */
 * {
   font-family: JetbrainsMono Nerd Font;
   font-size: 20px;
@@ -9,9 +12,9 @@
 
 #waybar {
   background: transparent;
-  color: #c6d0f5;
+  color: #cad3f5;
   margin: 2px 2px;
-  background-color: rgba(30, 30, 46, 0.15);
+  background-color: rgba(36, 39, 58, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -22,18 +25,18 @@
 }
 
 #workspaces button {
-  color: #babbf1;
+  color: #b7bdf8;
   border-radius: 5px;
   padding: 0.4rem;
 }
 
 #workspaces button.active {
-  color: #99d1db;
+  color: #91d7e3;
   border-radius: 5px;
 }
 
 #workspaces button:hover {
-  color: #85c1dc;
+  color: #7dc4e4;
   border-radius: 5px;
 }
 
@@ -65,15 +68,15 @@
 }
 
 #custom-stream_status.up {
-  color: #c3e88d;
+  color: #a6da95;
 }
 
 #custom-stream_status.warning {
-  color: #ff9e64;
+  color: #f5a97f;
 }
 
 #custom-stream_status.down {
-  color: #ea999c;
+  color: #ee99a0;
 }
 
 #memory {
@@ -81,25 +84,25 @@
 }
 
 #clock {
-  color: #8caaee;
+  color: #8aadf4;
   border-radius: 5px;
   margin-right: 1rem;
 }
 
 #battery {
-  color: #a6d189;
+  color: #a6da95;
 }
 
 #battery.charging {
-  color: #a6d189;
+  color: #a6da95;
 }
 
 #battery.warning:not(.charging) {
-  color: #e78284;
+  color: #ed8796;
 }
 
 #backlight {
-  color: #e5c890;
+  color: #eed49f;
 }
 
 #backlight,
@@ -108,24 +111,24 @@
 }
 
 #pulseaudio {
-  color: #ea999c;
+  color: #ee99a0;
   border-radius: 5px;
 }
 
 #custom-music {
-  color: #ca9ee6;
+  color: #c6a0f6;
   border-radius: 5px;
 }
 
 #custom-lock {
   border-radius: 5px;
-  color: #babbf1;
+  color: #b7bdf8;
 }
 
 #custom-power {
   margin-right: 1rem;
   border-radius: 5px;
-  color: #e78284;
+  color: #ed8796;
 }
 
 #tray {
@@ -135,74 +138,74 @@
 }
 
 #custom-pad5120 {
-  color: rgba(30, 30, 46, 0.4);
+  color: rgba(36, 39, 58, 0.4);
   padding-left: 700;
   padding-right: 700;
 }
 
 #custom-lms_status.high {
-  color: #e78284;
+  color: #ed8796;
 }
 
 #custom-lms_status.medium {
-  color: #e5c890;
+  color: #eed49f;
 }
 
 #custom-lms_status.low {
-  color: #a6d189;
+  color: #a6da95;
 }
 
 #custom-lms_status.inactive {
-  color: #6c7086;
+  color: #6e738d;
 }
 
 #custom-lms_status.warning {
-  color: #ef9f76;
+  color: #f5a97f;
 }
 
 #cpu.high {
-  color: #e78284;
+  color: #ed8796;
 }
 
 #cpu.medium {
-  color: #e5c890;
+  color: #eed49f;
 }
 
 #cpu:not(.high):not(.medium) {
-  color: #a6d189;
+  color: #a6da95;
 }
 
 #memory.high {
-  color: #e78284;
+  color: #ed8796;
 }
 
 #memory.medium {
-  color: #e5c890;
+  color: #eed49f;
 }
 
 #memory:not(.high):not(.medium) {
-  color: #a6d189;
+  color: #a6da95;
 }
 
 /* ⇄ port forwards — green while any tunnel is up, dim otherwise (mirrors the
    sketchybar item's grey/green icon states). */
 #custom-port_forwards.active {
-  color: #a6d189;
+  color: #a6da95;
 }
 
 #custom-port_forwards.idle {
-  color: #a5adce;
+  color: #a5adcb;
 }
 
 /* 🔔 notifications — red with a pending count, dim when clear, amber on DND. */
 #custom-notifications.active {
-  color: #e78284;
+  color: #ed8796;
 }
 
 #custom-notifications.idle {
-  color: #a5adce;
+  color: #a5adcb;
 }
 
 #custom-notifications.dnd {
-  color: #ef9f76;
+  color: #f5a97f;
 }

@@ -29,9 +29,11 @@ automatically-unhide-macos-hidden-apps = true
     inner.vertical   = 5
     outer.left       = 5
     outer.bottom     = 5
-    # macOS already reserves the notch/menu-bar strip on the built-in display
-    # (sketchybar draws inside it), so only a small gap is needed there.
-    # External displays get bar height (32) + 5.
+    # macOS reserves the notch/menu-bar strip on the built-in display
+    # (sketchybar draws inside it), so this gap is measured from below the bar
+    # and only needs to be small.
+    # External displays get no such reservation, so they carry the bar
+    # themselves: height 38 + y_offset 2 + 5 = 45.
     outer.top        = [{ monitor.'built-in' = 5 }, 37]
     outer.right      = 5
 
