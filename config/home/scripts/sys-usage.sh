@@ -88,7 +88,7 @@ read -r cpu_temp cpu_fan gpu_temp gpu_fan gpu_util < <(
   "$(dirname "$0")/thermals.sh" --values 2>/dev/null || echo "- - - - -"
 )
 
-cpu_group="#[fg=$(pct_color "$cpu")]$ICON_CPU $(printf '%3d' "$cpu")%"
+cpu_group="#[fg=$(pct_color "$cpu")]$ICON_CPU ${cpu}%"
 if [[ $cpu_temp != - ]] && ((cpu_temp >= HOT_TEMP)); then
   cpu_group+=" #[fg=$(temp_color "$cpu_temp")]${cpu_temp}°"
   [[ $cpu_fan != - ]] && cpu_group+=" #[fg=$COLOR_DIM]$ICON_FAN ${cpu_fan}"
@@ -96,14 +96,17 @@ fi
 
 gpu_group=""
 if [[ $gpu_util != - ]]; then
-  gpu_group="#[fg=$(pct_color "$gpu_util")]$ICON_GPU $(printf '%3d' "$gpu_util")%"
+  gpu_group="#[fg=$(pct_color "$gpu_util")]$ICON_GPU ${gpu_util}%"
   if [[ $gpu_temp != - ]] && ((gpu_temp >= HOT_TEMP)); then
     gpu_group+=" #[fg=$(temp_color "$gpu_temp")]${gpu_temp}°"
     [[ $gpu_fan != - ]] && gpu_group+=" #[fg=$COLOR_DIM]$ICON_FAN ${gpu_fan}%"
   fi
 fi
 
-ram_group="#[fg=$(pct_color "$ram_pct")]$ICON_RAM $ram_used/$ram_total GB"
+superscript() { local d="$1"; d=${d//0/⁰}; d=${d//1/¹}; d=${d//2/²}; d=${d//3/³}; d=${d//4/⁴}; d=${d//5/⁵}; d=${d//6/⁶}; d=${d//7/⁷}; d=${d//8/⁸}; d=${d//9/⁹}; printf '%s' "$d"; }
+subscript() { local d="$1"; d=${d//0/₀}; d=${d//1/₁}; d=${d//2/₂}; d=${d//3/₃}; d=${d//4/₄}; d=${d//5/₅}; d=${d//6/₆}; d=${d//7/₇}; d=${d//8/₈}; d=${d//9/₉}; printf '%s' "$d"; }
+
+ram_group="#[fg=$(pct_color "$ram_pct")]$ICON_RAM $(superscript "$ram_used")⁄$(subscript "$ram_total") GB"
 
 printf '%s#[fg=default]  ' "$cpu_group"
 [[ -n $gpu_group ]] && printf '%s#[fg=default]  ' "$gpu_group"
