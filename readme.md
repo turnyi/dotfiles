@@ -51,7 +51,10 @@ bash config/install.sh scripts
 
 - **Server host (`turny`)**: starts the container, replaces the default admin
   password with a random one in `~/.config/clipcascade/password` (never in the
-  repo), and Hyprland autostarts the headless client.
+  repo), and enables the `clipcascade` user service with lingering, so the
+  client runs from boot. With nobody signed in to the desktop it keeps the
+  clipboard on a headless X display (`Xvfb :86`), which is what `prefix v`
+  reads over ssh; it switches to the Wayland clipboard on login.
 - **Mac**: downloads the app into `/Applications`, fetches the password over
   ssh from the server host, pre-seeds the login, adds a login item, and opens
   it. Needs Tailscale up and `ssh turny@turny.tail02a788.ts.net` working

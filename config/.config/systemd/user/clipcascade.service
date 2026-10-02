@@ -1,0 +1,12 @@
+[Unit]
+Description=ClipCascade clipboard client
+After=network-online.target
+
+[Service]
+ExecStart=%h/scripts/clipcascade.sh client
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

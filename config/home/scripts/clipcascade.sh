@@ -17,7 +17,11 @@ USERNAME="admin"
 DEFAULT_PASSWORD="admin123"
 
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-COMPOSE_SOURCE="$(cd "$SCRIPT_DIR/../.." && pwd)/.config/clipcascade/docker-compose.yml"
+DOTFILES_CONFIG="$(cd "$SCRIPT_DIR/../.." && pwd)/.config"
+COMPOSE_SOURCE="$DOTFILES_CONFIG/clipcascade/docker-compose.yml"
+UNIT="clipcascade.service"
+UNIT_SOURCE="$DOTFILES_CONFIG/systemd/user/$UNIT"
+UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/clipcascade"
 DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/clipcascade"
 CLIENT_DIR="$DATA_DIR/ClipCascade"
@@ -25,6 +29,11 @@ VENV_PYTHON="$DATA_DIR/venv/bin/python"
 PASSWORD_FILE="$CONFIG_DIR/password"
 MAC_APP="/Applications/ClipCascade.app"
 MAC_DATA_DIR="$HOME/Library/Application Support/ClipCascade"
+X_DISPLAY=":86"
+X_SOCKET="/tmp/.X11-unix/X${X_DISPLAY#:}"
+X_SEED_TARGET="application/x-clipcascade-seed"
+
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 
 is_server_host() {
   [ "$(uname -s)" = "Linux" ] && [ "$(uname -n)" = "${SERVER_HOST%%.*}" ]
@@ -168,6 +177,17 @@ setup_linux() {
   fi
   install_linux_client
   seed_login "$CLIENT_DIR/DATA"
+  enable_service
+}
+
+# Lingering starts the user service at boot, so the clipboard syncs for ssh
+# logins before (or without) anyone signing in to the desktop.
+enable_service() {
+  mkdir -p "$UNIT_DIR"
+  ln -sfn "$UNIT_SOURCE" "$UNIT_DIR/$UNIT"
+  loginctl enable-linger "$USER"
+  systemctl --user daemon-reload
+  systemctl --user enable --now "$UNIT"
 }
 
 setup() {
@@ -191,6 +211,52 @@ stop_client() {
   return 0
 }
 
+cleanup() {
+  stop_client
+  [ -n "${XVFB_PID:-}" ] && kill "$XVFB_PID" 2>/dev/null
+  return 0
+}
+
+wayland_socket() {
+  local socket
+  for socket in "$XDG_RUNTIME_DIR"/wayland-*; do
+    if [ -S "$socket" ]; then
+      echo "${socket##*/}"
+      return 0
+    fi
+  done
+}
+
+start_headless_display() {
+  if [ ! -S "$X_SOCKET" ]; then
+    Xvfb "$X_DISPLAY" -screen 0 1x1x24 -nolisten tcp >/dev/null 2>&1 9>&- &
+    XVFB_PID=$!
+    until [ -S "$X_SOCKET" ]; do
+      kill -0 "$XVFB_PID"
+      sleep 0.2
+    done
+  fi
+  # The client only drives xclip when the X clipboard already has an owner, and
+  # otherwise falls back to wl-copy; a non-text target owns it without syncing anything.
+  xclip -display "$X_DISPLAY" -selection clipboard -t TARGETS -o >/dev/null 2>&1 ||
+    printf seed | xclip -display "$X_DISPLAY" -selection clipboard -t "$X_SEED_TARGET" >/dev/null 2>&1 9>&-
+}
+
+# CLI mode blocks on a menu prompt and quits on EOF; a FIFO opened read-write
+# never reports EOF, so the client keeps running without a terminal.
+start_client() {
+  CLIENT_DISPLAY="$(wayland_socket)"
+  if [ -n "$CLIENT_DISPLAY" ]; then
+    # With XWayland up the client assumes X11 and polls; --xmode false makes it
+    # use the event-driven `wl-paste --watch` instead.
+    WAYLAND_DISPLAY="$CLIENT_DISPLAY" setsid "$VENV_PYTHON" main.py --gui false --xmode false <>"$DATA_DIR/stdin" >/dev/null 9>&- &
+  else
+    start_headless_display
+    env -u WAYLAND_DISPLAY DISPLAY="$X_DISPLAY" setsid "$VENV_PYTHON" main.py --gui false --xmode true <>"$DATA_DIR/stdin" >/dev/null 9>&- &
+  fi
+  CLIENT_PID=$!
+}
+
 run_client() {
   mkdir -p "$DATA_DIR"
   exec 9>"$DATA_DIR/launcher.lock"
@@ -199,23 +265,22 @@ run_client() {
   seed_login "$CLIENT_DIR/DATA"
   [ -p "$DATA_DIR/stdin" ] || mkfifo "$DATA_DIR/stdin"
   cd "$CLIENT_DIR"
-  trap stop_client EXIT
+  trap cleanup EXIT
   trap "exit 0" TERM INT
 
   # The server keeps sessions in memory, and after it restarts the client retries
   # its dead cookie forever instead of logging in again; only a fresh start does.
+  # A desktop login or logout likewise needs a restart to switch clipboards.
+  local ticks
   while true; do
     wait_for_server
-    # CLI mode blocks on a menu prompt and quits on EOF; a FIFO opened read-write
-    # never reports EOF, so the client keeps running without a terminal.
-    # With XWayland up the client assumes X11 and polls; --xmode false makes it
-    # use the event-driven `wl-paste --watch` instead.
-    setsid "$VENV_PYTHON" main.py --gui false --xmode false <>"$DATA_DIR/stdin" >/dev/null 9>&- &
-    CLIENT_PID=$!
+    start_client
+    ticks=0
     while kill -0 "$CLIENT_PID" 2>/dev/null; do
-      sleep 60 &
+      sleep 5 &
       wait $! || true
-      if ! session_is_valid; then
+      ticks=$((ticks + 1))
+      if [ "$(wayland_socket)" != "$CLIENT_DISPLAY" ] || { [ $((ticks % 12)) -eq 0 ] && ! session_is_valid; }; then
         stop_client
         wait "$CLIENT_PID" || true
       fi
