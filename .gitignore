@@ -31,3 +31,4 @@ config/.config/eww/gmail-token.json
 
 .claude/worktrees/
 .claude/settings.local.json
+config/claude/mods/*/.claude-plugin/types/
