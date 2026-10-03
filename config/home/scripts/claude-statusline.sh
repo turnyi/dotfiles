@@ -2,6 +2,9 @@
 # claude-statusline.sh — Claude Code statusLine command (~/.claude/settings.json).
 # Reads the session JSON Claude Code pipes on stdin and prints one line:
 #   [VIM MODE] ★ [label] ~/dir  branch  Model
+# With --prefix it stops after the pill and the ★: a repo whose own statusLine
+# overrides this one (project settings beat user settings) runs it that way
+# through ~/.claude/statusline-prefix.sh.
 # The vim pill only shows when vim mode is on; it also sets the cursor shape
 # (block in NORMAL/VISUAL, beam in INSERT).
 # The ★ (+ label) shows when THIS conversation is bookmarked in
@@ -55,6 +58,10 @@ out=""
 if [ -n "$sid" ] && [ -f "$BOOKMARKS" ] && grep -q "^$sid	" "$BOOKMARKS"; then
   label=$(grep -m1 "^$sid	" "$BOOKMARKS" | cut -f2)
   out+=$'\033[1;33m★'"${label:+ [$label]}"$'\033[0m '
+fi
+if [ "${1:-}" = --prefix ]; then
+  printf '%s' "$out"
+  exit 0
 fi
 out+=$'\033[36m'"${dir/#$HOME/\~}"$'\033[0m'
 branch=$(git -C "$dir" branch --show-current 2>/dev/null)

@@ -42,6 +42,8 @@ tmp="$(mktemp)"
 jq '.statusLine = {type: "command", command: "~/scripts/claude-statusline.sh"}' \
   "$CLAUDE_SETTINGS" >"$tmp" && mv "$tmp" "$CLAUDE_SETTINGS"
 echo "  ✅ statusLine → ~/scripts/claude-statusline.sh"
+ln -sfn "$HOME_SOURCE/scripts/claude-statusline-prefix.sh" "$HOME/.claude/statusline-prefix.sh"
+echo "  ✅ ~/.claude/statusline-prefix.sh → scripts/claude-statusline-prefix.sh"
 
 # Report each agent's state onto its tmux pane (see scripts/claude-hook-state.sh).
 # Registration filters our own command out of each event before re-adding it, so
