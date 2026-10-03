@@ -33,6 +33,8 @@ export const register: Register = on => {
       )
     }
 
-    return next(e)
+    return isInsert
+      ? next({ ...e, props: { ...e.props, hint: e.props.hint.replace(INSERT_LABEL, '').trimStart() } })
+      : next(e)
   })
 }

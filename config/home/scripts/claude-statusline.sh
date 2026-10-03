@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # claude-statusline.sh — Claude Code statusLine command (~/.claude/settings.json).
 # Reads the session JSON Claude Code pipes on stdin and prints one line:
-#   [VIM MODE] ★ [label] ~/dir  branch  Model
-# With --prefix it stops after the pill and the ★: a repo whose own statusLine
-# overrides this one (project settings beat user settings) runs it that way
-# through ~/.claude/statusline-prefix.sh.
-# The vim pill only shows when vim mode is on; it also sets the cursor shape
-# (block in NORMAL/VISUAL, beam in INSERT).
+#   ★ [label] ~/dir  branch  Model
+# With --prefix it stops after the ★: a repo whose own statusLine overrides
+# this one (project settings beat user settings) runs it that way through
+# ~/.claude/statusline-prefix.sh.
+# In vim mode it also sets the cursor shape (block in NORMAL/VISUAL, beam in
+# INSERT), the fallback for a session the vim-cursor mod is not loaded in.
 # The ★ (+ label) shows when THIS conversation is bookmarked in
 # ~/.claude/bookmarks.tsv — toggled with prefix-b in tmux or ctrl-b inside the
 # C-o resume picker (see claude-resume.sh).
@@ -35,18 +35,6 @@ claude_tty() {
   done
 }
 
-mode_pill() {
-  local bg
-  case "$1" in
-    NORMAL) bg='122;162;247' ;;
-    INSERT) bg='158;206;106' ;;
-    VISUAL*) bg='187;154;247' ;;
-    REPLACE) bg='219;75;75' ;;
-    *) bg='130;139;184' ;;
-  esac
-  printf '\033[38;2;%sm\xee\x82\xb6\033[1;38;2;30;30;46;48;2;%sm %s \033[0;38;2;%sm\xee\x82\xb4\033[0m ' "$bg" "$bg" "$1" "$bg"
-}
-
 if [ -n "$vim_mode" ]; then
   [ "$vim_mode" = INSERT ] && shape=6 || shape=2
   tty=$(claude_tty)
@@ -54,7 +42,6 @@ if [ -n "$vim_mode" ]; then
 fi
 
 out=""
-[ -n "$vim_mode" ] && out+=$(mode_pill "$vim_mode")
 if [ -n "$sid" ] && [ -f "$BOOKMARKS" ] && grep -q "^$sid	" "$BOOKMARKS"; then
   label=$(grep -m1 "^$sid	" "$BOOKMARKS" | cut -f2)
   out+=$'\033[1;33m★'"${label:+ [$label]}"$'\033[0m '
