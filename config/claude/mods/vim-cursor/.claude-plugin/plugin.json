@@ -1,0 +1,1 @@
+{ "name": "vim-cursor", "version": "0.1.0", "description": "Beam cursor in vim INSERT mode, block otherwise, switched as the prompt hint line draws" }

@@ -45,6 +45,22 @@ echo "  ✅ statusLine → ~/scripts/claude-statusline.sh"
 ln -sfn "$HOME_SOURCE/scripts/claude-statusline-prefix.sh" "$HOME/.claude/statusline-prefix.sh"
 echo "  ✅ ~/.claude/statusline-prefix.sh → scripts/claude-statusline-prefix.sh"
 
+# Load each mod in every session. CLAUDE_CODE_PLUGIN_DIRS is read from the
+# process env or this file's env block only, never from a project's settings.
+echo -e "\n🧩 Registering Claude Code mods..."
+mkdir -p "$HOME/.claude/mods"
+mod_dirs=""
+for mod in "$SCRIPT_DIR"/claude/mods/*/; do
+  [ -d "$mod" ] || continue
+  name="$(basename "$mod")"
+  ln -sfn "${mod%/}" "$HOME/.claude/mods/$name"
+  mod_dirs="${mod_dirs:+$mod_dirs:}$HOME/.claude/mods/$name"
+  echo "  ✅ ~/.claude/mods/$name → config/claude/mods/$name"
+done
+tmp="$(mktemp)"
+jq --arg dirs "$mod_dirs" '.env.CLAUDE_CODE_PLUGIN_DIRS = $dirs' \
+  "$CLAUDE_SETTINGS" >"$tmp" && mv "$tmp" "$CLAUDE_SETTINGS"
+
 # Report each agent's state onto its tmux pane (see scripts/claude-hook-state.sh).
 # Registration filters our own command out of each event before re-adding it, so
 # reruns stay idempotent without disturbing hooks owned by other projects.
