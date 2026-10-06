@@ -17,6 +17,19 @@
 # actually tested a password. Absence of that line means the password never
 # reached it — a different failure than a wrong one, worth telling apart.
 
+# busctl's connection failure is indistinguishable from "no login collection"
+# once the output is discarded, so the bus gets its own probe: without it a
+# dead broker reads as an unlocked keyring and every caller gives the wrong hint.
+keyring-bus-up() {
+  busctl --user status >/dev/null 2>&1
+}
+
+keyring-bus-hint() {
+  print -u2 "keyring: the user D-Bus broker is down (earlyoom kills it under memory pressure). run:"
+  print -u2 "  systemctl --user reset-failed && systemctl --user restart dbus.socket dbus-broker.service"
+  print -u2 "  keyring-unlock"
+}
+
 keyring-locked() {
   local locked
   locked=$(busctl --user get-property org.freedesktop.secrets \
@@ -27,6 +40,11 @@ keyring-locked() {
 
 keyring-unlock() {
   local pw
+
+  if ! keyring-bus-up; then
+    keyring-bus-hint
+    return 1
+  fi
 
   if ! keyring-locked; then
     print "keyring: already unlocked"

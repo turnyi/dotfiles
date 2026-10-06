@@ -48,7 +48,9 @@ claude() {
   key=$(secret-tool lookup linear "$slot" 2>/dev/null)
   if [[ -z "$key" ]]; then
     print -u2 "linear: no key for '$slot' — not launching without it"
-    if keyring-locked; then
+    if ! keyring-bus-up; then
+      keyring-bus-hint
+    elif keyring-locked; then
       print -u2 "linear: the login keyring is locked. run: keyring-unlock"
     else
       print -u2 "linear: store it with: secret-tool store --label=\"Linear $slot\" linear $slot"
