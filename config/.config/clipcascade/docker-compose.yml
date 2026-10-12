@@ -5,6 +5,8 @@ services:
     image: sathvikrao/clipcascade:0.7.0
     container_name: clipcascade
     restart: always
+    # earlyoom --prefer targets every `java`; run it under a name `--ignore ^clipcascade` spares.
+    entrypoint: ["sh", "-c", "ln -sf \"$$(command -v java)\" /usr/local/bin/clipcascade-srv && exec clipcascade-srv -jar app.jar"]
     # Loopback only: the tailnet reaches it through `tailscale serve`, which adds TLS.
     ports:
       - "127.0.0.1:8686:8080"

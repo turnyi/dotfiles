@@ -26,11 +26,16 @@ CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/clipcascade"
 DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/clipcascade"
 CLIENT_DIR="$DATA_DIR/ClipCascade"
 VENV_PYTHON="$DATA_DIR/venv/bin/python"
+# earlyoom --ignore matches only the process name, which a symlink sets; these
+# names let `--ignore ^clipcascade` spare the client without sparing every python/Xvfb.
+CLIENT_PYTHON="$DATA_DIR/venv/bin/clipcascade"
+XVFB_BIN="$DATA_DIR/bin/clipcascade-x"
 PASSWORD_FILE="$CONFIG_DIR/password"
 MAC_APP="/Applications/ClipCascade.app"
 MAC_DATA_DIR="$HOME/Library/Application Support/ClipCascade"
 X_DISPLAY=":86"
 X_SOCKET="/tmp/.X11-unix/X${X_DISPLAY#:}"
+X_LOCK="/tmp/.X${X_DISPLAY#:}-lock"
 X_SEED_TARGET="application/x-clipcascade-seed"
 
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
@@ -118,7 +123,9 @@ start_server() {
 # is saved; an empty (non-null) cookie sends it down that path on first run.
 seed_login() {
   local data_file="$1"
-  [ -f "$data_file" ] && return 0
+  # -s, not -f: the client truncates this file when a save fails (full disk),
+  # and an empty one can never log in.
+  [ -s "$data_file" ] && return 0
   (
     umask 077
     cat >"$data_file" <<EOF
@@ -228,8 +235,15 @@ wayland_socket() {
 }
 
 start_headless_display() {
+  # An Xvfb that is killed outright (earlyoom, SIGKILL) leaves its socket and
+  # lock behind, and with them in place nothing would ever start a new one.
+  if [ -S "$X_SOCKET" ] && ! pgrep -f "^$XVFB_BIN $X_DISPLAY( |\$)" >/dev/null; then
+    rm -f "$X_SOCKET" "$X_LOCK"
+  fi
   if [ ! -S "$X_SOCKET" ]; then
-    Xvfb "$X_DISPLAY" -screen 0 1x1x24 -nolisten tcp >/dev/null 2>&1 9>&- &
+    mkdir -p "${XVFB_BIN%/*}"
+    ln -sfn "$(command -v Xvfb)" "$XVFB_BIN"
+    "$XVFB_BIN" "$X_DISPLAY" -screen 0 1x1x24 -nolisten tcp >/dev/null 2>&1 9>&- &
     XVFB_PID=$!
     until [ -S "$X_SOCKET" ]; do
       kill -0 "$XVFB_PID"
@@ -249,10 +263,10 @@ start_client() {
   if [ -n "$CLIENT_DISPLAY" ]; then
     # With XWayland up the client assumes X11 and polls; --xmode false makes it
     # use the event-driven `wl-paste --watch` instead.
-    WAYLAND_DISPLAY="$CLIENT_DISPLAY" setsid "$VENV_PYTHON" main.py --gui false --xmode false <>"$DATA_DIR/stdin" >/dev/null 9>&- &
+    WAYLAND_DISPLAY="$CLIENT_DISPLAY" setsid "$CLIENT_PYTHON" main.py --gui false --xmode false <>"$DATA_DIR/stdin" >/dev/null 9>&- &
   else
     start_headless_display
-    env -u WAYLAND_DISPLAY DISPLAY="$X_DISPLAY" setsid "$VENV_PYTHON" main.py --gui false --xmode true <>"$DATA_DIR/stdin" >/dev/null 9>&- &
+    env -u WAYLAND_DISPLAY DISPLAY="$X_DISPLAY" setsid "$CLIENT_PYTHON" main.py --gui false --xmode true <>"$DATA_DIR/stdin" >/dev/null 9>&- &
   fi
   CLIENT_PID=$!
 }
@@ -262,6 +276,7 @@ run_client() {
   exec 9>"$DATA_DIR/launcher.lock"
   flock -n 9 || exit 0
   install_linux_client
+  ln -sfn python "$CLIENT_PYTHON"
   seed_login "$CLIENT_DIR/DATA"
   [ -p "$DATA_DIR/stdin" ] || mkfifo "$DATA_DIR/stdin"
   cd "$CLIENT_DIR"

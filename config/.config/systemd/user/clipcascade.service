@@ -1,11 +1,13 @@
 [Unit]
 Description=ClipCascade clipboard client
 After=network-online.target
+StartLimitIntervalSec=0
 
 [Service]
 ExecStart=%h/scripts/clipcascade.sh client
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
-Restart=on-failure
+# The launcher traps SIGTERM (earlyoom) and exits 0, which on-failure would not restart.
+Restart=always
 RestartSec=5
 
 [Install]
