@@ -68,6 +68,14 @@ automatically-unhide-macos-hidden-apps = true
     # alt+ctrl+s → clipboard screenshot scp'd to the ssh server, remote path on clipboard
     alt-ctrl-s = 'exec-and-forget bash ~/scripts/shot2server.sh'
 
+    # ── Screenshots (same keys as Hyprland Super+X / Super+Shift+S / Super+Shift+R) ─
+    # alt+x → region to clipboard (grim | wl-copy)
+    # alt+shift+s → region opened in Preview to annotate (swappy)
+    # alt+shift+r → screenshot/recording toolbar (kooha)
+    alt-x       = 'exec-and-forget screencapture -i -c'
+    alt-shift-s = 'exec-and-forget f="${TMPDIR:-/tmp}/shot-$(date +%Y%m%d-%H%M%S).png"; screencapture -i "$f" && open -a Preview "$f"'
+    alt-shift-r = 'exec-and-forget open -a Screenshot'
+
     # ── Focus windows (vim keys, like Hyprland Super+hjkl) ──────────
     alt-h = 'focus left'
     alt-j = 'focus down'
@@ -91,7 +99,7 @@ automatically-unhide-macos-hidden-apps = true
 
     # ── Resize ───────────────────────────────────────────────────────
     alt-equal    = 'resize smart +50'
-    alt-shift-r  = ['balance-sizes']
+    # balance-sizes lives in service mode (b): alt+shift+r is screen recording
 
     # ── Window misc ───────────────────────────────────────────────────
     alt-i         = 'exec-and-forget bash ~/scripts/sketchybar-toggle.sh'
@@ -139,7 +147,6 @@ automatically-unhide-macos-hidden-apps = true
     alt-shift-t = "exec-and-forget open -na 'kitty'"
     alt-shift-b = "exec-and-forget open -na 'Google Chrome' --args --profile-directory='Profile 2'"
     alt-shift-n = "exec-and-forget open -na 'Google Chrome' --args --profile-directory='Profile 1'"
-    alt-shift-s = "exec-and-forget open -na 'Slack'"
     alt-shift-d = "exec-and-forget open -na 'Discord'"
     alt-shift-m = "exec-and-forget open -na 'Spotify'"
     alt-shift-w = "exec-and-forget open -na 'WhatsApp'"
@@ -151,6 +158,7 @@ automatically-unhide-macos-hidden-apps = true
 [mode.service.binding]
     esc       = ['reload-config', 'mode main']
     r         = ['flatten-workspace-tree', 'mode main']
+    b         = ['balance-sizes', 'mode main']
     f         = ['layout floating tiling', 'mode main']
     backspace = ['close-all-windows-but-current', 'mode main']
 
