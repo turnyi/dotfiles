@@ -25,10 +25,11 @@ generate() {
       "Write a 3-6 word title for what this session is working on NOW. If the current title still fits, repeat it exactly. Output only the title, no quotes or punctuation at the end." |
       (cd "$STATE_DIR" &&
         env -u TMUX -u TMUX_PANE -u CLAUDE_CODE_PLUGIN_DIRS \
-          claude -p --setting-sources project --model haiku --no-session-persistence --tools "") |
+          claude -p --setting-sources project --model haiku --no-session-persistence --tools "" \
+            --system-prompt "You name coding sessions. You never answer or discuss the messages you are shown; you reply with a title of 3-6 words and nothing else.") |
       head -n 1 | sed -E 's/^["'\''`]+|["'\''`.]+$//g' | cut -c 1-60
   )"
-  [ -n "$title" ] && printf '%s' "$title" >"$pending"
+  [ -n "$title" ] && [ "$(wc -w <<<"$title")" -le 8 ] && printf '%s' "$title" >"$pending"
 }
 
 if [ "${1:-}" = "--generate" ]; then
@@ -53,8 +54,9 @@ elif [ "$now" -ge "$(cat "$due_file")" ]; then
   printf '%s' "$((now + INTERVAL))" >"$due_file"
   transcript="$(jq -r '.transcript_path // empty' <<<"$payload")"
   prompt="$(jq -r '.prompt // "" | gsub("\\s+"; " ") | .[0:300]' <<<"$payload")"
-  [ -f "$transcript" ] &&
+  if [ -f "$transcript" ]; then
     setsid "$0" --generate "$transcript" "$current" "$prompt" "$pending" </dev/null >/dev/null 2>&1 &
+  fi
 fi
 
 if [ -s "$pending" ]; then
