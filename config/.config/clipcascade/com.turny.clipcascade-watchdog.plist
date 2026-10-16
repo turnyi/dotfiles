@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.turny.clipcascade-watchdog</string>
+
+  <!-- Re-logs the Mac ClipCascade client in after the server restarts and
+       drops every in-memory session. The client cannot do this itself: it
+       runs its login flow only at startup, then retries the websocket with a
+       dead cookie forever. See scripts/clipcascade-watchdog.sh. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/turny/scripts/clipcascade-watchdog.sh</string>
+  </array>
+
+  <!-- A minute is well inside the "I went to paste something" window, and the
+       check is one cheap HTTP request when all is well. -->
+  <key>StartInterval</key>
+  <integer>60</integer>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/turny/Library/Application Support/ClipCascade/watchdog.err.log</string>
+</dict>
+</plist>

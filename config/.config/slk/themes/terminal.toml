@@ -1,0 +1,56 @@
+# ANSI Dark with a readable selected-message row.
+#
+# Every colour here is an ANSI palette number ("0"-"15") rather than a hex
+# value, so it resolves through kitty's own palette — re-theme kitty and slk
+# follows. The two selection colours are the deliberate exception, explained
+# below.
+name = "Terminal"
+
+[colors]
+primary = "4"
+accent = "6"
+warning = "3"
+error = "1"
+background = "0"
+surface = "8"
+surface_dark = "0"
+text = "15"
+text_muted = "8"
+border = "8"
+
+# The selected-message row. ANSI Dark fills it with ANSI 8, which on kitty's
+# default palette is #767676 — a flat mid-grey slab that only reaches about
+# 4.5:1 against the white message text, so the selected line is both the
+# loudest block on screen and the hardest to read on it.
+#
+# These two are the one place worth leaving the palette: 16 fixed colours
+# cannot express "a few percent lighter than the background", which is all a
+# selection needs to be. The navy is drawn from the same family as primary
+# (ANSI 4 is #0d73cc on kitty's defaults) and still clears 17:1 against white.
+#
+# A terminal cell background has no alpha, so this cannot literally be
+# translucent — kitty's background_opacity applies only to the DEFAULT
+# background, and any explicitly painted cell is opaque. Sitting the colour
+# close to the background is the only way to imitate it. To go fainter still,
+# walk these toward #000000; to make the row easier to find, walk them up.
+selection_bg_focused = "#09192B"
+# Unfocused panes get a neutral, recessive row so they stop competing with
+# whichever pane actually has focus.
+selection_bg_unfocused = "#141414"
+
+# Depth. Left unset these derive from the base colours and every panel ends up
+# the same flat black, which is what makes a terminal chat read as one wall
+# rather than as Slack's sidebar / rail / conversation layers. Each step here
+# is a few percent lighter than the last, so the eye gets the hierarchy
+# without any panel announcing itself.
+#
+# These are the second and last departure from the ANSI palette, for the same
+# reason as the selection: 16 fixed colours have no "slightly off-black".
+rail_background = "#121212"
+sidebar_background = "#0C0C0C"
+sidebar_text = "15"
+sidebar_text_muted = "8"
+
+# The compose box while typing. A hair of the accent so the input is visibly
+# live without turning into a lit panel.
+compose_insert_bg = "#0A1E1E"

@@ -5,7 +5,7 @@ local HOME = os.getenv("HOME")
 local COUNT_SCRIPT = HOME .. "/scripts/notif-count.sh"
 local OPEN_SCRIPT = HOME .. "/scripts/notif-open.sh"
 
-local BELL = "" -- nerdfont bell
+local BELL = utf8.char(0xf009c) -- glyph `bell-outline.1` in Hack Nerd Font v2
 
 -- Padding item required because of the bracket
 sbar.add("item", { position = "right", width = settings.group_paddings })

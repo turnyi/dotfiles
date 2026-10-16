@@ -10,6 +10,11 @@ for i = 1, 9 do
     position = "left",
     drawing = true,
     update_freq = 5,
+    -- Must be "on", not the inherited "when_shown". An empty workspace is
+    -- hidden with drawing=off, and a hidden item under "when_shown" stops
+    -- updating — so it could never notice it had gained a window and turn
+    -- itself back on. Hidden would have meant hidden until the next reload.
+    updates = true,
     icon = {
       string = ws,
       font = { family = settings.font.numbers, style = "Bold", size = 13.0 },
@@ -24,12 +29,16 @@ for i = 1, 9 do
       padding_right = 10,
       y_offset = -1,
     },
+    -- No pill of its own: the whole row shares one frosted pill (the bracket
+    -- below), and only the focused workspace draws a chip inside it. Nine
+    -- bordered pills in a row read as nine competing objects; one pill with a
+    -- highlight inside reads as one control with a current value.
     background = {
-      color = colors.bg1,
-      border_color = colors.bg2,
-      border_width = 1,
-      height = 26,
-      corner_radius = 5,
+      color = colors.transparent,
+      border_color = colors.transparent,
+      border_width = 0,
+      height = 20,
+      corner_radius = 7,
     },
     padding_left = 2,
     padding_right = 2,
@@ -51,3 +60,25 @@ for i = 1, 9 do
     sbar.exec(SCRIPT .. " " .. ws)
   end)
 end
+
+-- One frosted pill around the whole workspace row.
+local space_names = {}
+for i = 1, 9 do
+  space_names[i] = "space." .. i
+end
+
+sbar.add("bracket", "spaces.bracket", space_names, {
+  background = {
+    color = colors.bg1,
+    border_color = colors.bg2,
+    border_width = 1,
+    height = 24,
+    corner_radius = 10,
+  },
+  blur_radius = 60,
+})
+
+sbar.add("item", "spaces.padding", {
+  position = "left",
+  width = settings.group_paddings,
+})

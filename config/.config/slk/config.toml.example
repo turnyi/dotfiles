@@ -1,0 +1,20 @@
+# slk follows the terminal instead of carrying its own palette. "Terminal"
+# (themes/terminal.toml) is ANSI Dark with a readable selected-message row:
+# every colour is an ANSI number resolved through kitty's own palette, so
+# re-theming kitty re-themes slk.
+#
+# NOTE: slk rewrites this file itself (theme switcher, workspace state), so it
+# is deliberately NOT symlinked into the dotfiles repo — only themes/ is.
+[appearance]
+theme = "Terminal"
+
+# Force the kitty graphics protocol rather than letting slk auto-detect it.
+# Inside tmux, TERM is screen-256color, which does not advertise kitty's
+# capabilities, so "auto" falls back to half-block rendering — real pixels
+# replaced by coloured block characters, which is what made images look low
+# quality. Needs `allow-passthrough on` in tmux, which is now set.
+image_protocol = "kitty"
+
+# Centinel
+[workspaces.T08EY1GQWFM]
+version_ts = "1790870607"

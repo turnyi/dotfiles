@@ -108,9 +108,23 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 export PATH="/opt/homebrew/bin:$PATH"
 export FZF_BASE=$HOME/.fzf
 
-# set node paths 
-export PATH=$PATH:$(npm config get prefix)/bin
-command -v yarn &>/dev/null && export PATH=$PATH:$(yarn global bin)
+# set node paths
+# `npm config get prefix` and `yarn global bin` each boot a node process
+# (~70ms apiece). Both answers only change when the package manager is
+# reinstalled, so cache them and refresh weekly.
+() {
+  local cache="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/node-global-bin.zsh"
+  if [[ -z $cache(#qN.mh-168) ]]; then
+    mkdir -p "${cache:h}"
+    {
+      command -v npm &>/dev/null &&
+        print -r -- "export PATH=\$PATH:$(npm config get prefix)/bin"
+      command -v yarn &>/dev/null &&
+        print -r -- "export PATH=\$PATH:$(yarn global bin)"
+    } >| "$cache"
+  fi
+  source "$cache"
+}
 
 if type brew &>/dev/null
 then

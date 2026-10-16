@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+PATH="/opt/homebrew/bin:$PATH"  # aerospace exec-and-forget doesn't inherit brew's PATH
 
 host="${SHOT2SERVER_HOST:-server}"
 dest="${SHOT2SERVER_DEST:-.shots}"
@@ -28,6 +29,7 @@ notify() {
 }
 
 if [ -t 0 ]; then grab_clipboard; else cat > "$tmp"; fi
+[ -s "$tmp" ] || grab_clipboard  # launchers pass /dev/null as stdin; fall back to clipboard
 [ -s "$tmp" ] || { notify "no image in clipboard"; exit 1; }
 
 remote_path=$(ssh -o ControlMaster=auto -o ControlPath="$HOME/.ssh/cm-%C" -o ControlPersist=10m \
