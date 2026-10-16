@@ -9,7 +9,7 @@ config=$(readlink -f "$HOME/.aerospace.toml")
 
 if sketchybar --query bar | grep -q '"hidden": *"on"'; then
   sketchybar --bar hidden=off
-  sed -i '' "s|^\( *\)outer\.top .*|\1outer.top        = [{ monitor.'built-in' = 5 }, 37]|" "$config"
+  sed -i '' "s|^\( *\)outer\.top .*|\1outer.top        = [{ monitor.'built-in' = 5 }, { monitor.'Any Display' = 5 }, 37]|" "$config"
 else
   sketchybar --bar hidden=on
   sed -i '' "s|^\( *\)outer\.top .*|\1outer.top        = 5|" "$config"

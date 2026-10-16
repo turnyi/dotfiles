@@ -33,8 +33,12 @@ automatically-unhide-macos-hidden-apps = true
     # (sketchybar draws inside it), so this gap is measured from below the bar
     # and only needs to be small.
     # External displays get no such reservation, so they carry the bar
-    # themselves: height 38 + y_offset 2 + 5 = 45.
-    outer.top        = [{ monitor.'built-in' = 5 }, 37]
+    # themselves: 37 clears the 38px bar sitting at y_offset -2.
+    # The tablet ('Any Display') is the exception: sketchybar skips it
+    # (see bar.lua), so its windows run to the top edge.
+    # sketchybar-toggle.sh rewrites the line below; while the bar is shown it is
+    #   [{ monitor.'built-in' = 5 }, { monitor.'Any Display' = 5 }, 37]
+    outer.top        = [{ monitor.'built-in' = 5 }, { monitor.'Any Display' = 5 }, 37]
     outer.right      = 5
 
 # Which monitor each workspace lives on. Apps are no longer auto-assigned to
