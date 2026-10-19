@@ -256,6 +256,10 @@ start_headless_display() {
     printf seed | xclip -display "$X_DISPLAY" -selection clipboard -t "$X_SEED_TARGET" >/dev/null 2>&1 9>&-
 }
 
+headless_display_lost() {
+  [ -z "$CLIENT_DISPLAY" ] && ! pgrep -f "^$XVFB_BIN $X_DISPLAY( |\$)" >/dev/null
+}
+
 # CLI mode blocks on a menu prompt and quits on EOF; a FIFO opened read-write
 # never reports EOF, so the client keeps running without a terminal.
 start_client() {
@@ -295,7 +299,7 @@ run_client() {
       sleep 5 &
       wait $! || true
       ticks=$((ticks + 1))
-      if [ "$(wayland_socket)" != "$CLIENT_DISPLAY" ] || { [ $((ticks % 12)) -eq 0 ] && ! session_is_valid; }; then
+      if [ "$(wayland_socket)" != "$CLIENT_DISPLAY" ] || headless_display_lost || { [ $((ticks % 12)) -eq 0 ] && ! session_is_valid; }; then
         stop_client
         wait "$CLIENT_PID" || true
       fi
