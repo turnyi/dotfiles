@@ -31,4 +31,19 @@ fi
 # AeroSpace's global hotkeys whenever kitty is focused.
 defaults write net.kovidgoyal.kitty SecureKeyboardEntry -bool false
 
+# Desktop wallpaper: the kitty background photo, blurred and washed grey so the
+# desktop and terminal read as one surface. Regenerate from config/images with:
+#   magick background.jpg -resize 3024x -crop 3024x1964+0+1215 +repage \
+#     -resize 50% -blur 0x11 -resize 3024x1964! -blur 0x2 \
+#     -modulate 100,60 \( +clone -fill black -colorize 100 \) \
+#     -compose blend -define compose:args=70 -composite -depth 8 desktop-blurred.png
+# PNG, not JPEG: compression blocks show up as grain in a dark, smooth gradient.
+# System Events' `set picture` silently no-ops on recent macOS; NSWorkspace sticks.
+osascript -l JavaScript -e "
+ObjC.import('AppKit');
+const url = \$.NSURL.fileURLWithPath('$SCRIPT_DIR/config/images/desktop-blurred.png');
+const screens = \$.NSScreen.screens;
+for (let i = 0; i < screens.count; i++)
+  \$.NSWorkspace.sharedWorkspace.setDesktopImageURLForScreenOptionsError(url, screens.objectAtIndex(i), \$(), null);"
+
 echo "🏁 Setup complete."
