@@ -27,4 +27,8 @@ else
   echo "⚠️  No post-install script found at $POST_INSTALL."
 fi
 
+# Kitty's secure keyboard entry grabs macOS secure input, which blocks
+# AeroSpace's global hotkeys whenever kitty is focused.
+defaults write net.kovidgoyal.kitty SecureKeyboardEntry -bool false
+
 echo "🏁 Setup complete."
