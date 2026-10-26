@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# claude-resume.sh — global Claude Code conversation picker (C-o, no prefix).
+# claude-resume.sh — global Claude Code conversation picker (C-q, no prefix).
 #
 # Claude stores sessions under ~/.claude/projects/<encoded-launch-dir>/, so a
 # conversation started in a worktree becomes unreachable once that worktree is
@@ -10,8 +10,8 @@
 # resume from, so orphaned sessions keep working.
 #
 #   claude-resume.sh            fzf picker (takes over the current terminal)
-#   claude-resume.sh --popup    open the picker in a floating tmux popup (C-o);
-#                               enter resumes in the pane C-o was pressed in
+#   claude-resume.sh --popup    open the picker in a floating tmux popup (C-q);
+#                               enter resumes in the pane C-q was pressed in
 #   claude-resume.sh --pick [%pane]     picker body (runs inside the popup)
 #   claude-resume.sh --list     print the session table (debugging)
 #   claude-resume.sh --preview <file>   fzf preview helper
@@ -469,14 +469,14 @@ case "${1:-}" in
   --popup)
     # bg=default keeps the popup cells transparent (popup-style is reset after
     # catppuccin in .tmux.conf), so kitty's opacity + Hyprland's blur show
-    # through. Remember the pane C-o was pressed in: enter resumes there.
+    # through. Remember the pane C-q was pressed in: enter resumes there.
     target="$(tmux display -p '#{pane_id}')"
     exec tmux display-popup -E -w 88% -h 82% -T ' claude resume ' \
       -b rounded -S 'fg=#bb9af7' -s 'bg=default' "$SELF --pick $target"
     ;;
   --pick)
     # no explicit target (flipped over from the agents view): the pane under
-    # the popup is the one C-g/C-o was pressed in
+    # the popup is the one C-g/C-q was pressed in
     pick "${2:-$(tmux display -p '#{pane_id}' 2>/dev/null)}"
     ;;
   --scope-header)
@@ -518,7 +518,7 @@ case "${1:-}" in
     quick_list
     ;;
   --marks-popup)
-    # standalone ★ menu (prefix B): same styling as the C-o popup
+    # standalone ★ menu (prefix B): same styling as the C-q popup
     target="$(tmux display -p '#{pane_id}')"
     exec tmux display-popup -E -w 88% -h 82% -T ' ★ bookmarks ' \
       -b rounded -S 'fg=#e0af68' -s 'bg=default' "$SELF --marks $target"

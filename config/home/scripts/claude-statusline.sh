@@ -9,7 +9,7 @@
 # INSERT), the fallback for a session the vim-cursor mod is not loaded in.
 # The ★ (+ label) shows when THIS conversation is bookmarked in
 # ~/.claude/bookmarks.tsv — toggled with prefix-b in tmux or ctrl-b inside the
-# C-o resume picker (see claude-resume.sh).
+# C-q resume picker (see claude-resume.sh).
 set -u
 BOOKMARKS="$HOME/.claude/bookmarks.tsv"
 
