@@ -185,14 +185,14 @@ hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd(terminal))
 
 hl.bind(mainMod .. " + B",         chrome_profile(chromePersonal))
 hl.bind(mainMod .. " + SHIFT + B", chrome_new_tab(chromePersonal))
-hl.bind(mainMod .. " + F",         chrome_profile(chromeCentinel))
-hl.bind(mainMod .. " + SHIFT + F", chrome_new_tab(chromeCentinel))
+hl.bind(mainMod .. " + N",         chrome_profile(chromeCentinel))
+hl.bind(mainMod .. " + SHIFT + N", chrome_new_tab(chromeCentinel))
 
 hl.bind(mainMod .. " + E",         focus_or_launch(fileManager))
 hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + W",         focus_or_launch("whatsapp"))
-hl.bind(mainMod .. " + N",         hl.dsp.exec_cmd(notificationPending))
-hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd(notificationHistory))
+hl.bind(mainMod .. " + comma",         hl.dsp.exec_cmd(notificationPending))
+hl.bind(mainMod .. " + SHIFT + comma", hl.dsp.exec_cmd(notificationHistory))
 hl.bind(mainMod .. " + D",         focus_or_launch(discord))
 hl.bind(mainMod .. " + M",         focus_or_launch(music))
 hl.bind(mainMod .. " + P",         focus_or_launch(postman))
@@ -345,6 +345,52 @@ hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = tr
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
+
+local hintsWindow = nil
+
+local function close_pointer_hints()
+  if not hintsWindow then return end
+  hintsWindow = nil
+  hl.exec_cmd("pkill -x wl-kbptr")
+end
+
+hl.on("window.active", function()
+  local win = hl.get_active_window()
+  if win and win.address ~= hintsWindow then close_pointer_hints() end
+end)
+hl.on("workspace.active", close_pointer_hints)
+
+local function pointer_hints()
+  local win = hl.get_active_window()
+  if not win or win.class == "kitty" or not win.monitor then return end
+  hintsWindow = win.address
+  local area = string.format("%dx%d+%d+%d", win.size.x, win.size.y,
+    win.at.x - win.monitor.x, win.at.y - win.monitor.y)
+  hl.exec_cmd("pkill -x wl-kbptr; timeout 15 wl-kbptr -O " .. win.monitor.name .. " -r " .. area)
+end
+
+local function scroll_mode()
+  local win = hl.get_active_window()
+  if win then
+    hl.dispatch(hl.dsp.cursor.move({
+      x = win.at.x + math.floor(win.size.x / 2),
+      y = win.at.y + math.floor(win.size.y / 2),
+    }))
+  end
+  hl.dispatch(hl.dsp.submap("scroll"))
+end
+
+hl.define_submap("scroll", "reset", function()
+  for key, delta in pairs({ j = "5 0", k = "-5 0", d = "30 0", u = "-30 0", h = "0 -5", l = "0 5" }) do
+    hl.bind(key, hl.dsp.exec_cmd("wlrctl pointer scroll " .. delta), { repeating = true })
+  end
+  hl.bind("f", pointer_hints)
+  hl.bind("escape", hl.dsp.submap("reset"))
+  hl.bind("q", hl.dsp.submap("reset"))
+end)
+
+hl.bind(mainMod .. " + F",         pointer_hints)
+hl.bind(mainMod .. " + SHIFT + F", scroll_mode)
 
 hl.bind("switch:on:Lid Switch",  hl.dsp.exec_cmd("hyprctl keyword monitor eDP-1, disable"), { locked = true })
 hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("hyprctl keyword monitor eDP-1,preferred,0x0,1"), { locked = true })

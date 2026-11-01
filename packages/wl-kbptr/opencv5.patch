@@ -1,0 +1,21 @@
+--- a/meson.build	2026-11-01 12:25:28.709931401 -0300
++++ b/meson.build	2026-11-01 12:25:40.153995597 -0300
+@@ -26,7 +26,7 @@
+ if use_opencv
+   add_project_arguments('-DOPENCV_ENABLED=1', language: ['c', 'cpp'])
+   add_languages('cpp', native: false)
+-  opencv = dependency('opencv4')
++  opencv = dependency('opencv5')
+   pixman = dependency('pixman-1')
+ endif
+ 
+--- a/src/target_detection.cpp	2026-11-01 12:25:28.710333421 -0300
++++ b/src/target_detection.cpp	2026-11-01 12:25:40.154867952 -0300
+@@ -4,6 +4,7 @@
+ 
+ #include <opencv2/imgcodecs.hpp>
+ #include <opencv2/imgproc.hpp>
++#include <opencv2/geometry.hpp>
+ #include <pixman.h>
+ #include <stdint.h>
+ #include <stdlib.h>

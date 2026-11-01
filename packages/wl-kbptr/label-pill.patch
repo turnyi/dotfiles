@@ -1,0 +1,64 @@
+--- a/src/mode_floating.c	2026-11-01 12:25:28.710227343 -0300
++++ b/src/mode_floating.c	2026-11-01 12:25:40.153266133 -0300
+@@ -8,6 +8,7 @@
+ #include "utils_cairo.h"
+ 
+ #include <cairo.h>
++#include <math.h>
+ #include <stdbool.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -191,17 +192,6 @@
+             label_selection_is_included(curr_label, ms->label_selection);
+ 
+         if (selectable) {
+-            cairo_set_operator(cairo, CAIRO_OPERATOR_OVER);
+-            cairo_set_source_u32(cairo, config->selectable_bg_color);
+-            cairo_rectangle(cairo, a.x, a.y, a.w, a.h);
+-            cairo_fill(cairo);
+-
+-            cairo_set_operator(cairo, CAIRO_OPERATOR_SOURCE);
+-            cairo_set_source_u32(cairo, config->selectable_border_color);
+-            cairo_rectangle(cairo, a.x + .5, a.y + .5, a.w - 1, a.h - 1);
+-            cairo_set_line_width(cairo, 1);
+-            cairo_stroke(cairo);
+-
+             cairo_set_font_size(
+                 cairo, compute_relative_font_size(&config->label_font_size, a.h)
+             );
+@@ -218,11 +208,34 @@
+             cairo_text_extents(cairo, label_selected_str, &te_selected);
+             cairo_text_extents(cairo, label_unselected_str, &te_unselected);
+ 
++            cairo_font_extents_t fe;
++            cairo_font_extents(cairo, &fe);
++            const double pad_x  = fe.height * .35;
++            const double pad_y  = fe.height * .1;
++            const double pill_w = te_all.x_advance + 2 * pad_x;
++            const double pill_h = fe.height + 2 * pad_y;
++            const double pill_x = a.x + (a.w - pill_w) / 2;
++            const double pill_y = a.y + (a.h - pill_h) / 2;
++            const double radius = pill_h * .3;
++
++            cairo_new_sub_path(cairo);
++            cairo_arc(cairo, pill_x + pill_w - radius, pill_y + radius, radius, -M_PI / 2, 0);
++            cairo_arc(cairo, pill_x + pill_w - radius, pill_y + pill_h - radius, radius, 0, M_PI / 2);
++            cairo_arc(cairo, pill_x + radius, pill_y + pill_h - radius, radius, M_PI / 2, M_PI);
++            cairo_arc(cairo, pill_x + radius, pill_y + radius, radius, M_PI, 3 * M_PI / 2);
++            cairo_close_path(cairo);
++            cairo_set_operator(cairo, CAIRO_OPERATOR_OVER);
++            cairo_set_source_u32(cairo, config->selectable_bg_color);
++            cairo_fill_preserve(cairo);
++            cairo_set_source_u32(cairo, config->selectable_border_color);
++            cairo_set_line_width(cairo, 1);
++            cairo_stroke(cairo);
++
+             cairo_move_to(
+                 cairo,
+                 a.x +
+                     (a.w - te_selected.x_advance - te_unselected.x_advance) / 2,
+-                a.y + (int)((a.h + te_all.height) / 2)
++                pill_y + pad_y + fe.ascent
+             );
+             cairo_set_operator(cairo, CAIRO_OPERATOR_OVER);
+             cairo_set_source_u32(cairo, config->label_select_color);

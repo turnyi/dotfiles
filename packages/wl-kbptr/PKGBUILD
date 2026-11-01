@@ -1,0 +1,33 @@
+pkgname=wl-kbptr
+pkgver=0.4.1
+pkgrel=4
+url="https://github.com/moverest/wl-kbptr"
+pkgdesc="Control the mouse pointer with the keyboard on Wayland"
+arch=("x86_64" "aarch64")
+license=("GPL-3.0")
+depends=("cairo" "wayland" "libxkbcommon" "opencv" "pixman")
+makedepends=("meson" "wayland-protocols")
+source=(
+  "https://github.com/moverest/wl-kbptr/archive/refs/tags/v$pkgver.tar.gz"
+  "opencv5.patch"
+  "label-pill.patch"
+  "merge-words.patch"
+)
+sha256sums=("03ac52afa42d7aa88f909f96b2c0e57f5706a11d5d0ff451f6052927571e0624" "SKIP" "SKIP" "SKIP")
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  patch -p1 < "$srcdir/opencv5.patch"
+  patch -p1 < "$srcdir/label-pill.patch"
+  patch -p1 < "$srcdir/merge-words.patch"
+}
+
+build() {
+  arch-meson "$pkgname-$pkgver" build -Dopencv=enabled
+  ninja -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+  install -Dm 0644 "$pkgname-$pkgver/LICENSE" -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

@@ -1,0 +1,11 @@
+--- a/src/target_detection.cpp	2026-11-01 12:25:40.154867952 -0300
++++ b/src/target_detection.cpp	2026-11-01 12:29:01.677839402 -0300
+@@ -352,7 +352,7 @@
+ 
+     cv::Mat m2;
+     cv::Mat kernel =
+-        cv::Mat::ones(round(2.5 * scale), round(3.5 * scale), CV_8U);
++        cv::Mat::ones(round(3 * scale), round(12 * scale), CV_8U);
+ 
+     cv::Canny(m1, m2, 70, 220);
+     cv::dilate(m2, m1, kernel);

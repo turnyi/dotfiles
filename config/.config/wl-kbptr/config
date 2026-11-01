@@ -1,0 +1,13 @@
+[general]
+modes=floating,click
+
+[mode_floating]
+source=detect
+label_symbols=asdfghjklqwertyuiopzxcvbnm
+label_font_family=JetBrainsMono NFP ExtraBold
+label_font_size=13 0% 13
+label_color=#e6e6f0ff
+label_select_color=#3cc8ccff
+unselectable_bg_color=#00000000
+selectable_bg_color=#1c1c24ee
+selectable_border_color=#4c5bffcc
