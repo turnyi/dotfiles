@@ -194,8 +194,8 @@ hl.bind(mainMod .. " + SHIFT + N", chrome_new_tab(chromeCentinel))
 hl.bind(mainMod .. " + E",         focus_or_launch(fileManager))
 hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + W",         focus_or_launch("whatsapp"))
-hl.bind(mainMod .. " + comma",         hl.dsp.exec_cmd(notificationPending))
-hl.bind(mainMod .. " + SHIFT + comma", hl.dsp.exec_cmd(notificationHistory))
+hl.bind(mainMod .. " + period",        hl.dsp.exec_cmd(notificationPending))
+hl.bind(mainMod .. " + SHIFT + period", hl.dsp.exec_cmd(notificationHistory))
 hl.bind(mainMod .. " + D",         focus_or_launch(discord))
 hl.bind(mainMod .. " + M",         focus_or_launch(music))
 hl.bind(mainMod .. " + P",         focus_or_launch(postman))
@@ -291,7 +291,7 @@ local function toggle_accordion()
     set_layout(ws, accordionLayout)
   end
 end
-hl.bind(mainMod .. " + slash", toggle_accordion)
+hl.bind(mainMod .. " + comma", toggle_accordion)
 
 for key, dir in pairs({ left = "left", right = "right", up = "up", down = "down",
                         h = "left", l = "right", k = "up", j = "down" }) do
