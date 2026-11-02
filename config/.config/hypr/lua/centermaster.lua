@@ -18,6 +18,11 @@ local opts = setmetatable({}, { __index = DEFAULTS })
 local mfact = DEFAULTS.mfact
 local accordion = {}
 local expanded = {}
+-- frozen[ws] is the column that takes no new windows; the other one is put in
+-- accordion while frozen and handed back its own accordion state afterwards.
+local frozen = {}
+local accordion_before_freeze = {}
+local last_count = {}
 
 local left, right = {}, {}
 
@@ -63,10 +68,6 @@ local function even_split(list, x, y, w, h)
   bsp(list, 1, #list, x, y, w, h, true)
 end
 
--- A window's column is decided once, when it first appears, and remembered
--- against its address for as long as it lives. Nothing is ever rebalanced, so
--- five windows on one side and one on the other is a state you can hold; the
--- alternative moves a window you were not touching every time you open one.
 local side_memo = {}
 -- Hyprland's movewindow dispatcher has no hook in the lua layout API, so which
 -- window is master and the order within a column are ours to track. rank orders
@@ -196,13 +197,6 @@ local function recalculate(ctx)
     end
   end
 
-  -- Where a new window goes depends on what you are focused on: inside a column
-  -- it joins that column, so a run of new windows stacks up beside the one you
-  -- are working in. From the master there is no such hint, so it goes to
-  -- whichever column is emptier rather than leaving one side blank.
-  -- Either way the choice is remembered against the window's address and never
-  -- revisited, so opening a window never shuffles one that is already placed.
-  -- SUPER+SHIFT+[ / ] moves one across.
   local nl, nr = 0, 0
   for i = 1, n do
     if i ~= master_i then
@@ -216,19 +210,31 @@ local function recalculate(ctx)
     end
   end
 
-  local focus_side = active_addr and side_memo[active_addr] or nil
-
-  -- Balancing is off once either column of this workspace is an accordion:
-  -- dropping a window into one reshuffles every sliver in it. New windows go to
-  -- the column you are focused in, else to the side that is still stacked.
-  local acc_l = accordion[ws .. ":l"]
-  local acc_r = accordion[ws .. ":r"]
+  local freeze = frozen[ws]
   local function home_for_new()
-    if focus_side then return focus_side end
-    if acc_l and not acc_r then return "r" end
-    if acc_r and not acc_l then return "l" end
-    if acc_l and acc_r then return "r" end
+    if freeze then return (freeze == "l") and "r" or "l" end
     return (nl <= nr) and "l" or "r"
+  end
+
+  -- Closing a window can leave the columns lopsided; the newest window of the
+  -- fuller one crosses over. Only on a shrink, so a manual send sticks until
+  -- something closes.
+  local shrank = last_count[ws] and n < last_count[ws]
+  last_count[ws] = n
+  if shrank and not freeze then
+    while math.abs(nl - nr) > 1 do
+      local from = (nl > nr) and "l" or "r"
+      local newest
+      for i = 1, n do
+        local w = targets[i].window
+        if i ~= master_i and w and side_memo[w.address] == from then
+          if not newest or rank_of(w.address) > rank_of(newest) then newest = w.address end
+        end
+      end
+      if not newest then break end
+      side_memo[newest] = (from == "l") and "r" or "l"
+      if from == "l" then nl, nr = nl - 1, nr + 1 else nl, nr = nl + 1, nr - 1 end
+    end
   end
 
   for i = 1, n do
@@ -269,6 +275,21 @@ end
 local function toggle(ws, side)
   local key = ws .. ":" .. side
   accordion[key] = not accordion[key]
+end
+
+local function toggle_freeze(ws, side)
+  local was = frozen[ws]
+  if was then
+    local other = ws .. ":" .. ((was == "l") and "r" or "l")
+    accordion[other] = accordion_before_freeze[ws]
+    frozen[ws] = nil
+    accordion_before_freeze[ws] = nil
+    if was == side then return end
+  end
+  local other = ws .. ":" .. ((side == "l") and "r" or "l")
+  frozen[ws] = side
+  accordion_before_freeze[ws] = accordion[other]
+  accordion[other] = true
 end
 
 -- Make addr the master; the window it displaces takes over addr's column slot
@@ -346,6 +367,15 @@ local function layout_msg(ctx, msg)
         side_memo[heir] = nil
         master_memo[ws] = heir
       end
+    end
+    return true
+  elseif msg == "togglefreeze" then
+    local side = active_side()
+    local ws = workspace_id(ctx.targets)
+    if side then
+      toggle_freeze(ws, side)
+    elseif frozen[ws] then
+      toggle_freeze(ws, frozen[ws])
     end
     return true
   elseif msg == "swapmaster" then

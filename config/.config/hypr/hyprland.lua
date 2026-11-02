@@ -307,6 +307,7 @@ hl.bind(mainMod .. " + SHIFT + A", per_layout("toggleaccordionboth"))
 hl.bind(mainMod .. " + bracketleft",  per_layout("toggleaccordionleft"))
 hl.bind(mainMod .. " + bracketright", per_layout("toggleaccordionright"))
 hl.bind(mainMod .. " + CTRL + A",     per_layout("sendotherside"))
+hl.bind(mainMod .. " + Z",            per_layout("togglefreeze"))
 hl.bind(mainMod .. " + CTRL + SHIFT + L",
   per_layout("mfact+", hl.dsp.window.resize({ x = 40, y = 0 })))
 hl.bind(mainMod .. " + CTRL + SHIFT + H",
