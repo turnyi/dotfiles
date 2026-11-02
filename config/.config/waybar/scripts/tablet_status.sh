@@ -24,7 +24,7 @@ IFS='|' read -r PERCENT STATE _LINK _NAME <<<"$LINE"
 ICON="󰓷"
 # charging / full / not_charging all mean a cable is doing the work.
 case "$STATE" in
-  charging | full | not_charging) ICON="󰓷󰐥" ;;
+  charging | full | not_charging) ICON="󰓷󱐥" ;;
 esac
 
 # Same thresholds and colours as battery_status.sh, so the two charges on this
