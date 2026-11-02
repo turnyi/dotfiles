@@ -111,7 +111,9 @@ hl.config({
   },
 
   decoration = {
-    rounding = 10,
+    rounding         = 10,
+    active_opacity   = 0.97,
+    inactive_opacity = 0.93,
     shadow = {
       enabled      = true,
       range        = 4,
