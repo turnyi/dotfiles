@@ -16,6 +16,7 @@ local chromePersonal = "Default"
 
 package.path = os.getenv("HOME") .. "/.config/hypr/lua/?.lua;" .. package.path
 require("centermaster").setup({})
+require("accordion").setup({})
 
 local mainMod = "SUPER"
 
@@ -263,17 +264,34 @@ hl.layer_rule({
   no_anim      = true,
 })
 
+local accordionLayout = "lua:accordion"
+local layout_before_accordion = {}
+
+local function set_layout(ws, layout)
+  hl.workspace_rule({ workspace = tostring(ws.id), layout = layout })
+end
+
 local function toggle_layout()
   local ws = hl.get_active_workspace()
-  if not ws then return end
+  if not ws or ws.tiled_layout == accordionLayout then return end
   local onG9 = ws.monitor and ws.monitor.description:sub(1, #g9Desc) == g9Desc
   local masterLayout = onG9 and g9Layout or "master"
-  hl.workspace_rule({
-    workspace = tostring(ws.id),
-    layout    = ws.tiled_layout == "dwindle" and masterLayout or "dwindle",
-  })
+  set_layout(ws, ws.tiled_layout == "dwindle" and masterLayout or "dwindle")
 end
 hl.bind(mainMod .. " + SHIFT + Y", toggle_layout)
+
+local function toggle_accordion()
+  local ws = hl.get_active_workspace()
+  if not ws then return end
+  if ws.tiled_layout == accordionLayout then
+    set_layout(ws, layout_before_accordion[ws.id] or "dwindle")
+    layout_before_accordion[ws.id] = nil
+  else
+    layout_before_accordion[ws.id] = ws.tiled_layout
+    set_layout(ws, accordionLayout)
+  end
+end
+hl.bind(mainMod .. " + slash", toggle_accordion)
 
 for key, dir in pairs({ left = "left", right = "right", up = "up", down = "down",
                         h = "left", l = "right", k = "up", j = "down" }) do
@@ -283,7 +301,7 @@ end
 local function per_layout(centermaster_msg, fallback)
   return function()
     local ws = hl.get_active_workspace()
-    if ws and ws.tiled_layout == "lua:centermaster" then
+    if ws and (ws.tiled_layout == "lua:centermaster" or ws.tiled_layout == accordionLayout) then
       hl.dispatch(hl.dsp.layout(centermaster_msg))
     elseif fallback then
       hl.dispatch(fallback)
