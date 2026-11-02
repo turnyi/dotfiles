@@ -1,0 +1,17 @@
+[Unit]
+Description=EasyEffects audio effects
+After=pipewire.service pipewire-pulse.service wireplumber.service
+PartOf=pipewire.service
+StartLimitIntervalSec=0
+
+[Service]
+ExecStart=/usr/bin/easyeffects --service-mode --hide-window
+# Exits on its own once PipeWire drops it (e.g. earlyoom killing pipewire), so
+# on-failure alone would leave it dead; at login it also fails until Hyprland
+# has imported WAYLAND_DISPLAY into the user manager.
+Restart=always
+RestartSec=3
+OOMScoreAdjust=100
+
+[Install]
+WantedBy=default.target
