@@ -199,6 +199,7 @@ hl.bind(mainMod .. " + SHIFT + period", hl.dsp.exec_cmd(notificationHistory))
 hl.bind(mainMod .. " + D",         focus_or_launch(discord))
 hl.bind(mainMod .. " + M",         focus_or_launch(music))
 hl.bind(mainMod .. " + P",         focus_or_launch(postman))
+hl.bind(mainMod .. " + O",         focus_or_launch("linear"))
 hl.bind(mainMod .. " + U",         focus_or_launch("com.anthropic.claude-desktop"))
 hl.bind(mainMod .. " + SHIFT + U", hl.dsp.exec_cmd("claude-desktop"))
 hl.bind(mainMod .. " + G",         hl.dsp.exec_cmd(screenRecorder))
@@ -416,13 +417,6 @@ hl.bind(mainMod .. " + SHIFT + F", scroll_mode)
 hl.bind("switch:on:Lid Switch",  hl.dsp.exec_cmd("hyprctl keyword monitor eDP-1, disable"), { locked = true })
 hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("hyprctl keyword monitor eDP-1,preferred,0x0,1"), { locked = true })
 
--- SUPER+O opened the Optitask Chrome profile AND entered the "nomovment" submap
--- in hyprland.conf; the submap bind came last and won, so O never reached
--- Chrome. Kept as the submap, with Optitask moved to SUPER+SHIFT+O.
-hl.define_submap("nomovment", "reset", function()
-  hl.bind("escape", hl.dsp.submap("reset"))
-end)
-hl.bind(mainMod .. " + O",         hl.dsp.submap("nomovment"))
 hl.bind(mainMod .. " + SHIFT + O", chrome_profile(chromeOptitask))
 
 --------------------------------
