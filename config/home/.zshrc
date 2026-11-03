@@ -126,6 +126,7 @@ source "$HOME/zsh/history.zsh"
 source "$HOME/zsh/mappings.zsh"
 source "$HOME/zsh/keyring.zsh"
 source "$HOME/zsh/linear.zsh"
+source "$HOME/zsh/tmux.zsh"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/martinradovitzky/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/martinradovitzky/google-cloud-sdk/path.zsh.inc'; fi
@@ -200,6 +201,9 @@ nvm() {
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use
   nvm "$@"
 }
+
+# After the nvm stub: functions.zsh runs load-nvmrc at source time.
+source "$HOME/zsh/functions.zsh"
 
 # PATH hygiene, last word after every block above (and after /etc/zprofile's
 # path_helper, .zprofile, and orbstack have each had their turn). Without this
