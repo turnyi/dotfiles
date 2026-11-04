@@ -64,22 +64,23 @@ stop_sunshine() {
   while running; do sleep 0.2; done
 }
 
+fail() {
+  notify-send -u critical "Tablet screen" "$1"
+  exit 1
+}
+
+# Once tethering is on, the tablet re-enumerates and ADB reports it
+# "unauthorized", so an already-up tether must be detected without ADB.
 start() {
-  local ip="" via="network"
-  if tablet_on_usb; then
-    if ip=$(usb_up); then
-      via="USB"
-    else
-      notify-send -u critical "Tablet screen" "USB tethering did not come up — falling back to network"
-    fi
+  local ip
+  ip=$(usb_ip)
+  if [ -z "$ip" ]; then
+    tablet_on_usb || fail "tablet not connected over USB — Wi-Fi streaming is disabled"
+    ip=$(usb_up) || fail "USB tethering did not come up"
   fi
   stop_sunshine
-  setsid -f sunshine >/dev/null 2>&1
-  if [ "$via" = USB ]; then
-    notify-send "Tablet screen" "server on over USB — open Desktop in Moonlight (host $ip)"
-  else
-    notify-send "Tablet screen" "server on over network — open Desktop in Moonlight"
-  fi
+  setsid -f sunshine "bind_address=$ip" >/dev/null 2>&1
+  notify-send "Tablet screen" "server on over USB — open Desktop in Moonlight (host $ip)"
 }
 
 stop() {
