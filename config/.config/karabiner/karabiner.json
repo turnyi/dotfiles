@@ -12,6 +12,181 @@
       "complex_modifications": {
         "rules": [
           {
+            "description": "Double Escape enters svim NORMAL inside text fields; a single Escape reaches the app after 150ms",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "caps_lock"
+                },
+                "conditions": [
+                  {
+                    "type": "variable_if",
+                    "name": "svim_insert",
+                    "value": 1
+                  },
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  },
+                  {
+                    "type": "variable_if",
+                    "name": "svim_escape_tap",
+                    "value": 1
+                  }
+                ],
+                "to": [
+                  {
+                    "set_variable": {
+                      "name": "svim_escape_tap",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "key_code": "close_bracket",
+                    "modifiers": [
+                      "left_control"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "caps_lock"
+                },
+                "conditions": [
+                  {
+                    "type": "variable_if",
+                    "name": "svim_insert",
+                    "value": 1
+                  },
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  }
+                ],
+                "to": [
+                  {
+                    "set_variable": {
+                      "name": "svim_escape_tap",
+                      "value": 1
+                    }
+                  }
+                ],
+                "to_delayed_action": {
+                  "to_if_invoked": [
+                    {
+                      "set_variable": {
+                        "name": "svim_escape_tap",
+                        "value": 0
+                      }
+                    },
+                    {
+                      "key_code": "escape"
+                    }
+                  ],
+                  "to_if_canceled": [
+                    {
+                      "set_variable": {
+                        "name": "svim_escape_tap",
+                        "value": 0
+                      }
+                    }
+                  ]
+                },
+                "parameters": {
+                  "basic.to_delayed_action_delay_milliseconds": 150
+                }
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "escape"
+                },
+                "conditions": [
+                  {
+                    "type": "variable_if",
+                    "name": "svim_insert",
+                    "value": 1
+                  },
+                  {
+                    "type": "variable_if",
+                    "name": "svim_escape_tap",
+                    "value": 1
+                  }
+                ],
+                "to": [
+                  {
+                    "set_variable": {
+                      "name": "svim_escape_tap",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "key_code": "close_bracket",
+                    "modifiers": [
+                      "left_control"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "escape"
+                },
+                "conditions": [
+                  {
+                    "type": "variable_if",
+                    "name": "svim_insert",
+                    "value": 1
+                  }
+                ],
+                "to": [
+                  {
+                    "set_variable": {
+                      "name": "svim_escape_tap",
+                      "value": 1
+                    }
+                  }
+                ],
+                "to_delayed_action": {
+                  "to_if_invoked": [
+                    {
+                      "set_variable": {
+                        "name": "svim_escape_tap",
+                        "value": 0
+                      }
+                    },
+                    {
+                      "key_code": "escape"
+                    }
+                  ],
+                  "to_if_canceled": [
+                    {
+                      "set_variable": {
+                        "name": "svim_escape_tap",
+                        "value": 0
+                      }
+                    }
+                  ]
+                },
+                "parameters": {
+                  "basic.to_delayed_action_delay_milliseconds": 150
+                }
+              }
+            ]
+          },
+          {
             "description": "Caps Lock -> Esc, Fn -> Caps Lock [built-in keyboard] (replaces macOS Modifier Keys, which Karabiner bypasses)",
             "manipulators": [
               {

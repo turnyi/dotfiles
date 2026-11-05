@@ -1,5 +1,6 @@
 require("items.spaces")
 require("items.front_app")
+require("items.svim")
 require("items.calendar")
 require("items.widgets.battery")
 require("items.widgets.cpu")

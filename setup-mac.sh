@@ -27,6 +27,12 @@ else
   echo "⚠️  No post-install script found at $POST_INSTALL."
 fi
 
+mkdir -p "$HOME/.config/svim"
+for f in blacklist svimrc svim.sh; do
+  ln -sfn "$SCRIPT_DIR/config/.config/svim/$f" "$HOME/.config/svim/$f"
+done
+brew services restart svim
+
 # Kitty's secure keyboard entry grabs macOS secure input, which blocks
 # AeroSpace's global hotkeys whenever kitty is focused.
 defaults write net.kovidgoyal.kitty SecureKeyboardEntry -bool false
