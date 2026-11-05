@@ -35,6 +35,12 @@ else
   echo "⚠️  No yay package list found at $YAY_FILE"
 fi
 
+HYPRVIM_DIR="$HOME/.local/share/hyprland/lua/plugins/hyprvim"
+if [[ ! -d "$HYPRVIM_DIR" ]]; then
+  echo "⌨️  Installing HyprVim..."
+  git clone https://github.com/uhs-robert/hyprvim "$HYPRVIM_DIR"
+fi
+
 if [[ "$SYNC_ONLY" = false ]]; then
   echo "✅ Arch setup complete."
   exit 0

@@ -18,6 +18,8 @@ package.path = os.getenv("HOME") .. "/.config/hypr/lua/?.lua;" .. package.path
 require("centermaster").setup({})
 require("accordion").setup({})
 
+local activeBorder = { colors = { "rgba(4c5bffdd)", "rgba(3cc8ccdd)" }, angle = 45 }
+
 local mainMod = "SUPER"
 
 local function focus_or_launch(query)
@@ -109,7 +111,7 @@ hl.config({
     gaps_out    = 5,
     border_size = 1,
     col = {
-      active_border   = { colors = { "rgba(4c5bffdd)", "rgba(3cc8ccdd)" }, angle = 45 },
+      active_border   = activeBorder,
       inactive_border = "rgba(3a3a4add)",
     },
     resize_on_border = false,
@@ -173,6 +175,11 @@ hl.config({
       natural_scroll = false,
     },
   },
+})
+
+require("vimmode").setup({
+  skip   = { "kitty", "alacritty" },
+  border = activeBorder,
 })
 
 -- Curves are still defined even though animations are disabled, so flipping

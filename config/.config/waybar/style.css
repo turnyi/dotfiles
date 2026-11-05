@@ -36,6 +36,7 @@ tooltip label {
 }
 
 #workspaces,
+#submap,
 #custom-stream_status,
 #custom-music,
 #custom-calendar,
@@ -66,6 +67,11 @@ tooltip label {
 
 #workspaces {
   padding: 0;
+}
+
+#submap {
+  color: @green;
+  font-weight: bold;
 }
 
 #workspaces button {

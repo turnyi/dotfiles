@@ -5,7 +5,8 @@
   "modules-left": [
     "custom/pad5120",
     "custom/stream_status",
-    "hyprland/workspaces"
+    "hyprland/workspaces",
+    "hyprland/submap"
   ],
   "modules-center": [
     "clock",
@@ -27,6 +28,12 @@
   ],
   "hyprland/workspaces": {
     "format": "{name}"
+  },
+  "hyprland/submap": {
+    "format": "\ue62b {}",
+    "max-length": 12,
+    "tooltip": false,
+    "on-click": "hyprctl dispatch 'hl.dsp.submap(\"reset\")'"
   },
   "tray": {
     "icon-size": 21,
