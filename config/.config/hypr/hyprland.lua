@@ -45,16 +45,22 @@ local g9 = "desc:Samsung Electric Company LC49G95T H4ZT100019"
 
 -- Pinned: "auto" monitors re-flow around the tablet output, which pushed the
 -- G9 out from above it as soon as TAB appeared.
+local main = { width = 5120, height = 1440 }
 local side = { width = 1920 }
-local main = { x = side.width, width = 5120, height = 1440 }
 local tab = { width = 2960, height = 1848, scale = 2 }
+local sideX = math.floor((main.width - side.width) / 2)
 
-hl.monitor({ output = "desc:Audio Processing Technology  Ltd MNN", mode = "preferred", position = "0x0", scale = 1 })
-hl.monitor({ output = g9, mode = "5120x1440@120", position = main.x .. "x0", scale = 1 })
+hl.monitor({ output = g9, mode = "5120x1440@120", position = "0x0", scale = 1 })
+hl.monitor({
+  output   = "desc:Audio Processing Technology  Ltd MNN",
+  mode     = "preferred",
+  position = sideX .. "x" .. main.height,
+  scale    = 1,
+})
 hl.monitor({
   output   = "TAB",
   mode     = tab.width .. "x" .. tab.height .. "@120",
-  position = string.format("%dx%d", math.floor(main.x + (main.width - tab.width / tab.scale) / 2), main.height),
+  position = string.format("%dx%d", sideX + side.width, main.height),
   scale    = tab.scale,
 })
 
