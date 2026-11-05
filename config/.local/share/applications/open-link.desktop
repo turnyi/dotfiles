@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Open Link
+Exec=/home/turny/scripts/open-link.sh %u
+MimeType=x-scheme-handler/http;x-scheme-handler/https;text/html;
+NoDisplay=true
