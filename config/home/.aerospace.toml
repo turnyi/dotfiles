@@ -145,7 +145,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-d = "exec-and-forget bash ~/scripts/focus-or-lunch.sh 'Discord'"
     alt-m = "exec-and-forget bash ~/scripts/focus-or-lunch.sh 'Spotify'"
     alt-w = "exec-and-forget bash ~/scripts/focus-or-lunch.sh 'WhatsApp'"
-    alt-o = "exec-and-forget bash ~/scripts/focus-or-lunch.sh 'Obsidian'"
+    alt-o = "exec-and-forget bash ~/scripts/focus-or-lunch.sh 'Linear'"
 
     # ── Open new window (like Hyprland Super+Shift+letter) ───────────
     alt-shift-t = "exec-and-forget open -na 'kitty'"
@@ -154,7 +154,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-shift-d = "exec-and-forget open -na 'Discord'"
     alt-shift-m = "exec-and-forget open -na 'Spotify'"
     alt-shift-w = "exec-and-forget open -na 'WhatsApp'"
-    alt-shift-o = "exec-and-forget open -na 'Obsidian'"
+    alt-shift-o = "exec-and-forget open -na 'Linear'"
 
     # ── Modes ────────────────────────────────────────────────────────
     alt-shift-semicolon = 'mode service'
