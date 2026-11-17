@@ -65,6 +65,9 @@ hl.monitor({
   position = string.format("%dx%d", sideX + side.width, main.height),
   scale    = tab.scale,
 })
+-- Headless output remote-play.sh streams over Tailscale; left of the G9 so it
+-- never shifts the pinned layout above.
+hl.monitor({ output = "REMOTE", mode = "1920x1080@60", position = "-1920x0", scale = 1 })
 
 local g9Layout = "lua:centermaster"
 hl.workspace_rule({

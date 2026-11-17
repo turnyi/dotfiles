@@ -1,0 +1,28 @@
+{
+  "env": {
+    "PATH": "$(PATH):$(HOME)/.local/bin"
+  },
+  "apps": [
+    {
+      "name": "Desktop",
+      "image-path": "desktop.png",
+      "prep-cmd": [
+        {
+          "do": "$(HOME)/scripts/remote-play.sh output-add",
+          "undo": "$(HOME)/scripts/remote-play.sh output-remove"
+        }
+      ]
+    },
+    {
+      "name": "Steam Big Picture",
+      "image-path": "steam.png",
+      "prep-cmd": [
+        {
+          "do": "$(HOME)/scripts/remote-play.sh output-add",
+          "undo": "$(HOME)/scripts/remote-play.sh output-remove"
+        }
+      ],
+      "detached": ["setsid steam steam://open/bigpicture"]
+    }
+  ]
+}

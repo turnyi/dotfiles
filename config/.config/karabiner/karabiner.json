@@ -12,6 +12,139 @@
       "complex_modifications": {
         "rules": [
           {
+            "description": "Moonlight: Option <-> Cmd so Option reaches Hyprland as Super [built-in keyboard]",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "left_option",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "left_command"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "left_command",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "left_option"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "right_option",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "right_command"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "right_command",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "right_option"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "description": "Double Escape enters svim NORMAL inside text fields; a single Escape reaches the app after 150ms",
             "manipulators": [
               {
@@ -269,6 +402,12 @@
                         "is_built_in_keyboard": true
                       }
                     ]
+                  },
+                  {
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
                   }
                 ]
               },
@@ -294,6 +433,12 @@
                       {
                         "is_built_in_keyboard": true
                       }
+                    ]
+                  },
+                  {
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -341,7 +486,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -384,7 +530,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -427,7 +574,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -470,7 +618,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -513,7 +662,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -556,7 +706,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -599,7 +750,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -639,7 +791,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -679,7 +832,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -723,7 +877,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -767,7 +922,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -811,7 +967,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -855,7 +1012,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -899,7 +1057,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -943,7 +1102,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -987,7 +1147,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1031,7 +1192,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1075,7 +1237,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1119,7 +1282,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1163,7 +1327,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1207,7 +1372,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1251,7 +1417,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1295,7 +1462,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1339,7 +1507,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1383,7 +1552,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1427,7 +1597,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1471,7 +1642,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1515,7 +1687,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1559,7 +1732,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1603,7 +1777,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1647,7 +1822,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1691,7 +1867,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1735,7 +1912,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1779,7 +1957,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1823,7 +2002,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1867,7 +2047,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1911,7 +2092,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1955,7 +2137,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -1999,7 +2182,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2043,7 +2227,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2087,7 +2272,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2131,7 +2317,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2175,7 +2362,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2219,7 +2407,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2263,7 +2452,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2307,7 +2497,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2351,7 +2542,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2395,7 +2587,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2439,7 +2632,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2483,7 +2677,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2527,7 +2722,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2571,7 +2767,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2615,7 +2812,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2659,7 +2857,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2703,7 +2902,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2747,7 +2947,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
@@ -2791,7 +2992,8 @@
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
                       "^org\\.alacritty$",
-                      "^com\\.github\\.wez\\.wezterm$"
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
                     ]
                   }
                 ]
