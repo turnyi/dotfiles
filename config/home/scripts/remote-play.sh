@@ -29,6 +29,18 @@ output_remove() {
   ! output_exists || hyprctl output remove "$OUTPUT" >/dev/null
 }
 
+# Gamepad input arrives through Sunshine's virtual controller, which hypridle
+# never sees, so without this the screen locks mid-game.
+INHIBIT=(systemd-inhibit --what=idle --who=remote-play --why="Moonlight stream" sleep infinity)
+
+inhibit_start() {
+  pgrep -f "${INHIBIT[*]}" >/dev/null || setsid -f "${INHIBIT[@]}" >/dev/null 2>&1
+}
+
+inhibit_stop() {
+  pkill -f "${INHIBIT[*]}" || true
+}
+
 # Bound to the Tailscale address only, so the stream and pairing ports are
 # never reachable from the LAN or the internet.
 serve() {
@@ -51,7 +63,7 @@ serve() {
 
 case "${1:-}" in
   serve) serve ;;
-  output-add) output_add ;;
-  output-remove) output_remove ;;
-  *) echo "Usage: $0 [serve|output-add|output-remove]" >&2; exit 1 ;;
+  stream-start) output_add && inhibit_start ;;
+  stream-stop) inhibit_stop && output_remove ;;
+  *) echo "Usage: $0 [serve|stream-start|stream-stop]" >&2; exit 1 ;;
 esac

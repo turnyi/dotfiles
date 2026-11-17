@@ -8,8 +8,8 @@
       "image-path": "desktop.png",
       "prep-cmd": [
         {
-          "do": "$(HOME)/scripts/remote-play.sh output-add",
-          "undo": "$(HOME)/scripts/remote-play.sh output-remove"
+          "do": "$(HOME)/scripts/remote-play.sh stream-start",
+          "undo": "$(HOME)/scripts/remote-play.sh stream-stop"
         }
       ]
     },
@@ -18,8 +18,8 @@
       "image-path": "steam.png",
       "prep-cmd": [
         {
-          "do": "$(HOME)/scripts/remote-play.sh output-add",
-          "undo": "$(HOME)/scripts/remote-play.sh output-remove"
+          "do": "$(HOME)/scripts/remote-play.sh stream-start",
+          "undo": "$(HOME)/scripts/remote-play.sh stream-stop"
         }
       ],
       "detached": ["setsid steam steam://open/bigpicture"]
