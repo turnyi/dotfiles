@@ -1,0 +1,6 @@
+# --prefer/--avoid match /proc/pid/comm, not the cmdline: node 24 renames itself
+# "MainThread" and node 26 "node-MainThread", so a plain "node" misses the hogs.
+# Each match shifts oom_score by 300, and systemd user services start at adj 200,
+# which outranks an 11 GB process at adj 0 even when the service holds 3 MB.
+# ~/scripts/claude-oom-first.sh keeps a Claude session at adj 0 and its children at 1000.
+EARLYOOM_ARGS="-m 5,3 -s 100,100 -r 60 --prefer (MainThread|next-server|tsgo|eslint_d|chrome-headless|java|firebase|qemu|emulator) --avoid (sshd|systemd|tmux|bash|zsh|login|^claude$|Hyprland|hypr|waybar|eww|pipewire|wireplumber|easyeffects|dbus-|xdg-|swaync|gvfs|at-spi|gnome-keyring|vicinae|slack|^chrome$|spotify|1password|sunshine|^sleep$|^xclip$|^curl$|^pgrep$) -n --ignore ^clipcascade"
