@@ -1,0 +1,14 @@
+Let Option combos (AeroSpace alt- shortcuts), F6 (app section cycling) and
+the arrow keys through to the app in every svim mode. Arrows fed to svim's
+vim buffer would kick it out of INSERT; only Esc Esc should do that.
+--- a/src/ax.c
++++ b/src/ax.c
+@@ -206,2 +206,6 @@
+-  if (flags & FLAG_COMMAND)
+-    return event;
++#define FLAG_ALTERNATE (1 << 19)
++#define KEYCODE_F6 97
++  if (flags & (FLAG_COMMAND | FLAG_ALTERNATE)) return event;
++  int keycode = CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
++  if (keycode == KEYCODE_F6) return event;
++  if (keycode >= 123 && keycode <= 126) return event;

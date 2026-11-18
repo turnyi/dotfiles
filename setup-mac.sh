@@ -31,6 +31,36 @@ mkdir -p "$HOME/.config/svim"
 for f in blacklist svimrc svim.sh; do
   ln -sfn "$SCRIPT_DIR/config/.config/svim/$f" "$HOME/.config/svim/$f"
 done
+
+# Patched svim: lets Option (AeroSpace) and F6 (Ctrl+h/j/k/l section cycling)
+# through in NORMAL. Pinned so brew upgrade doesn't overwrite it; rerun after unpinning.
+SVIM_SRC="$(mktemp -d)"
+git clone --depth 1 https://github.com/FelixKratz/SketchyVim "$SVIM_SRC"
+git -C "$SVIM_SRC" apply --unidiff-zero "$SCRIPT_DIR/packages/svim/pass-option-and-f6.patch"
+make -C "$SVIM_SRC"
+
+# Sign with a stable self-signed identity so the Accessibility grant survives
+# rebuilds (an ad-hoc signature changes every build and macOS drops the grant).
+SVIM_SIGN_IDENTITY="svim-codesign"
+LOGIN_KEYCHAIN="$HOME/Library/Keychains/login.keychain-db"
+if ! security find-certificate -c "$SVIM_SIGN_IDENTITY" "$LOGIN_KEYCHAIN" >/dev/null 2>&1; then
+  SIGN_TMP="$(mktemp -d)"
+  /usr/bin/openssl req -x509 -newkey rsa:2048 -nodes -days 3650 \
+    -subj "/CN=$SVIM_SIGN_IDENTITY" \
+    -addext "basicConstraints=critical,CA:false" \
+    -addext "keyUsage=critical,digitalSignature" \
+    -addext "extendedKeyUsage=critical,codeSigning" \
+    -keyout "$SIGN_TMP/key.pem" -out "$SIGN_TMP/cert.pem"
+  /usr/bin/openssl pkcs12 -export -passout pass:svim \
+    -inkey "$SIGN_TMP/key.pem" -in "$SIGN_TMP/cert.pem" -out "$SIGN_TMP/identity.p12"
+  security import "$SIGN_TMP/identity.p12" -k "$LOGIN_KEYCHAIN" -P svim -T /usr/bin/codesign
+  rm -rf "$SIGN_TMP"
+fi
+codesign --force --sign "$SVIM_SIGN_IDENTITY" --identifier svim "$SVIM_SRC/bin/svim"
+
+cp "$SVIM_SRC/bin/svim" "$(brew --prefix)/bin/svim"
+rm -rf "$SVIM_SRC"
+brew pin svim
 brew services restart svim
 
 # Kitty's secure keyboard entry grabs macOS secure input, which blocks

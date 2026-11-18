@@ -1,11 +1,11 @@
 after-login-command = []
 after-startup-command = [
-  'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=2.0',
+  'exec-and-forget borders active_color="gradient(top_left=0xdd4c5bff,bottom_right=0xdd3cc8cc)" inactive_color=0xdd3a3a4a width=2.0',
   'exec-and-forget sketchybar'
 ]
 
 exec-on-workspace-change = ['/bin/bash', '-c',
-  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; bash ~/scripts/aerospace-whatsapp-call.sh --follow'
 ]
 
 start-at-login = true
@@ -221,10 +221,12 @@ run = 'move-node-to-workspace --focus-follows-window 6'
 if.app-id = 'com.spotify.client'
 run = 'move-node-to-workspace --focus-follows-window 7'
 
-# WhatsApp Web (Chrome PWA)
+# WhatsApp Web (Chrome PWA). The main window goes to workspace 8. A call
+# popup floats on the current workspace and follows you to every workspace
+# (see aerospace-whatsapp-call.sh).
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome.app.hnpfjngllnobngcgfapefoaidbinmjnm'
-run = 'move-node-to-workspace --focus-follows-window 8'
+run = 'exec-and-forget bash ~/scripts/aerospace-whatsapp-call.sh --detected'
 
 [[on-window-detected]]
 if.app-id = 'io.zsa.keymapp'
@@ -234,3 +236,11 @@ run = 'move-node-to-workspace --focus-follows-window 4'
 [[on-window-detected]]
 if.app-id = 'com.webcatalog.switchbar'
 run = 'layout floating'
+
+# Wine games (e.g. via CrossOver) have no bundle ID and no green fullscreen
+# button, so put every Wine window into macOS native fullscreen (its own
+# Space, like the green button) as it opens. on-window-detected can't run
+# that command directly, so it goes through exec-and-forget.
+[[on-window-detected]]
+if.app-name-regex-substring = '^wine'
+run = 'exec-and-forget aerospace macos-native-fullscreen on --window-id "$AEROSPACE_WINDOW_ID"'

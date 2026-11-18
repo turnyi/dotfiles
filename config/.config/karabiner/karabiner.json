@@ -145,7 +145,7 @@
             ]
           },
           {
-            "description": "Double Escape enters svim NORMAL inside text fields; a single Escape reaches the app after 150ms",
+            "description": "Double Escape enters svim NORMAL outside terminals; a single Escape reaches the app after 150ms (instant in NORMAL/VISUAL)",
             "manipulators": [
               {
                 "type": "basic",
@@ -154,8 +154,21 @@
                 },
                 "conditions": [
                   {
-                    "type": "variable_if",
-                    "name": "svim_insert",
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
+                      "^com\\.apple\\.Terminal$",
+                      "^com\\.googlecode\\.iterm2$",
+                      "^com\\.mitchellh\\.ghostty$",
+                      "^org\\.alacritty$",
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "variable_unless",
+                    "name": "svim_vim",
                     "value": 1
                   },
                   {
@@ -194,8 +207,21 @@
                 },
                 "conditions": [
                   {
-                    "type": "variable_if",
-                    "name": "svim_insert",
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
+                      "^com\\.apple\\.Terminal$",
+                      "^com\\.googlecode\\.iterm2$",
+                      "^com\\.mitchellh\\.ghostty$",
+                      "^org\\.alacritty$",
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "variable_unless",
+                    "name": "svim_vim",
                     "value": 1
                   },
                   {
@@ -247,8 +273,21 @@
                 },
                 "conditions": [
                   {
-                    "type": "variable_if",
-                    "name": "svim_insert",
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
+                      "^com\\.apple\\.Terminal$",
+                      "^com\\.googlecode\\.iterm2$",
+                      "^com\\.mitchellh\\.ghostty$",
+                      "^org\\.alacritty$",
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "variable_unless",
+                    "name": "svim_vim",
                     "value": 1
                   },
                   {
@@ -279,8 +318,21 @@
                 },
                 "conditions": [
                   {
-                    "type": "variable_if",
-                    "name": "svim_insert",
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
+                      "^com\\.apple\\.Terminal$",
+                      "^com\\.googlecode\\.iterm2$",
+                      "^com\\.mitchellh\\.ghostty$",
+                      "^org\\.alacritty$",
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "variable_unless",
+                    "name": "svim_vim",
                     "value": 1
                   }
                 ],
@@ -316,6 +368,173 @@
                 "parameters": {
                   "basic.to_delayed_action_delay_milliseconds": 150
                 }
+              }
+            ]
+          },
+          {
+            "description": "Ctrl+h/j/k/l cycles app sections (F6 / Shift+F6) in svim NORMAL",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "h",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control"
+                    ],
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
+                },
+                "conditions": [
+                  {
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
+                      "^com\\.apple\\.Terminal$",
+                      "^com\\.googlecode\\.iterm2$",
+                      "^com\\.mitchellh\\.ghostty$",
+                      "^org\\.alacritty$",
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "variable_if",
+                    "name": "svim_normal",
+                    "value": 1
+                  }
+                ],
+                "to": [
+                  {
+                    "key_code": "f6",
+                    "modifiers": [
+                      "left_shift"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "k",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control"
+                    ],
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
+                },
+                "conditions": [
+                  {
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
+                      "^com\\.apple\\.Terminal$",
+                      "^com\\.googlecode\\.iterm2$",
+                      "^com\\.mitchellh\\.ghostty$",
+                      "^org\\.alacritty$",
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "variable_if",
+                    "name": "svim_normal",
+                    "value": 1
+                  }
+                ],
+                "to": [
+                  {
+                    "key_code": "f6",
+                    "modifiers": [
+                      "left_shift"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "j",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control"
+                    ],
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
+                },
+                "conditions": [
+                  {
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
+                      "^com\\.apple\\.Terminal$",
+                      "^com\\.googlecode\\.iterm2$",
+                      "^com\\.mitchellh\\.ghostty$",
+                      "^org\\.alacritty$",
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "variable_if",
+                    "name": "svim_normal",
+                    "value": 1
+                  }
+                ],
+                "to": [
+                  {
+                    "key_code": "f6"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "l",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_control"
+                    ],
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
+                },
+                "conditions": [
+                  {
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
+                      "^com\\.apple\\.Terminal$",
+                      "^com\\.googlecode\\.iterm2$",
+                      "^com\\.mitchellh\\.ghostty$",
+                      "^org\\.alacritty$",
+                      "^com\\.github\\.wez\\.wezterm$",
+                      "^com\\.moonlight-stream\\.Moonlight$"
+                    ]
+                  },
+                  {
+                    "type": "variable_if",
+                    "name": "svim_normal",
+                    "value": 1
+                  }
+                ],
+                "to": [
+                  {
+                    "key_code": "f6"
+                  }
+                ]
               }
             ]
           },
@@ -482,6 +701,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -526,6 +746,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -570,6 +791,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -614,6 +836,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -658,6 +881,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -702,6 +926,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -746,6 +971,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -787,6 +1013,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -828,6 +1055,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -873,6 +1101,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -918,6 +1147,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -963,6 +1193,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1008,6 +1239,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1053,6 +1285,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1098,6 +1331,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1143,6 +1377,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1188,6 +1423,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1233,6 +1469,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1278,6 +1515,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1323,6 +1561,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1368,6 +1607,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1413,6 +1653,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1458,6 +1699,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1503,6 +1745,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1548,6 +1791,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1593,6 +1837,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1638,6 +1883,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1683,6 +1929,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1728,6 +1975,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1773,6 +2021,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1818,6 +2067,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1863,6 +2113,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1908,6 +2159,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1953,6 +2205,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -1998,6 +2251,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2043,6 +2297,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2088,6 +2343,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2133,6 +2389,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2178,6 +2435,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2223,6 +2481,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2268,6 +2527,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2313,6 +2573,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2358,6 +2619,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2403,6 +2665,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2448,6 +2711,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2493,6 +2757,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2538,6 +2803,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2583,6 +2849,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2628,6 +2895,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2673,6 +2941,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2718,6 +2987,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2763,6 +3033,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2808,6 +3079,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2853,6 +3125,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2898,6 +3171,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2943,6 +3217,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",
@@ -2988,6 +3263,7 @@
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
                       "^net\\.kovidgoyal\\.kitty$",
+                      "^com\\.superlogical\\.rex$",
                       "^com\\.apple\\.Terminal$",
                       "^com\\.googlecode\\.iterm2$",
                       "^com\\.mitchellh\\.ghostty$",

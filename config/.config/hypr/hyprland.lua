@@ -222,6 +222,9 @@ hl.bind(mainMod .. " + G",         hl.dsp.exec_cmd(screenRecorder))
 hl.bind(mainMod .. " + S",         focus_or_launch("slack"))
 hl.bind(mainMod .. " + C",         hl.dsp.exec_cmd(clipboard))
 hl.bind(mainMod .. " + R",         hl.dsp.exec_cmd(menu))
+-- Mac parity: PowerClick's ShortClick (⌃⌥Space) and Showtap (⌥⇧P)
+hl.bind("CTRL + ALT + space",      hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("bash ~/scripts/presenter-cursor.sh toggle"))
 
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
@@ -475,6 +478,19 @@ hl.window_rule({
   size = "640 360",
   move = "100%-650 61",
   pin  = true,
+})
+
+-- WhatsApp call popup. The WhatsApp Web PWA opens the call in a second window
+-- whose title ends in "WhatsApp call". It shares the main PWA window's class,
+-- so the title is the only thing that separates them. Pin keeps it on top and
+-- visible on every workspace.
+hl.window_rule({
+  name  = "whatsapp-call-corner",
+  match = { class = "^(chrome-hnpfjngllnobngcgfapefoaidbinmjnm-Default)$", title = "^(.*WhatsApp call)$" },
+  float = true,
+  size  = "640 360",
+  move  = "100%-650 61",
+  pin   = true,
 })
 
 -------------------

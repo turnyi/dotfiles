@@ -8,17 +8,17 @@ Karabiner does the Escape timing, and JankyBorders plus SketchyBar show the mode
 
 | Behaviour | Hyprland (done) | Mac status |
 |---|---|---|
-| Single Esc reaches the app after 150ms | yes | done (task 2 widens it) |
-| Esc Esc within 150ms enters NORMAL, nothing reaches the app | yes | done (only after typing in the field; task 2 fixes) |
-| Esc in NORMAL goes to the app | yes | done (svim default) |
+| Single Esc reaches the app after 150ms | yes | done, everywhere except terminals |
+| Esc Esc within 150ms enters NORMAL, nothing reaches the app | yes | done, gated by app (task 2) |
+| Esc in NORMAL goes to the app | yes | done, instant (no delay while `svim_vim` is set) |
 | Motions, operators, text objects, counts | HyprVim (subset) | done (svim is real vim, better than Linux) |
 | Border green in NORMAL, orange in VISUAL, normal otherwise | yes | done (JankyBorders) |
 | Mode label in the bar | waybar | done (SketchyBar) |
 | Off in terminals | kitty, alacritty | done (svim blacklist) |
-| WM shortcuts work in any mode | SUPER | **verify** (task 3) |
-| Ctrl+h/j/k/l cycles app sections (F6 / Shift+F6) in NORMAL | yes | **todo** (task 4) |
+| WM shortcuts work in any mode | SUPER | done with patched svim (task 6) |
+| Ctrl+h/j/k/l cycles app sections (F6 / Shift+F6) in NORMAL | yes | done with patched svim (tasks 4, 6) |
 | Each window remembers its mode | yes | accepted difference: svim resets to insert per field |
-| Linear/WhatsApp links open in their apps | `open-link.sh` | Chrome setting only (task 5) |
+| Linear/WhatsApp links open in their apps | `open-link.sh` | **manual**: Chrome setting (task 5) |
 
 ## Task 1: apply and verify what is already committed
 

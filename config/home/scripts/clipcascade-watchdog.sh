@@ -14,6 +14,13 @@
 #
 # So the fix is the same one the Linux side already uses: notice the session is
 # gone and restart the client, which makes it log in again.
+#
+# A network outage (Tailscale reconnecting, sleep/wake) breaks it differently:
+# the client reopens the websocket while the link is still flaky, logs
+# "Websocket connected", and never gets its STOMP CONNECT through. The session
+# cookie stays valid, so the check above passes, yet nothing syncs until the
+# client restarts. So once the server is reachable again after an outage, the
+# client is restarted regardless.
 set -euo pipefail
 
 APP="/Applications/ClipCascade.app"
@@ -23,6 +30,8 @@ LOG="$HOME/Library/Application Support/ClipCascade/watchdog.log"
 # session on the next tick and the watchdog restarts it forever.
 RESTART_STAMP="${TMPDIR:-/tmp}/clipcascade-watchdog.stamp"
 RESTART_COOLDOWN=120
+# Present while the server is unreachable; its removal on recovery restarts the client.
+OUTAGE_STAMP="${TMPDIR:-/tmp}/clipcascade-watchdog.outage"
 CURL_TIMEOUT=8
 
 log() {
@@ -77,11 +86,18 @@ session="$(data_field jsessionid)"
 # No cookie yet means the client is still logging in — leave it alone.
 [ -n "$server_url" ] && [ -n "$session" ] || exit 0
 
+# curl already prints 000 when it cannot connect; `|| true` keeps it from
+# being doubled up.
 status="$(curl -s -o /dev/null -w "%{http_code}" --max-time "$CURL_TIMEOUT" \
-  -H "Cookie: JSESSIONID=$session" "$server_url/max-size" 2>/dev/null || echo 000)"
+  -H "Cookie: JSESSIONID=$session" "$server_url/max-size" 2>/dev/null || true)"
 
 case "$status" in
-  200) ;; # session alive, nothing to do
+  200)
+    if [ -f "$OUTAGE_STAMP" ]; then
+      rm -f "$OUTAGE_STAMP"
+      restart_client "server reachable again after outage"
+    fi
+    ;;
   302 | 401 | 403)
     # Authenticated endpoint is bouncing us to the login page: the session is
     # gone. This is the state the client can never dig itself out of.
@@ -90,6 +106,7 @@ case "$status" in
   *)
     # 000 / 502 / 503: the server itself is down or still booting. Restarting
     # the client would not help — there is nothing to log in to yet.
-    log "server unreachable (HTTP $status) - waiting"
+    [ -f "$OUTAGE_STAMP" ] || log "server unreachable (HTTP ${status:-000}) - waiting"
+    : >"$OUTAGE_STAMP"
     ;;
 esac

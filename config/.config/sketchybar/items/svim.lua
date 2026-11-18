@@ -1,10 +1,10 @@
-local colors = require("colors")
 local settings = require("settings")
 
+-- Same colors as the border (config/.config/svim/svim.sh) and Hyprland's vimmode.lua
 local MODES = {
-  N = { label = "NORMAL", color = colors.green },
-  V = { label = "VISUAL", color = colors.orange },
-  C = { label = "COMMAND", color = colors.yellow },
+  N = { label = "NORMAL", color = 0xee9ed072 },
+  V = { label = "VISUAL", color = 0xeef39660 },
+  C = { label = "COMMAND", color = 0xeee7c664 },
 }
 
 sbar.add("event", "svim_mode")

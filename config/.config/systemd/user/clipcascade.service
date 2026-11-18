@@ -9,6 +9,11 @@ Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin
 # The launcher traps SIGTERM (earlyoom) and exits 0, which on-failure would not restart.
 Restart=always
 RestartSec=5
+# User services default to the manager's adjust + 100 (200), which scores every
+# 2 MiB sleep/curl/xclip the launcher spawns above a multi-GiB node process, so
+# earlyoom picks them first and takes the client down. 100 is the lowest an
+# unprivileged user manager may set.
+OOMScoreAdjust=100
 
 [Install]
 WantedBy=default.target
