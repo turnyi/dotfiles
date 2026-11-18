@@ -27,18 +27,27 @@ rex.bind("ctrl+a>ctrl+r", "client.mode.enter", { name = "repeat" })
 rex.bind("repeat/enter", "client.mode.exit")
 rex.bind("repeat/escape", "client.mode.exit")
 
--- ~/.tmux.conf:129
-rex.bind("ctrl+a>j", "pane.resize", { amount = 5, direction = "down" })
-rex.bind("repeat/j", "pane.resize", { amount = 5, direction = "down" })
--- ~/.tmux.conf:130
-rex.bind("ctrl+a>k", "pane.resize", { amount = 5, direction = "up" })
-rex.bind("repeat/k", "pane.resize", { amount = 5, direction = "up" })
--- ~/.tmux.conf:131
-rex.bind("ctrl+a>l", "pane.resize", { amount = 5, direction = "right" })
-rex.bind("repeat/l", "pane.resize", { amount = 5, direction = "right" })
--- ~/.tmux.conf:132
-rex.bind("ctrl+a>h", "pane.resize", { amount = 5, direction = "left" })
-rex.bind("repeat/h", "pane.resize", { amount = 5, direction = "left" })
+-- ~/.tmux.conf:129-132 (bind -r h/j/k/l resize-pane -L/-D/-U/-R 5): prefix
+-- h/j/k/l resizes and then enters repeat mode, so jjj or kk carries on
+-- resizing. Rex has no repeat timer, so instead of tmux's repeat-time you
+-- leave with escape or enter; other keys do nothing until then. The mode keeps
+-- to these few keys so the key hint stays short.
+local resize_keys = { h = "left", j = "down", k = "up", l = "right" }
+
+rex.action{
+  name  = "resize_start",
+  title = "Resize Pane and Keep Resizing",
+  args  = { direction = "string" },
+  run   = function(ctx, args)
+    rex.client.queue("pane.resize", { amount = 5, direction = args.direction })
+    rex.client.queue("client.mode.enter", { name = "repeat" })
+  end,
+}
+
+for key, direction in pairs(resize_keys) do
+  rex.bind("ctrl+a>" .. key, "resize_start", { direction = direction })
+  rex.bind("repeat/" .. key, "pane.resize", { amount = 5, direction = direction })
+end
 -- ~/.tmux.conf:134
 rex.bind("ctrl+a>m", "pane.zoom")
 rex.bind("repeat/m", "pane.zoom")
