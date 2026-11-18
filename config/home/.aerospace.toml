@@ -138,7 +138,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-shift-9 = 'move-node-to-workspace --focus-follows-window 9'
 
     # ── Focus or launch apps (like Hyprland Super+letter) ────────────
-    alt-t = "exec-and-forget bash ~/scripts/focus-or-lunch.sh 'kitty'"
+    alt-t = "exec-and-forget bash ~/scripts/focus-or-lunch.sh 'Rex Beta'"
     alt-b = "exec-and-forget bash ~/scripts/focus-or-lunch.sh 'Google Chrome' 'Personal'"
     alt-n = "exec-and-forget bash ~/scripts/focus-or-lunch.sh 'Google Chrome' 'Centinel'"
     alt-s = "exec-and-forget bash ~/scripts/focus-or-lunch.sh 'Slack'"
