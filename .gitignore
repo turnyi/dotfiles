@@ -8,6 +8,10 @@ config/.config/gh/hosts
 config/.config/gh/hosts.yml
 config/home/zsh/antigen.sh.zwc
 .DS_Store
+._*
+config/home/.tmux/plugins/tmux/
+config/home/.tmux/plugins/tmux-continuum/
+config/home/.tmux/plugins/tmux-resurrect/
 config/.config/nvim/db.config.vim
 .aider*
 config/home/scripts/setup-quasar-docs.sh
