@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Like `ssh HOST`, but into a persistent Rex session on HOST's Rex server.
+# Reuses the session named NAME (default "main") or creates it, registers HOST
+# as a Rex host on first use, and shows the session in the Rex app.
+# HOST is anything ssh understands, e.g. an alias from ~/.ssh/config.
+#   sshx <host> [name]
+set -u
+
+host="${1:-}"; name="${2:-main}"
+[ -n "$host" ] || { echo "usage: sshx <host> [name]" >&2; exit 2; }
+
+# Register the host so the app lists it and `rex -S <host>` works.
+if ! rex hosts --json | jq -e --arg h "$host" '.hosts[] | select(.host.label == $h)' >/dev/null; then
+  if ! rex -S "ssh://$host" ls >/dev/null 2>&1; then
+    echo "sshx: can't reach a Rex server on $host (is rex installed there?)" >&2
+    exit 1
+  fi
+  rex hosts add "$host" "ssh://$host" >/dev/null || exit 1
+fi
+
+session="$(rex -S "$host" ls --json | jq -r --arg n "$name" 'first(.sessions[] | select(.label == $n) | .session_id) // empty')" || exit 1
+if [ -z "$session" ]; then
+  session="$(rex -S "$host" new "$name" --json | jq -er '.session_id')" || exit 1
+fi
+
+# Show it in the Rex app, if the app is connected to that host.
+client="$(rex -S "$host" client ls --json | jq -r 'first(.clients[] | select(.info.kind == "app") | .client_id) // empty')"
+if [ -n "$client" ] && rex -S "$host" -C "$client" do session.select session_id="$session" >/dev/null 2>&1; then
+  echo "sshx: opened '$name' on $host"
+else
+  echo "sshx: session '$name' is ready on $host ($session)"
+  echo "      open it in the Rex app: Switch Host -> $host"
+fi
