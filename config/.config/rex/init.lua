@@ -52,8 +52,11 @@ rex.action{
   title = "New Tab Here",
   description = "Open a tab whose shell starts in the focused pane's current directory.",
   run   = function(ctx, args)
-    local _, err = rex.session.new_window{ layout = shellHere(ctx.block_id) }
+    local w, err = rex.session.new_window{ layout = shellHere(ctx.block_id) }
     if err ~= nil then error(err, 0) end
+    -- The new window becomes the session's active one, but the app keeps
+    -- showing the tab it was on, so ask it to switch, like tmux new-window.
+    rex.client.queue("session.select", { session_id = ctx.session_id, window_id = w.window_id })
   end,
 }
 
