@@ -1,0 +1,6 @@
+[filechooser]
+cmd=superfile-wrapper.sh
+default_dir=$HOME/Downloads
+env=TERMCMD=kitty --class termfilechooser
+open_mode=last
+save_mode=last

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=superfile
+Comment=Terminal file manager
+Exec=kitty --class superfile spf
+Icon=system-file-manager
+Terminal=false
+Categories=System;FileTools;FileManager;
+Keywords=files;file manager;spf;superfile;

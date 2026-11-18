@@ -1,6 +1,6 @@
 local terminal       = "kitty"
 local browser        = "google-chrome-stable"
-local fileManager    = "dolphin"
+local fileManager    = "superfile"
 local discord        = "discord"
 local menu           = "vicinae toggle"
 local music          = "Spotify"
@@ -208,7 +208,7 @@ hl.bind(mainMod .. " + N",         chrome_profile(chromeCentinel))
 hl.bind(mainMod .. " + SHIFT + N", chrome_new_tab(chromeCentinel))
 
 hl.bind(mainMod .. " + E",         focus_or_launch(fileManager))
-hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd(fileManager))
+hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("kitty --class superfile spf"))
 hl.bind(mainMod .. " + W",         focus_or_launch("whatsapp"))
 hl.bind(mainMod .. " + period",        hl.dsp.exec_cmd(notificationPending))
 hl.bind(mainMod .. " + SHIFT + period", hl.dsp.exec_cmd(notificationHistory))
@@ -313,9 +313,17 @@ local function toggle_accordion()
 end
 hl.bind(mainMod .. " + comma", toggle_accordion)
 
+local deckStep = { left = "focusprev", up = "focusprev", right = "focusnext", down = "focusnext" }
 for key, dir in pairs({ left = "left", right = "right", up = "up", down = "down",
                         h = "left", l = "right", k = "up", j = "down" }) do
-  hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ direction = dir }))
+  hl.bind(mainMod .. " + " .. key, function()
+    local ws = hl.get_active_workspace()
+    if ws and ws.tiled_layout == accordionLayout then
+      hl.dispatch(hl.dsp.layout(deckStep[dir]))
+    else
+      hl.dispatch(hl.dsp.focus({ direction = dir }))
+    end
+  end)
 end
 
 local function per_layout(centermaster_msg, fallback)
@@ -338,7 +346,7 @@ for key, dir in pairs({ H = "left", L = "right", K = "up", J = "down" }) do
 end
 hl.bind(mainMod .. " + SHIFT + Return", per_layout("swapmaster"))
 
--- Accordion: A toggles the column holding the focused window (both columns from
+-- Centermaster accordion: A toggles the column holding the focused window (both columns from
 -- the master); the bracket keys target a side directly.
 hl.bind(mainMod .. " + A", per_layout("toggleaccordion"))
 hl.bind(mainMod .. " + SHIFT + A", per_layout("toggleaccordionboth"))
@@ -467,6 +475,14 @@ hl.window_rule({
   match = { class = "^(pf-menu)$" },
   float  = true,
   center = true,
+})
+
+hl.window_rule({
+  name  = "termfilechooser-popup",
+  match = { class = "^(termfilechooser)$" },
+  float  = true,
+  center = true,
+  size   = "60% 65%",
 })
 
 -- Google Meet picture-in-picture. Chrome opens it as a floating window whose

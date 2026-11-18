@@ -51,8 +51,9 @@ fi
 # grep returns matches in readdir order, which is not stable: with two entries
 # for one app (e.g. a Chrome PWA and a leftover firefoxpwa one) consecutive runs
 # disagree on which comes first. Sort, then prefer an exact "Name=" hit over a
-# substring one, so the same launcher wins every time.
-mapfile -t MATCHES < <(grep -ril --include="*.desktop" "Name=$QUERY" \
+# substring one, so the same launcher wins every time. -R, not -r: launchers
+# from dotfiles are symlinks, and -r silently skips symlinked files.
+mapfile -t MATCHES < <(grep -Ril --include="*.desktop" "Name=$QUERY" \
     ~/.local/share/applications /usr/share/applications 2>/dev/null | sort)
 if [ ${#MATCHES[@]} -eq 0 ]; then
     echo "No .desktop file found for '$QUERY'"

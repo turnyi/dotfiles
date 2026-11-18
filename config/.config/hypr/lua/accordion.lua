@@ -1,8 +1,7 @@
 local M = {}
 
 local DEFAULTS = {
-  -- place() subtracts gaps_in on each edge, so 22 requested = 12px visible.
-  sliver = 22,
+  step = 40,
 }
 
 local opts = setmetatable({}, { __index = DEFAULTS })
@@ -43,6 +42,13 @@ local function index_of(list, addr)
   return nil
 end
 
+local function sorted_targets(ctx)
+  local list = {}
+  for _, t in ipairs(ctx.targets) do list[#list + 1] = t end
+  table.sort(list, by_rank)
+  return list
+end
+
 local function even_split(list, a)
   local w = a.w / #list
   for i = 1, #list do
@@ -50,56 +56,73 @@ local function even_split(list, a)
   end
 end
 
+local function focused_index(list)
+  local ws = workspace_id(list)
+  local active = hl.get_active_window()
+  local focus = index_of(list, active and active.address)
+  if focus then
+    expanded[ws] = active.address
+    return focus
+  end
+  return index_of(list, expanded[ws]) or 1
+end
+
+-- The focused window sits at the front of the deck (largest offset, drawn
+-- last by the compositor); the rest keep their rank order behind it so each
+-- one's top-left corner stays visible as a step.
 local function recalculate(ctx)
   local a = ctx.area
-  local list = {}
-  for _, t in ipairs(ctx.targets) do list[#list + 1] = t end
+  local list = sorted_targets(ctx)
   local n = #list
   if n == 0 then return end
   if n == 1 then
     list[1]:place({ x = a.x, y = a.y, w = a.w, h = a.h })
     return
   end
-  table.sort(list, by_rank)
 
-  local ws = workspace_id(list)
-  local active = hl.get_active_window()
-  local focus = index_of(list, active and active.address)
-  if focus then
-    expanded[ws] = active.address
-  else
-    focus = index_of(list, expanded[ws]) or 1
-  end
-
-  local sliver = opts.sliver
-  local big = a.w - sliver * (n - 1)
-  if big <= sliver then
+  local focus = focused_index(list)
+  local step = opts.step
+  local inset = step * (n - 1)
+  if inset * 2 > a.w or inset * 2 > a.h then
     even_split(list, a)
     return
   end
 
-  local cx = a.x
+  local deck = {}
   for i = 1, n do
-    local tw = (i == focus) and big or sliver
-    list[i]:place({ x = cx, y = a.y, w = tw, h = a.h })
-    cx = cx + tw
+    if i ~= focus then deck[#deck + 1] = list[i] end
   end
+  deck[#deck + 1] = list[focus]
+
+  for i = 1, n do
+    local off = step * (i - 1)
+    deck[i]:place({ x = a.x + off, y = a.y + off, w = a.w - inset, h = a.h - inset })
+  end
+end
+
+local function neighbour(ctx, delta)
+  local active = hl.get_active_window()
+  if not active then return nil, nil end
+  local list = sorted_targets(ctx)
+  local at = index_of(list, active.address)
+  if not at then return nil, nil end
+  local other = at + delta
+  if other < 1 or other > #list then return nil, nil end
+  return active, list[other].window
 end
 
 local function layout_msg(ctx, msg)
   if msg == "refocus" then return true end
+  if msg == "focusprev" or msg == "focusnext" then
+    local _, target = neighbour(ctx, msg == "focusprev" and -1 or 1)
+    if target then hl.dispatch(hl.dsp.focus({ window = "address:" .. target.address })) end
+    return true
+  end
   if msg ~= "moveleft" and msg ~= "moveright" then return nil end
-  local active = hl.get_active_window()
-  if not active then return true end
-  local list = {}
-  for _, t in ipairs(ctx.targets) do list[#list + 1] = t end
-  table.sort(list, by_rank)
-  local at = index_of(list, active.address)
-  if not at then return true end
-  local swap = (msg == "moveleft") and (at - 1) or (at + 1)
-  if swap < 1 or swap > #list then return true end
-  local other = list[swap].window.address
-  rank[active.address], rank[other] = rank[other], rank[active.address]
+  local active, other = neighbour(ctx, msg == "moveleft" and -1 or 1)
+  if other then
+    rank[active.address], rank[other.address] = rank[other.address], rank[active.address]
+  end
   return true
 end
 
@@ -112,6 +135,7 @@ function M.setup(user_opts)
   hl.on("window.active", function()
     local ws = hl.get_active_workspace()
     if ws and ws.tiled_layout == "lua:accordion" then
+      hl.dispatch(hl.dsp.window.alter_zorder({ mode = "top" }))
       hl.dispatch(hl.dsp.layout("refocus"))
     end
   end)
