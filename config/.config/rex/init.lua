@@ -2,16 +2,71 @@
 
 -- ~/.tmux.conf:12
 rex.bind("ctrl+a>ctrl+a", "pane.send_key", { key = "ctrl+a" })
+-- New panes and tabs start where the focused pane's shell is, like tmux's
+-- split-window -c "#{pane_current_path}". The directory the shell last
+-- reported over OSC 7 comes first: it stays where you launched a program, so
+-- a pane running Claude Code opens beside where you started it, even after
+-- Claude moved into a worktree. Without OSC 7 (a shell that doesn't send it)
+-- the foreground process's directory is used, then ~.
+local terminal = "com.superlogical.terminal"
+
+---@param block_id string?
+---@return string?
+local function paneCwd(block_id)
+  if not block_id then return nil end
+  local d = rex.block.call(terminal, "pwd", { block_id = block_id })
+  local url = d and d.pwd
+  if url then
+    local path = url:gsub("^file://[^/]*", "")
+    return (path:gsub("%%(%x%x)", function(h) return string.char(tonumber(h, 16)) end))
+  end
+  local p = rex.block.call(terminal, "process", { block_id = block_id })
+  return p and p.foreground and p.foreground.cwd
+end
+
+---@param block_id string?
+local function shellHere(block_id)
+  return { block = { flavor = terminal .. ".shell", options = { cwd = paneCwd(block_id) } } }
+end
+
+rex.action{
+  name  = "pane_split_here",
+  title = "Split Pane Here",
+  description = "Split the pane, starting the new shell in the pane's current directory.",
+  args  = { direction = "string" },
+  run   = function(ctx, args)
+    local d = args.direction
+    local _, err = rex.session.new_split{
+      anchor_id = ctx.block_id,
+      direction = (d == "left" or d == "right") and "horizontal" or "vertical",
+      side = (d == "left" or d == "up") and "before" or "after",
+      focus = true,
+      layout = shellHere(ctx.block_id),
+    }
+    if err ~= nil then error(err, 0) end
+  end,
+}
+
+rex.action{
+  name  = "tab_new_here",
+  title = "New Tab Here",
+  description = "Open a tab whose shell starts in the focused pane's current directory.",
+  run   = function(ctx, args)
+    local _, err = rex.session.new_window{ layout = shellHere(ctx.block_id) }
+    if err ~= nil then error(err, 0) end
+  end,
+}
+
 -- ~/.tmux.conf:15
-rex.bind("ctrl+a>\\", "pane.split", { direction = "right" })
+rex.bind("ctrl+a>\\", "pane_split_here", { direction = "right" })
 -- ~/.tmux.conf:18
-rex.bind("ctrl+a>-", "pane.split", { direction = "down" })
+rex.bind("ctrl+a>-", "pane_split_here", { direction = "down" })
 -- ~/.tmux.conf:21
 rex.bind("ctrl+a>r", "client.config.reload")
 -- tmux default prefix x (kill-pane)
 rex.bind("ctrl+a>x", "pane.close")
 -- tmux default prefix c (new-window); a tmux window is a Rex tab
-rex.bind("ctrl+a>c", "client.tab.new")
+rex.bind("ctrl+a>c", "tab_new_here")
 -- Toolbar: show always -> on hover -> hidden. App settings can't be set from
 -- this file, but a key can flip one; the app remembers the choice.
 rex.bind("ctrl+a>t", "client.setting.interface.toolbar.auto_hide_toolbar")
@@ -55,7 +110,6 @@ rex.bind("repeat/m", "pane.zoom")
 -- Smart pane switching with awareness of vim splits, like vim-tmux-navigator
 -- (~/.tmux.conf:193-196): in (n)vim the key goes through to vim, elsewhere it
 -- moves focus to the neighbouring pane.
-local terminal = "com.superlogical.terminal"
 
 local function is_vim(block_id)
   local p = rex.block.call(terminal, "process", { block_id = block_id })
