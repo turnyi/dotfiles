@@ -3,6 +3,12 @@ local settings = require("settings")
 
 local SCRIPT = "~/.config/sketchybar/plugins/aerospace_spaces.sh"
 
+-- Each workspace shows the native icons of its apps. SketchyBar draws an app
+-- icon as an item's background image, one per item, so every workspace gets a
+-- fixed row of icon slots that the script fills or hides. Keep in sync with
+-- MAX_APPS in aerospace_spaces.sh.
+local MAX_APPS = 6
+
 for i = 1, 9 do
   local ws = tostring(i)
 
@@ -22,27 +28,49 @@ for i = 1, 9 do
       padding_left = 10,
       padding_right = 4,
     },
-    label = {
-      string = "",
-      font = "sketchybar-app-font:Regular:14.0",
-      color = colors.grey,
-      padding_right = 10,
-      y_offset = -1,
-    },
-    -- No pill of its own: the whole row shares one frosted pill (the bracket
-    -- below), and only the focused workspace draws a chip inside it. Nine
-    -- bordered pills in a row read as nine competing objects; one pill with a
-    -- highlight inside reads as one control with a current value.
-    background = {
-      color = colors.transparent,
-      border_color = colors.transparent,
-      border_width = 0,
-      height = 20,
-      corner_radius = 7,
-    },
-    padding_left = 2,
-    padding_right = 2,
+    label = { drawing = false },
+    background = { drawing = false },
+    padding_left = 0,
+    padding_right = 0,
     click_script = "aerospace workspace " .. ws,
+  })
+
+  local members = { "space." .. ws }
+  for k = 1, MAX_APPS do
+    local name = "space." .. ws .. ".app." .. k
+    sbar.add("item", name, {
+      position = "left",
+      drawing = false,
+      icon = { drawing = false },
+      label = { drawing = false },
+      -- Override the default pill from default.lua, or every icon gets its
+      -- own bordered tile.
+      background = {
+        drawing = true,
+        color = colors.transparent,
+        border_width = 0,
+        corner_radius = 0,
+        image = { scale = 0.6, corner_radius = 0, border_width = 0 },
+      },
+      padding_left = 2,
+      padding_right = 2,
+      click_script = "aerospace workspace " .. ws,
+    })
+    members[#members + 1] = name
+  end
+
+  -- Each workspace is its own pill, styled like the widgets on the right
+  -- (bg1 fill, bg2 rim, from default.lua). The script recolours the rim of
+  -- the focused one.
+  sbar.add("bracket", "space." .. ws .. ".chip", members, {
+    background = { color = colors.bg1 },
+  })
+
+  -- Gap after the pill, as the widgets have. The script hides it along with
+  -- an empty workspace.
+  sbar.add("item", "space." .. ws .. ".gap", {
+    position = "left",
+    width = settings.group_paddings,
   })
 
   -- Initial render
@@ -60,23 +88,6 @@ for i = 1, 9 do
     sbar.exec(SCRIPT .. " " .. ws)
   end)
 end
-
--- One frosted pill around the whole workspace row.
-local space_names = {}
-for i = 1, 9 do
-  space_names[i] = "space." .. i
-end
-
-sbar.add("bracket", "spaces.bracket", space_names, {
-  background = {
-    color = colors.bg1,
-    border_color = colors.bg2,
-    border_width = 1,
-    height = 24,
-    corner_radius = 10,
-  },
-  blur_radius = 60,
-})
 
 sbar.add("item", "spaces.padding", {
   position = "left",
