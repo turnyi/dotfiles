@@ -14,6 +14,14 @@ echo "🔧 Starting dotfiles setup..."
 # process_path "$CONFIG_PATH" "$CONFIG_DIR" ".config"
 process_path "$HOME_SOURCE" "$HOME" "HOME"
 
+# Link the Rex config. Only init.lua: ~/.config/rex also holds files Rex writes
+# itself, so the directory can't be a symlink. Reload a running server with
+# `rex config reload`.
+echo -e "\n🦖 Linking Rex config..."
+mkdir -p "$CONFIG_DIR/rex"
+ln -sfn "$CONFIG_PATH/rex/init.lua" "$CONFIG_DIR/rex/init.lua"
+echo "  ✅ ~/.config/rex/init.lua → config/.config/rex/init.lua"
+
 # Link the global Claude Code instructions. Deliberately NOT under config/home:
 # process_directories rm -rf's each target dir before stowing, which would wipe
 # ~/.claude (settings.json, projects/, bookmarks.tsv) on every run.
