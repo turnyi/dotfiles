@@ -93,3 +93,60 @@ keyring-unlock() {
 
   print "keyring: unlocked"
 }
+
+# Make the login keyring passwordless, so it opens on its own at every boot.
+#
+# gnome-keyring stores a blank-password keyring unencrypted and unlocks it as
+# soon as the daemon loads it, which retires keyring-unlock on this box. The
+# tradeoff: login.keyring then sits on disk in plaintext, guarded only by its
+# 0600 mode and whatever disk encryption is underneath.
+#
+# ChangeWithPrompt needs a GUI prompter, which SSH doesn't have, so this goes
+# through gnome-keyring's master-password interface instead. The password is
+# handed to python on stdin, never argv, so it doesn't show up in ps.
+keyring-clear-password() {
+  local pw keyrings="$HOME/.local/share/keyrings"
+
+  if ! keyring-bus-up; then
+    keyring-bus-hint
+    return 1
+  fi
+
+  if keyring-locked; then
+    IFS= read -rs "pw?current keyring password: " || return 1
+    print
+    if [[ -z "$pw" ]]; then
+      print -u2 "keyring: empty password, nothing sent"
+      return 1
+    fi
+  fi
+
+  cp -p "$keyrings/login.keyring" "$keyrings/login.keyring.bak-$(date +%Y%m%d%H%M%S)" || return 1
+
+  print -rn -- "$pw" | python3 -c '
+import sys, dbus
+pw = sys.stdin.buffer.read()
+bus = dbus.SessionBus()
+svc = bus.get_object("org.freedesktop.secrets", "/org/freedesktop/secrets")
+_, session = dbus.Interface(svc, "org.freedesktop.Secret.Service").OpenSession("plain", dbus.String("", variant_level=1))
+internal = dbus.Interface(svc, "org.gnome.keyring.InternalUnsupportedGuiltRiddenInterface")
+login = dbus.ObjectPath("/org/freedesktop/secrets/collection/login")
+secret = lambda value: dbus.Struct((session, dbus.ByteArray(b""), dbus.ByteArray(value), "text/plain"), signature="oayays")
+try:
+    if pw:
+        internal.UnlockWithMasterPassword(login, secret(pw))
+    internal.ChangeWithMasterPassword(login, secret(pw), secret(b""))
+except dbus.DBusException as e:
+    sys.exit("keyring: " + e.get_dbus_message())
+'
+  local rc=$?
+  pw=
+  (( rc == 0 )) || return 1
+
+  if keyring-locked; then
+    print -u2 "keyring: password cleared but the collection is still locked"
+    return 1
+  fi
+
+  print "keyring: password cleared — login keyring now unlocks itself at boot"
+}

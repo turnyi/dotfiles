@@ -29,7 +29,25 @@ _linear_key_lookup() {
   if [[ "$OSTYPE" == darwin* ]]; then
     security find-generic-password -s linear -a "$1" -w 2>/dev/null
   else
-    secret-tool lookup linear "$1" 2>/dev/null
+    # A locked collection makes secret-tool wait for an unlock prompt that
+    # never appears over SSH. _linear_keyring_ready catches that up front;
+    # the timeout covers anything that slips past it.
+    timeout 5 secret-tool lookup linear "$1" 2>/dev/null
+  fi
+}
+
+# Fail fast, with the fix, when the Linux keyring can't answer a lookup.
+_linear_keyring_ready() {
+  [[ "$OSTYPE" == darwin* ]] && return 0
+
+  if ! keyring-bus-up; then
+    keyring-bus-hint
+    return 1
+  fi
+
+  if keyring-locked; then
+    print -u2 "linear: the login keyring is locked. run: keyring-unlock"
+    return 1
   fi
 }
 
@@ -68,16 +86,15 @@ claude() {
     return $?
   fi
 
+  if ! _linear_keyring_ready; then
+    print -u2 "linear: to launch anyway: LINEAR_SKIP=1 claude"
+    return 1
+  fi
+
   key=$(_linear_key_lookup "$slot")
   if [[ -z "$key" ]]; then
     print -u2 "linear: no key for '$slot' — not launching without it"
-    if [[ "$OSTYPE" != darwin* ]] && ! keyring-bus-up; then
-      keyring-bus-hint
-    elif [[ "$OSTYPE" != darwin* ]] && keyring-locked; then
-      print -u2 "linear: the login keyring is locked. run: keyring-unlock"
-    else
-      print -u2 "linear: store it with: $(_linear_store_hint "$slot")"
-    fi
+    print -u2 "linear: store it with: $(_linear_store_hint "$slot")"
     print -u2 "linear: to launch anyway: LINEAR_SKIP=1 claude"
     return 1
   fi
@@ -94,6 +111,8 @@ linear-whoami() {
     print "linear: $PWD maps to no Linear workspace"
     return 1
   fi
+
+  _linear_keyring_ready || return 1
 
   key=$(_linear_key_lookup "$slot")
   if [[ -z "$key" ]]; then
