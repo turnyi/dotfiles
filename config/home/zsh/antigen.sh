@@ -7,7 +7,6 @@ antigen use oh-my-zsh
 antigen bundle brew
 antigen bundle docker
 antigen bundle docker-compose
-antigen bundle dotenv
 antigen bundle fzf
 antigen bundle git
 antigen bundle jira

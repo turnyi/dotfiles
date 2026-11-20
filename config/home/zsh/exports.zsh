@@ -97,10 +97,6 @@ export ZSH_TMUX_AUTOSTART=true
 export ZSH_TMUX_ITERM2=true
 export ZSH_TMUX_CONFIG=$HOME/.tmux.conf
 
-export ZSH_DOTENV_ALLOWED_LIST=~/dotenv/allowed.list
-export ZSH_DOTENV_DISALLOWED_LIST=~/dotenv/disallowed.list
-export ZSH_DOTENV_AUTOLOAD=false
-
 # Set andorid studio home variables
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
