@@ -22,8 +22,38 @@ local activeBorder = { colors = { "rgba(4c5bffdd)", "rgba(3cc8ccdd)" }, angle = 
 
 local mainMod = "SUPER"
 
+-- Super+letter, then Super+digit within appChordMs, picks that app's Nth window
+-- (Super+S, 2 → second Slack) instead of switching workspace. Each pick re-arms
+-- the chord, so Super+S, 2, 3 keeps hopping between that app's windows.
+local appChordMs = 1000
+local appChord = { query = nil, press = 0 }
+
+local function arm_app_chord(query)
+  appChord.query = query
+  appChord.press = appChord.press + 1
+  local press = appChord.press
+  hl.timer(function()
+    if press == appChord.press then appChord.query = nil end
+  end, { timeout = appChordMs, type = "oneshot" })
+end
+
 local function focus_or_launch(query)
-  return hl.dsp.exec_cmd(string.format('bash ~/scripts/focus-or-lunch.sh "%s"', query))
+  return function()
+    hl.exec_cmd(string.format('bash ~/scripts/focus-or-lunch.sh "%s"', query))
+    arm_app_chord(query)
+  end
+end
+
+local function workspace_or_app_window(i)
+  return function()
+    local query = appChord.query
+    if not query then
+      hl.dispatch(hl.dsp.focus({ workspace = i }))
+      return
+    end
+    hl.exec_cmd(string.format('bash ~/scripts/focus-or-lunch.sh "%s" "" %d', query, i))
+    arm_app_chord(query)
+  end
 end
 
 local function chrome_profile(profile)
@@ -369,7 +399,7 @@ hl.bind(mainMod .. " + CTRL + L", hl.dsp.workspace.move({ monitor = "r" }))
 
 for i = 1, 10 do
   local key = i % 10
-  hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i }))
+  hl.bind(mainMod .. " + " .. key,             workspace_or_app_window(i))
   hl.bind(mainMod .. " + SHIFT + " .. key,     hl.dsp.window.move({ workspace = i }))
 end
 

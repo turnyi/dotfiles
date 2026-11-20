@@ -38,7 +38,7 @@ automatically-unhide-macos-hidden-apps = true
     # (see bar.lua), so its windows run to the top edge.
     # sketchybar-toggle.sh rewrites the line below; while the bar is shown it is
     #   [{ monitor.'built-in' = 5 }, { monitor.'Any Display' = 5 }, 37]
-    outer.top        = [{ monitor.'built-in' = 5 }, { monitor.'Any Display' = 5 }, 37]
+    outer.top        = 5
     outer.right      = 5
 
 # Which monitor each workspace lives on. Apps are no longer auto-assigned to
@@ -114,15 +114,15 @@ automatically-unhide-macos-hidden-apps = true
     alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
     # ── Switch workspace (like Hyprland Super+1-9) ───────────────────
-    alt-1 = 'workspace 1'
-    alt-2 = 'workspace 2'
-    alt-3 = 'workspace 3'
-    alt-4 = 'workspace 4'
-    alt-5 = 'workspace 5'
-    alt-6 = 'workspace 6'
-    alt-7 = 'workspace 7'
-    alt-8 = 'workspace 8'
-    alt-9 = 'workspace 9'
+    alt-1 = 'exec-and-forget bash ~/scripts/focus-nth-or-workspace.sh 1'
+    alt-2 = 'exec-and-forget bash ~/scripts/focus-nth-or-workspace.sh 2'
+    alt-3 = 'exec-and-forget bash ~/scripts/focus-nth-or-workspace.sh 3'
+    alt-4 = 'exec-and-forget bash ~/scripts/focus-nth-or-workspace.sh 4'
+    alt-5 = 'exec-and-forget bash ~/scripts/focus-nth-or-workspace.sh 5'
+    alt-6 = 'exec-and-forget bash ~/scripts/focus-nth-or-workspace.sh 6'
+    alt-7 = 'exec-and-forget bash ~/scripts/focus-nth-or-workspace.sh 7'
+    alt-8 = 'exec-and-forget bash ~/scripts/focus-nth-or-workspace.sh 8'
+    alt-9 = 'exec-and-forget bash ~/scripts/focus-nth-or-workspace.sh 9'
 
     # ── Move window to workspace AND follow it there (like Hyprland) ─
     # --focus-follows-window jumps focus (and the monitor) to the space the
